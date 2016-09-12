@@ -1,6 +1,6 @@
 Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of the card game of poker. Two cards, known as the hole cards or hold cards, are dealt face down to each player, and then five community cards are dealt face up in three stages. The stages consist of a series of three cards ("the flop"), later an additional single card ("the turn" or "fourth street") and a final card ("the river" or "fifth street"). Each player seeks the best five card poker hand from the combination of the community cards and their own hole cards. If a player's best five card poker hand consists only of the five community cards and none of the player's hole cards, it is called "playing the board". Players have betting options to check, call, raise or fold. Rounds of betting take place before the flop is dealt, and after each subsequent deal (https://en.wikipedia.org/wiki/Texas_hold_%27em).
 
-![wireframes](https://github.com/robertschneiderman/texas-holdem-poker/images.png)
+![wireframes](https://github.com/robertschneiderman/texas-holdem-poker/blob/master/images/texas-holdem-poker.png)
 
 
 ### Functionality & MVP  
