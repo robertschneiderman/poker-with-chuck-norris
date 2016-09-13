@@ -1,0 +1,12 @@
+.justify {
+  text-align: justify;
+}
+
+.justify:after{
+  content: '';
+  display: inline-block;
+  font-size:0;
+  height: 0;      
+  line-height:0;
+  width: 100%;  
+}
