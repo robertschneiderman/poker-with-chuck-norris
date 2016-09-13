@@ -18,10 +18,14 @@ class Interface extends React.Component {
   }
 
   btnEnabledness() {
-    if (this.props.turn === 1) {
-      document.getElementById("myBtn").disabled = true;
+    if (this.props.turn !== 1) {
+      document.querySelectorAll(".interface-betting > button").forEach(button => {
+        button.disabled = true;
+      });
     } else {
-      document.getElementById("myBtn").disabled = true;
+      document.querySelectorAll(".interface-betting > button").forEach(button => {
+        button.disabled = false;
+      });
     }
   }
 
@@ -29,12 +33,20 @@ class Interface extends React.Component {
 
   render() {
     this.interfaceClasses();
+    this.btnEnabledness();
 
     return(
       <div className="interface-container">
         <div className={this.bettingClass}>
-          <button id="btn-raise" className="btn-raise">Raise</button>
-          <button id="btn-check-call" className="btn-check-call">Check/Call</button>
+          <button 
+            id="btn-raise"
+            className="btn-raise"
+            onClick={this.props.raise}
+            >
+            Raise 50
+          </button>
+
+          <button id="btn-call-check" className="btn-call-check">Call/Check</button>
           <button id="btn-fold" className="btn-fold">Fold</button>
         </div>
         <div className={this.dealClass}>

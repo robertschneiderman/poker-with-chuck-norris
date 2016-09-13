@@ -80,8 +80,8 @@
   padding: 0.15rem 0.05rem;
   width: 0.5rem;
 }
-.card.rank1:before,
-.card.rank1:after {
+.card.rank14:before,
+.card.rank14:after {
   content: "A";
 }
 .card.rank2:before,
@@ -132,7 +132,7 @@
 .card.rank13:after {
   content: "K";
 }
-.card.spades.rank1 .face {
+.card.spades.rank14 .face {
   background-image: url("../images/faces/0_1.svg");
 }
 .card.spades.rank2 .face {
@@ -171,7 +171,7 @@
 .card.spades.rank13 .face {
   background-image: url("../images/faces/0_13.svg");
 }
-.card.hearts.rank1 .face {
+.card.hearts.rank14 .face {
   background-image: url("../images/faces/1_1.svg");
 }
 .card.hearts.rank2 .face {
@@ -210,7 +210,7 @@
 .card.hearts.rank13 .face {
   background-image: url("../images/faces/1_13.svg");
 }
-.card.clubs.rank1 .face {
+.card.clubs.rank14 .face {
   background-image: url("../images/faces/2_1.svg");
 }
 .card.clubs.rank2 .face {
@@ -249,7 +249,7 @@
 .card.clubs.rank13 .face {
   background-image: url("../images/faces/2_13.svg");
 }
-.card.diamonds.rank1 .face {
+.card.diamonds.rank14 .face {
   background-image: url("../images/faces/3_1.svg");
 }
 .card.diamonds.rank2 .face {

@@ -45,12 +45,6 @@ class Game extends React.Component {
     };
   }
 
-  // pre-round
-  // pre-flop
-  // flop
-  // turn
-  // river
-
   deal() {
     let deck = shuffle(this.state.deck);
     let cardsToDeal = deck.splice(48);
@@ -105,13 +99,59 @@ class Game extends React.Component {
         }
       },
       round: 'pre-flop'
-    }, this.getBets);
+    }, this.callOrCheck);
+  }
+
+  getHighestStake() {
+    let stake1 = this.state.players['1'].stake;
+    let stake2 = this.state.players['2'].stake;
+    return (stake1 > stake2) ? stake1 : stake2;
+  }
+
+  callOrCheck() {
+    let newState = merge({}, this.state);
+    let turnStr = String(this.state.turn)
+    let oldStake = newState.players[turnStr].stake;
+
+    newState.players[turnStr].stake = this.getHighestStake();
+    newState.players[turnStr].bank -= this.getHighestStake() - oldStake;
+
+    this.setState(newState);
+  }
+
+  raise() {
+    let turnStr = String(this.state.turn)    
+    let newState = merge({}, this.state);
+    newState.players[turnStr].stake += 50;
+    newState.players[turnStr].bank -= 50;
   }
 
   getBet() {
-    let i = 0
-    while (this.state.players['1'].stake !== this.state.players['2'].stake && i < 2) {
+
+    if (this.state.turn === 2) {
+
+    }
+
+
+    this.setState({
       
+    })
+    let i = 0;
+    while (this.state.players['1'].stake !== this.state.players['2'].stake && i < 2) {
+      this.setState({
+      players: {
+        [smallAntePlayerIdx]: { 
+          bank: smallAntesBank,
+          stake: 25,
+          hand: this.state.players[smallAntePlayerIdx].hand
+        },
+        [bigAntePlayerIdx]: {
+          bank: bigAntesBank,
+          stake: 50,
+          hand: this.state.players[bigAntePlayerIdx].hand               
+        }
+      }        
+      })
       i++;
     }
   }
@@ -128,10 +168,12 @@ class Game extends React.Component {
           <Player 
             num={1}
             round={this.state.round}
+            turn={this.state.turn}
             player={ this.state.players["1"] } />
           <Player
             num={2}
             round={this.state.round}
+            turn={this.state.turn}
             player={ this.state.players["2"] } />
         </ul>
 
@@ -141,6 +183,9 @@ class Game extends React.Component {
           deal={this.deal.bind(this)} 
           round={this.state.round}
           turn={this.state.turn}
+          callCheck={this.callOrCheck.bind(this)}
+          fold={this.fold.bind(this)}
+          raise={this.raise.bind(this)}
           />
       </div>
     );
