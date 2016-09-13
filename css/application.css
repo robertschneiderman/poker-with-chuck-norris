@@ -73,9 +73,7 @@ body {font-family: Roboto;}
 
 .player-avatar {border-radius: 5px;height: 20%;width: 34%;}
 
-.player-hand {
-
-}
+.player-hand {position: absolute;justify-content: space-between;display: flex;height: 10rem;width: 8.5rem;right: -132px;top: 3px;}
 
 .player-card {
 

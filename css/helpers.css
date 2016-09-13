@@ -10,3 +10,7 @@
   line-height:0;
   width: 100%;  
 }
+
+.hidden {
+  visibility: hidden !important;
+}

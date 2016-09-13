@@ -3,7 +3,7 @@ import * as ACTIONS from '../../actions/players_actions';
 import Player from './player';
 
 const mapStateToProps = state => ({
-  items: state.user
+  hand: state.deck.
 });
 
 const mapDispatchToProps = (dispatch) => {
