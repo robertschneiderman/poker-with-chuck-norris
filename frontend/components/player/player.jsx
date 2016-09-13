@@ -8,23 +8,41 @@ class Player extends React.Component {
     super(props);
   }
 
+  getPlayerClass() {
+    this.playerClass = `player player-${this.props.num}`;
+
+    if (this.props.turn === this.props.num) {
+      this.playerClass = `player player-${this.props.num} active`;
+    }
+  }
+
+  aiMove() {
+    if (this.props.turn === this.props.num) {
+      this.props.call();
+    }    
+  }
+
   getCardClasses() {
     // debugger;
-    this.card1Class = `card ${this.props.hand[0].suit} rank${this.props.hand[0].rank}`
-    this.card2Class = `card ${this.props.hand[1].suit} rank${this.props.hand[1].rank}`
+    let hand = this.props.player.hand;
+    this.card1Class = `card ${hand[0].suit} rank${hand[0].rank}`
+    this.card2Class = `card ${hand[1].suit} rank${hand[1].rank}`
   }
 
   render() {
-    let playerClass = `player player-${this.props.num}`
+    this.getPlayerClass();
     this.getCardClasses();
-
+    // aiMove()
+    
+    let player = this.props.player;
     return(
-      <li className={playerClass}>
+      <li className={this.playerClass}>
 
         <div className="player-tag">
+          <div className="player-stake">{player.stake}</div>
           <div className="player-info">
             <p className="player-name">John</p>
-            <p className="player-worth">{this.props.bank}</p>
+            <p className="player-worth">{player.bank}</p>
           </div>
 
           <img className="player-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" alt=""/>

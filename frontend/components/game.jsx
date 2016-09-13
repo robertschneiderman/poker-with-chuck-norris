@@ -15,8 +15,9 @@ class Game extends React.Component {
     this.state = {
       pot: 0,
       deck: deck,
-      turn: 'pre-round',
+      round: 'pre-round',
       dealer: 1,
+      turn: 2,
       players: {
         "1": {
           hand: [{
@@ -27,7 +28,7 @@ class Game extends React.Component {
             rank: ''
           }],
           bank: 1000,
-          stake: 50
+          stake: 0
         },
         "2": {
           hand: [{
@@ -38,7 +39,7 @@ class Game extends React.Component {
             rank: ''
           }],
           bank: 1000,
-          stake: 25
+          stake: 0
         }
       }
     };
@@ -60,17 +61,19 @@ class Game extends React.Component {
     this.setState({
       deck: deck,
       players: {
-        '1': { 
+        '1': {
+          bank: this.state.players['1'].bank,
+          stake: this.state.players['1'].stake,
           hand: player1Hand,
         },
         '2': {
-          hand: player2Hand,
+          bank: this.state.players['2'].bank,
+          stake: this.state.players['2'].stake,
+          hand: player2Hand
         }
       },
-      turn: 'pre-flop'
-    });
-    debugger;
-    this.collectAntes();
+      round: 'pre-flop'
+    }, this.collectAntes);
   }
 
   collectAntes() {
@@ -101,10 +104,16 @@ class Game extends React.Component {
           hand: this.state.players[bigAntePlayerIdx].hand               
         }
       },
-      turn: 'pre-flop'
-    });
-    debugger;
+      round: 'pre-flop'
+    }, this.getBets);
+  }
 
+  getBet() {
+    let i = 0
+    while (this.state.players['1'].stake !== this.state.players['2'].stake && i < 2) {
+      
+      i++;
+    }
   }
 
   setPlayer() {
@@ -117,19 +126,20 @@ class Game extends React.Component {
       <div className="game">
         <ul className="players">
           <Player 
-            num={1} 
-            hand={ this.state.players["1"].hand } 
-            bank={ this.state.players["1"].bank } />
+            num={1}
+            round={this.state.round}
+            player={ this.state.players["1"] } />
           <Player
             num={2}
-            hand={ this.state.players["2"].hand }
-            bank={ this.state.players["2"].bank } />
+            round={this.state.round}
+            player={ this.state.players["2"] } />
         </ul>
 
         <Stage />
 
         <Interface 
           deal={this.deal.bind(this)} 
+          round={this.state.round}
           turn={this.state.turn}
           />
       </div>
