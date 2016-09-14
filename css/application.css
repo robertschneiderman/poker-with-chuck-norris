@@ -17,12 +17,18 @@ body {font-family: Roboto;}
 	/* padding: 4rem; */
 	border-radius: 260px;
 	background-color: #c6e4c6;
-	height: 38rem;
+	height: 33rem;
 }
 
-.stage {position: absolute;top: 50%;left: 50%;transform: translate3d(-50%, -50%, 0);}
+.stage {position: absolute;top: 50%;left: 50%;text-align: center;width: 18rem;transform: translate3d(-50%, -50%, 0);}
 
-.pot {background-color: rgba(0,0,0, 0.45);color: #fff;padding: 0.7rem 0.7rem;}
+.pot {background-color: rgba(0,0,0, 0.45);color: #fff;padding: 0.7rem 0.7rem;display: block;width: 6rem;margin: 0 auto 1rem;}
+
+
+.stage-cards {
+  display: flex;
+  justify-content: space-between;
+}
 
 .stage-card {
 

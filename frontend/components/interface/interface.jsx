@@ -8,7 +8,7 @@ class Interface extends React.Component {
   }
 
   interfaceClasses() {
-    if (this.props.round === 'pre-round') {
+    if (this.props.round === 0) {
       this.bettingClass = 'interface-betting hidden';
       this.dealClass = 'interface-deal';
     } else {
@@ -50,7 +50,12 @@ class Interface extends React.Component {
             Raise 50
           </button>
 
-          <button id="btn-call-check" className="btn-call-check">Call/Check</button>
+          <button 
+            id="btn-call-check" 
+            className="btn-call-check"
+            onClick={this.props.callOrCheck}>
+              Call/Check
+          </button>
           <button id="btn-fold" className="btn-fold">Fold</button>
         </div>
         <div className={this.dealClass}>
