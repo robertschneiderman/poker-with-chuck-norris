@@ -18,7 +18,7 @@ class Interface extends React.Component {
   }
 
   btnEnabledness() {
-    if (this.props.turn !== 1) {
+    if (this.props.turn !== 0) {
       document.querySelectorAll(".interface-betting > button").forEach(button => {
         button.disabled = true;
       });
@@ -26,6 +26,10 @@ class Interface extends React.Component {
       document.querySelectorAll(".interface-betting > button").forEach(button => {
         button.disabled = false;
       });
+    }
+
+    if (this.props.players['0'].stake === this.props.players['1'].stake) {
+      // document.getElementById('btn-call-check').disabled = true;
     }
   }
 

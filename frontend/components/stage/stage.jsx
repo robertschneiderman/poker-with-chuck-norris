@@ -10,7 +10,7 @@ class Stage extends React.Component {
   render() {
     return(
       <section className="stage">
-        <span className="pot">Pot: 10,000</span>
+        <span className="pot">Pot: {this.props.pot}</span>
         <div className="stage-cards"></div>
       </section>
     )

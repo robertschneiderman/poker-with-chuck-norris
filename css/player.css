@@ -1,11 +1,11 @@
-.player-1 {
+.player-0 {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   position: absolute;
 }
 
-.player-2 {
+.player-1 {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
