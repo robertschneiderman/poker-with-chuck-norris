@@ -6,6 +6,8 @@ import { deck } from '../util/deck';
 import shuffle from 'lodash/shuffle';
 import merge from 'lodash/merge';
 import uniq from 'lodash/uniq';
+import drop from 'lodash/drop';
+import take from 'lodash/take';
 
 Array.prototype.myRotate = function (pivot = 1) {
 
@@ -18,6 +20,29 @@ Array.prototype.myRotate = function (pivot = 1) {
 
 };
 
+const defaultPlayer = {
+  hand: [{
+    suit: '',
+    rank: ''
+  },{
+    suit: '',
+    rank: ''
+  }],
+  bank: 1000,
+  stake: 0
+};
+
+const defaultState = {
+  pot: 0,
+  deck: deck,
+  round: 0,
+  dealer: 0,
+  turn: 0,
+  stage: [],
+  looped: false,
+  players: [ merge({}, defaultPlayer), merge({}, defaultPlayer) ]
+}
+
 // rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
 
 class Game extends React.Component {
@@ -25,29 +50,20 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
 
-    let player = {
-      hand: [{
-        suit: '',
-        rank: ''
-      },{
-        suit: '',
-        rank: ''
-      }],
-      bank: 1000,
-      stake: 0
-    };
-
-    this.state = {
-      pot: 0,
-      deck: deck,
-      round: 0,
-      dealer: 0,
-      turn: 0,
-      stage: [],
-      looped: false,
-      players: [ merge({}, player), merge({}, player) ]
-    }
+    this.state = defaultState;
   }
+
+  nextSet() {
+    let player1Bank = this.state.players[0].bank;
+    let player2Bank = this.state.players[1].bank;
+
+    let newState = merge({}, defaultState);
+    newState.players[0].bank = player1Bank;
+    newState.players[1].bank = player2Bank;
+
+    debugger;
+    this.setState(newState, this.deal);
+  }  
 
   deal() {
     let deck = shuffle(this.state.deck);
@@ -59,6 +75,7 @@ class Game extends React.Component {
     newState.deck = deck;
     newState.round = 1;
 
+    // debugger;
     this.setState(newState, this.collectAntes);
   }
 
@@ -73,18 +90,20 @@ class Game extends React.Component {
     newState.players[bigIdx].bank -= 50;
     newState.players[bigIdx].stake += 50;
 
+    // debugger;
     this.setState(newState, this.nextTurn);
   }
 
   nextRound() {
-    let nextRound = (this.state.round + 1) % 5;
-    let pot = (this.state.players['0'].stake + this.state.players['1'].stake)
+    let nextRound = (this.state.round + 1)
+    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
     
     // let stageCards
     this.resetPlayerStakes();
 
     this.setState({
-      stage: this.stageCards(nextRound),
+      deck: this.alterDeck(nextRound).deck,
+      stage: this.alterDeck(nextRound).cards,
       pot: pot,
       round: nextRound,
       turn: this.state.dealer,
@@ -99,46 +118,43 @@ class Game extends React.Component {
     this.setState(newState);
   }  
 
-  stageCards(round) {
+  alterDeck(round) {
     let deck = this.state.deck;
     let cards;
     switch (round) {
       case 2:
-        cards = [deck.pop(), deck.pop(), deck.pop()];
-        return cards;
-      case 3:
-        cards = [deck.pop()]
-        return this.state.stage.concat(cards);
-      case 4:
-        cards = [deck.pop()]
-        return this.state.stage.concat(cards); 
+        cards = take(deck, 3);
+        deck = drop(deck, 3);
+        return {deck, cards: cards.concat(this.state.stage)};
+      case (3):
+        cards = take(deck, 1);
+        deck = drop(deck, 1);
+        return {deck, cards: cards.concat(this.state.stage)};
+      case (4):
+        cards = take(deck, 1);
+        deck = drop(deck, 1);
+        return {deck, cards: cards.concat(this.state.stage)};        
       default:
         return [];       
     }
   }
 
   nextTurn() {
-    debugger;
     if ( (this.allStakesEven()) && (this.state.looped)) {
       //end of round
       this.nextRound();
+    } else if (this.state.round > 4) {
+        this.nextSet();
     } else {
       let nextTurn = (this.state.turn + 1) % 2;
 
       if (nextTurn === this.state.dealer) {
-        debugger;
         this.setState({ turn: nextTurn, looped: true }, this.aiMove);
       } else {
         this.setState({ turn: nextTurn }, this.aiMove);        
       }   
     }
   }
-
-  // checkLooped(turn) {
-  //   if (turn === this.state.dealer) {
-  //     this.setState({looped: true});
-  //   }
-  // }
 
   allStakesEven() {
     let stakes = this.state.players.map(player => player.stake);
@@ -192,15 +208,15 @@ class Game extends React.Component {
   }
 
   otherPlayer() {
-    return (this.state.turn === '0') ? this.state.players['1'] : this.state.players['0'];
+    return (this.state.turn === 0) ? this.state.players[1] : this.state.players[0];
   }
 
   currentIndex() {
-    return (this.state.turn === '0') ? '0' : '1';
+    return (this.state.turn === 0) ? 0 : 1;
   }  
 
   otherIndex() {
-    return (this.state.turn === '0') ? '1' : '0';
+    return (this.state.turn === 0) ? 1 : 0;
   }
 
   render() {
@@ -212,18 +228,18 @@ class Game extends React.Component {
             num={0}
             round={this.state.round}
             turn={this.state.turn}
-            player={this.state.players['0']} />
+            player={this.state.players[0]} />
           <Player
             num={1}
             round={this.state.round}
             turn={this.state.turn}
-            player={this.state.players['1']} />
+            player={this.state.players[1]} />
         </ul>
 
         <Stage pot={this.state.pot} cards={this.state.stage} />
 
         <Interface
-          deal={this.deal.bind(this)} 
+          nextSet={this.nextSet.bind(this)} 
           round={this.state.round}
           turn={this.state.turn}
           players={this.state.players}
