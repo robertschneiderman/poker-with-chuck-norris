@@ -24,6 +24,18 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
 
+    let player = {
+      hand: [{
+        suit: '',
+        rank: ''
+      },{
+        suit: '',
+        rank: ''
+      }],
+      bank: 1000,
+      stake: 0
+    };
+
     this.state = {
       pot: 0,
       deck: deck,
@@ -32,75 +44,34 @@ class Game extends React.Component {
       turn: 0,
       stage: [],
       looped: false,
-      players: [{
-          hand: [{
-            suit: '',
-            rank: ''
-          },{
-            suit: '',
-            rank: ''
-          }],
-          bank: 1000,
-          stake: 0
-        }, {
-          hand: [{
-            suit: '',
-            rank: ''
-          },{
-            suit: '',
-            rank: ''
-          }],
-          bank: 1000,
-          stake: 0
-        }
-      }];
+      players: [ merge({}, player), merge({}, player) ]
+    }
   }
 
   deal() {
-    let deck = shuffle(this.state.deck);
     let cardsToDeal = deck.splice(48);
-    
-    let player1Hand = cardsToDeal.slice(0, 2);
-    let player2Hand  = cardsToDeal.slice(2);
+    let newState = merge({}, this.state);
 
-    this.setState({
-      deck: deck,
-      players: [{
-          bank: this.state.players[0].bank,
-          stake: this.state.players[0].stake,
-          hand: player1Hand,
-        }, {
-          bank: this.state.players[1].bank,
-          stake: this.state.players[1].stake,
-          hand: player2Hand
-        }
-      ],
-      round: 1
-    }, this.collectAntes);
+    newState.players[0].hand = cardsToDeal.slice(0, 2);
+    newState.players[1].hand = cardsToDeal.slice(2);
+    newState.deck = shuffle(this.state.deck);
+    newState.round = 1;
+
+    this.setState(newState, this.collectAntes);
   }
 
   collectAntes() {
     let dealer = String(this.state.dealer);
-    let smallAntePlayerIdx = (this.state.dealer + 1) % 2;
-    let bigAntePlayerIdx = (this.state.dealer + 2) % 2;
+    let smallIdx = (this.state.dealer + 1) % 2;
+    let bigIdx = (this.state.dealer + 2) % 2;
 
-    let smallAntesBank = this.state.players[smallAntePlayerIdx].bank - 25;
-    let bigAntesBank = this.state.players[bigAntePlayerIdx].bank - 50;
+    let newState = merge({}, this.state);
+    newState.players[smallIdx].bank -= 25;
+    newState.players[smallIdx].stake += 25;
+    newState.players[bigIdx].bank -= 50;
+    newState.players[bigIdx].stake += 50;
 
-    this.setState({
-      players: {
-        [smallAntePlayerIdx]: { 
-          bank: smallAntesBank,
-          stake: 25,
-          hand: this.state.players[smallAntePlayerIdx].hand
-        },
-        [bigAntePlayerIdx]: {
-          bank: bigAntesBank,
-          stake: 50,
-          hand: this.state.players[bigAntePlayerIdx].hand               
-        },
-      }
-    }, this.nextTurn);
+    this.setState(newState, this.nextTurn);
   }
 
   nextRound() {
