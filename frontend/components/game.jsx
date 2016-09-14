@@ -8,6 +8,7 @@ import merge from 'lodash/merge';
 import uniq from 'lodash/uniq';
 import drop from 'lodash/drop';
 import take from 'lodash/take';
+import greatestHand from 'lodash/take';
 
 Array.prototype.myRotate = function (pivot = 1) {
 
@@ -61,7 +62,6 @@ class Game extends React.Component {
     newState.players[0].bank = player1Bank;
     newState.players[1].bank = player2Bank;
 
-    debugger;
     this.setState(newState, this.deal);
   }  
 
@@ -95,20 +95,27 @@ class Game extends React.Component {
   }
 
   nextRound() {
-    let nextRound = (this.state.round + 1)
-    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
-    
-    // let stageCards
+    let nextRound = (this.state.round + 1);
     this.resetPlayerStakes();
 
-    this.setState({
-      deck: this.alterDeck(nextRound).deck,
-      stage: this.alterDeck(nextRound).cards,
-      pot: pot,
-      round: nextRound,
-      turn: this.state.dealer,
-      looped: false
-    }, this.nextTurn);
+    if (nextRound > 4) {
+      this.collectWinnings();
+    } else {
+      let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
+      this.setState({
+        deck: this.alterDeck(nextRound).deck,
+        stage: this.alterDeck(nextRound).cards,
+        pot: pot,
+        round: nextRound,
+        turn: this.state.dealer,
+        looped: false
+      }, this.nextTurn);      
+    }
+  }
+
+  collectWinnings() {
+    let winner = greatestHand(this.state.players[0].hand, this.state.players[1].hand);
+
   }
 
   resetPlayerStakes() {
@@ -133,7 +140,7 @@ class Game extends React.Component {
       case (4):
         cards = take(deck, 1);
         deck = drop(deck, 1);
-        return {deck, cards: cards.concat(this.state.stage)};        
+        return {deck, cards: cards.concat(this.state.stage)};
       default:
         return [];       
     }
@@ -141,10 +148,7 @@ class Game extends React.Component {
 
   nextTurn() {
     if ( (this.allStakesEven()) && (this.state.looped)) {
-      //end of round
       this.nextRound();
-    } else if (this.state.round > 4) {
-        this.nextSet();
     } else {
       let nextTurn = (this.state.turn + 1) % 2;
 
@@ -179,6 +183,8 @@ class Game extends React.Component {
       newState.players[turnStr].stake = otherStake;
       newState.players[turnStr].bank -= (otherStake - oldStake);
     }
+
+    debugger;
 
     // debugger;
     this.setState(newState, this.nextTurn);
