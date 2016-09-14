@@ -5,6 +5,7 @@ import Interface from './interface/interface';
 import { deck } from '../util/deck';
 import shuffle from 'lodash/shuffle';
 import merge from 'lodash/merge';
+import uniq from 'lodash/uniq';
 
 Array.prototype.myRotate = function (pivot = 1) {
 
@@ -49,12 +50,13 @@ class Game extends React.Component {
   }
 
   deal() {
+    let deck = shuffle(this.state.deck);
     let cardsToDeal = deck.splice(48);
     let newState = merge({}, this.state);
 
     newState.players[0].hand = cardsToDeal.slice(0, 2);
     newState.players[1].hand = cardsToDeal.slice(2);
-    newState.deck = shuffle(this.state.deck);
+    newState.deck = deck;
     newState.round = 1;
 
     this.setState(newState, this.collectAntes);
@@ -99,17 +101,17 @@ class Game extends React.Component {
         return cards;
       case 3:
         cards = [deck.pop()]
-        return cards;
+        return this.state.stage.concat(cards);
       case 4:
         cards = [deck.pop()]
-        return cards; 
+        return this.state.stage.concat(cards); 
       default:
         return [];       
     }
   }
 
   nextTurn() {
-    if ( () && (this.state.looped)) {
+    if ( (this.allStakesEven()) && (this.state.looped)) {
       //end of round
       this.nextRound();
     } else {
@@ -121,13 +123,13 @@ class Game extends React.Component {
 
   checkLooped(turn) {
     if (turn === this.state.dealer) {
-      this.setState(looped: true);
+      this.setState({looped: true});
     }
   }
 
   allStakesEven() {
     let stakes = this.state.players.map(player => player.stake);
-
+    return (uniq(stakes).length === 1)
   }
 
   aiMove() {
