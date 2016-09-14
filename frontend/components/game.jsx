@@ -77,11 +77,11 @@ class Game extends React.Component {
   }
 
   nextRound() {
-    let nextRound = (this.state.round + 1);
+    let nextRound = (this.state.round + 1) % 5;
     let pot = (this.state.players['0'].stake + this.state.players['1'].stake)
     
     // let stageCards
-    debugger;
+    this.resetPlayerStakes();
 
     this.setState({
       stage: this.stageCards(nextRound),
@@ -89,8 +89,15 @@ class Game extends React.Component {
       round: nextRound,
       turn: this.state.dealer,
       looped: false
-    });
+    }, this.nextTurn);
   }
+
+  resetPlayerStakes() {
+    let newState = merge({}, this.state);
+    newState.players[0].stake = 0;
+    newState.players[1].stake = 0;
+    this.setState(newState);
+  }  
 
   stageCards(round) {
     let deck = this.state.deck;
@@ -111,25 +118,32 @@ class Game extends React.Component {
   }
 
   nextTurn() {
+    debugger;
     if ( (this.allStakesEven()) && (this.state.looped)) {
       //end of round
       this.nextRound();
     } else {
       let nextTurn = (this.state.turn + 1) % 2;
-      this.checkLooped(nextTurn);
-      this.setState({ turn: nextTurn }, this.aiMove);      
+
+      if (nextTurn === this.state.dealer) {
+        debugger;
+        this.setState({ turn: nextTurn, looped: true }, this.aiMove);
+      } else {
+        this.setState({ turn: nextTurn }, this.aiMove);        
+      }   
     }
   }
 
-  checkLooped(turn) {
-    if (turn === this.state.dealer) {
-      this.setState({looped: true});
-    }
-  }
+  // checkLooped(turn) {
+  //   if (turn === this.state.dealer) {
+  //     this.setState({looped: true});
+  //   }
+  // }
 
   allStakesEven() {
     let stakes = this.state.players.map(player => player.stake);
-    return (uniq(stakes).length === 1)
+    let val = (uniq(stakes).length === 1)
+    return val;
   }
 
   aiMove() {
@@ -137,12 +151,6 @@ class Game extends React.Component {
     if (this.state.turn === 1) {
       this.callOrCheck();
     }
-  }
-
-  getHighestStake() {
-    let stake1 = this.state.players['0'].stake;
-    let stake2 = this.state.players['1'].stake;
-    return (stake1 > stake2) ? stake1 : stake2;
   }
 
   callOrCheck() {

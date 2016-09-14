@@ -8,10 +8,10 @@ class Stage extends React.Component {
   }
 
   render() {
-    let cards = this.props.cards.map(card => {
+    let cards = this.props.cards.map((card, i) => {
       let cardClass = `card ${card.suit} rank${card.rank}`;
       return(
-        <li className={cardClass}>
+        <li key={i} className={cardClass}>
           <div className="face">
           </div>
         </li>
