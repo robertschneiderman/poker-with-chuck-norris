@@ -114,7 +114,8 @@ class Game extends React.Component {
   }
 
   collectWinnings() {
-    let winner = greatestHand(this.state.players[0].hand, this.state.players[1].hand);
+    let hands = [this.state.players[0].hand, this.state.players[1].hand];
+    let winner = greatestHand(this.state.stage, hands);
 
   }
 
@@ -152,7 +153,7 @@ class Game extends React.Component {
     } else {
       let nextTurn = (this.state.turn + 1) % 2;
 
-      if (nextTurn === this.state.dealer) {
+      if (nextTurn === this.state.dealer) { //FIX!!!!!!!!!
         this.setState({ turn: nextTurn, looped: true }, this.aiMove);
       } else {
         this.setState({ turn: nextTurn }, this.aiMove);        

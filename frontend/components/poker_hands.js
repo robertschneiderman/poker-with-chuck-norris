@@ -1,26 +1,22 @@
-require_relative './tie_breaker'
+// import { sortBy, drop, uniq } from './lodash';
 
-import sortBy from 'lodash/sortBy';
-import drop from 'lodash/drop';
+const RANKS = {
+  'straightFlush': 9,
+  'fourOfAKind': 8,
+  'fullHouse': 7,
+  'flush': 6,
+  'straight': 5,
+  'triples': 4,
+  'twoPair': 3,
+  'pair': 2,
+  'singles': 1
+};
 
-const RANKS = [
-  'royal_flush',
-  'straight_flush',
-  'four_of_a_kind',
-  'full_house',
-  'flush',
-  'straight',
-  'three_of_a_kind',
-  'two_pair',
-  'one_pair',
-  'high_car'
-];
-
-function count() {
-  var count = 0;
-  for(var i = 0; i < array.length; ++i){
-      if(array[i] == 2)
-          count++;
+function count(array, value) {
+  let count = 0;
+  for(let i = 0; i < array.length; i++){
+    if(array[i] === value)
+        count++;
   }
   return count;
 }
@@ -29,122 +25,202 @@ function sortNumber(a,b) {
     return b - a;
 }
 
-// function rank() {
-//   RANKS.forEach(rank => {
-//   }
-// }
+function greatestHand(stage, hands) {
+  let pokerHands = hands.map( hand => new PokerHand(stage, hand));
+  debugger;
+  let handsSortedByRank = pokerHands.sort(hand => hand.bestHand.value);
+  let greatestValue = handsSortedByRank[pokerHands.length - 1].value;
+  let greatestHands = handsSortedByRank.select(hand => hand.bestHand.value === greatestValue);
+
+  if (greatestHands.length === 1) {
+    return greatestHands[0];
+  } else {
+    return tiebreaker(greatestHands);
+  }
+
+}
+
+
+function tiebreaker(hands) {
+
+  let greatestHands = hands;
+
+  for (var i = 0; i < hands.tiebreakers.length; i++) {
+    let tiebreaker = greatestHands.tiebreakers[i];
+
+    let sortedHands = greatestHands.sort((hand, nextHand) => hand.tiebreakers[i] > nextHand.tiebreakers[i]);
+
+    let largestTiebreaker = sortedHands[0].tiebreakers[i];
+
+    greatestHands = sortedHands.select(hand => hand.tiebreaker = largestTiebreaker);
+
+    if (greatestHands.length === 1) {
+      return greatestHands[0];
+    }
+  };
+
+  return 'tie';
+}
+
+function fourOfAKind(array) {
+  let fours = []
+  array.forEach(card => {
+    if (count(array, card) === 4) {
+      fours.push(card);
+    }
+  });
+
+  return fours.length !== 0 ? fours : false;
+}
+
+console.log("fourOfAKind([3, 3, 3, 4, 5, 6, 7]):", fourOfAKind([3, 3, 3, 4, 5, 6, 7]));
+console.log("fourOfAKind([3, 3, 3, 3, 5, 6, 7]):", fourOfAKind([3, 3, 3, 3, 5, 6, 7]));
+
 
 class PokerHand {
 
-  constructor(pile) {
-    this.hand = bestHand(pile);
-    this.getRank();
-  }
-
-  compare(otherHand) {
-    if (this.hand === otherHand) {
-      0
-    } else if (rank != otherHand.rank) {
-      RANKS.reverse.index(rank) <=> RANKS.reverse.index(otherHand.rank)
-    }
-    else {
-      tie_breaker(otherHand)
-    }
+  constructor(stage, hand) {
+    let pile = stage.concat(hand);
+    this.pile = this.bestHand(pile);
   }
 
   bestHand() {
-    let bestHand = this.hand.sort(sortNumber);
+    for (hand in this.hands()) {
+      let value = RANKS[hand];
+      let tiebreakers = this.hands[hand];
 
-    bestHand = bestHand.sort((card, nextCard) => { return count(arr, card) >= count(arr, nextCard) });
+      if (tiebreakers && (value > 4)) {
+        
+        return { value, tiebreakers }
 
-    return drop(bestHand, 2);
+      } else if(tiebreakers && (value <= 4)) {
+        let sortedSingles = this.hands['singles'].sort(sortNumber)
+        let tiebreakers =  tiebreakers.concat(sortedSingles);
+
+        return { value, tiebreakers }
+      }
+    }
   }
 
-  // function count(array, val) {
-  //   var count = 0;
-  //   for(var i = 0; i < array.length; ++i){
-  //       if(array[i] === val)
-  //           count++;
-  //   }
-  //   return count;
-  // }
-
-  // arr = [12, 10, 9, 9, 2, 2, 2]
-  // arr.sort((card, nextCard) => { return count(arr, card) >= count(arr, nextCard) })
-
-  // [12, 10, 9, 9, 2, 2, 2].sort(sortNumber)
-
-  function card_value_count(value) {
-    @cards.map(&:value).count(value)
+  hands() {
+    this.hands = {
+      'straightFlush': this.straightFlush(),
+      'fourOfAKind': this.fourOfAKind(),
+      'fullHouse': this.fullHouse(),
+      'flush': this.flush(),
+      'straight': this.straight(),      
+      'triples': this.triples(),
+      'twoPair': this.doubles(),
+      'pair': this.doubles(),
+      'singles': this.singles()
+    }
   }
 
-  function highCard {
-    @cards.sort.last
+  straightFlush() {
+    let straight = this.straight(this.pile);
+    if (straight && this.flush(straight)) {
+      return true;
+    }
+    return false;
   }
 
-  def cards_without(value)
-    @cards.select { |card| card.value != value }
-  end
+  fourOfAKind() {
+    let fours = []
+    this.pile.forEach(card => {
+      if (count(this.pile, card) === 4) {
+        fours.push(card);
+      }
+    });
 
-  def has_a?(value_or_suit)
-    @cards.any? do |card|
-      card.value == value_or_suit || card.suit == value_or_suit
-    end
-  end
+    return fours.length !== 0 ? fours : false;
+  }
 
-  def royal?
-    Card.royal_values.all? { |value| @cards.map(&:value).include?(value) }
-  end
+  fullHouse() {
+    let triples = this.triples();
+    let doubles = this.doubles();
 
-  def set_card(n)
-    cards.find { |card| card_value_count(card.value) == n }
-  end
+    if (triples && doubles) {
+      return [triples[0], doubles[0]]
+    }
 
-  private
-  def royal_flush?
-    royal? && straight_flush?
-  end
+    return false;
+  }
 
-  def straight_flush?
-    straight? && flush?
-  end
+  flush() {
+    let arrangedBySuit = arrangeBySuit(this.pile).values;
 
-  def four_of_a_kind?
-    @cards.any? { |card| card_value_count(card.value) == 4 }
-  end
+    arrangedBySuit.forEach(suitCards => {
+      if (suitCards.length >= 5) {
+        return take(suitCards.sorted(sortNumber), 5);
+      }
+    })
 
-  def full_house?
-    three_of_a_kind? && one_pair?
-  end
+    return false;
+  }
 
-  def flush?
-    @cards.map(&:suit).uniq.length == 1
-  end
+  straight() {
+    let sortedPile = this.pile.sort(sortNumber);
 
-  def straight?
-    if has_a?(:ace) && has_a?(:two)
-      straight = Card.values[0..3] + [:ace]
-    else
-      low_index = Card.values.index(@cards.first.value)
-      straight = Card.values[low_index..(low_index + 4)]
-    end
+    for (let i = 0; i < sortedPile.length; i++) {
+      for (let j = i; j <= (i + 3); j++) {
+        let cur = sortedPile[j];
+        let next = sortedPile[j+1];
+        if ( (cur - next) !== 1 ) {
+          next
+        } else if(j === i + 3) {
+          return sortedPile.slice(i, i + 5); 
+        }
+      };      
+    };
 
-    @cards.map(&:value) == straight
-  end
+    return false;
+  }  
 
-  def three_of_a_kind?
-    @cards.any? { |card| card_value_count(card.value) == 3 }
-  end
+  triples() {
+    return findByCount(3);
+  }
 
-  def two_pair?
-    pairs.count == 2
-  end
+  doubles() {
+    return findByCount(2);
+  }
 
-  def one_pair?
-    pairs.count == 1
-  end
+  singles() {
+    return findByCount(1);
+  }  
 
-  def high_card?
-    true
-  end
+  findByCount(num) {
+    let finds = [];
+    this.hand.forEach(card => {
+      if (count(card.rank) === num) {
+        finds.push(card.rank);
+      }
+    });
+    let uniqueVals = uniq(finds);
+    return uniqueVals.sort(sortNumber);
+  }  
+
+  arrangeBySuit(pile) {
+    let arranged = {"spades": [], "hearts": [], "clubs": [], "diamonds": []};
+    
+    pile.forEach(card => {
+      arranged[card.suit].push(card);
+    });
+
+    return arranged;
+  }  
+
+  straight() {
+
+  }
+
+  specialStraight() {
+    return this.hand === []
+  }
 }
+
+greatestHand([3, 5, 8],
+  [[{rank: 3, suit: 'spades' },
+  {rank: 7, suit: 'hearts'}],
+  [{rank: 14, suit: 'spades' },
+  {rank: 6, suit: 'hearts'}]]   
+);
