@@ -21,6 +21,10 @@ class Player extends React.Component {
     }    
   }
 
+  getDealerClass() {
+    this.dealerClass = (this.props.dealer === this.props.num) ? 'dealer' : 'hidden'
+  }
+
   getCardClasses() {
     // debugger;
     let hold = this.props.player.hold;
@@ -30,6 +34,7 @@ class Player extends React.Component {
 
   render() {
     this.getPlayerClass();
+    this.getDealerClass();
     this.getCardClasses();
     // aiMove()
     
@@ -39,6 +44,8 @@ class Player extends React.Component {
 
         <div className="player-tag">
           <div className="player-stake">{player.stake}</div>
+          <div className={this.dealerClass}>D</div>
+
           <div className="player-info">
             <p className="player-name">John</p>
             <p className="player-worth">{player.bank}</p>

@@ -1,3 +1,21 @@
+.player-stake {
+  background-color: rgba(0,0,0,.3);
+  border-radius: 50%;
+  color: #fff;
+  /* padding: 0.4rem; */
+  width: 2rem;
+  height: 2rem;
+  line-height: 1.3;
+  position: absolute;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+}
+
+.dealer {background-color: #fff;border-radius: 50%;display: flex;color: #666;justify-content: center;align-items: center;font-weight: 900;line-height: 1;width: 1.6rem;height: 1.6rem;position: absolute;}
+
 .player-0 {
   bottom: 0;
   left: 50%;
@@ -5,9 +23,21 @@
   position: absolute;
 }
 
+.player-0 .player-stake {
+  top: -50px;  
+}
+
+.player-0 .dealer {top: -40px;}
+
 .player-1 {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
   position: absolute;
 }
+
+.player-1 .player-stake {
+  bottom: -50px;  
+}
+
+.player-1 .dealer {bottom: -40px;right: 0;}

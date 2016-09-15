@@ -30,7 +30,6 @@ const defaultPlayer = {
     suit: '',
     rank: ''
   }],
-  bank: 1000,
   stake: 0
 };
 
@@ -38,7 +37,6 @@ const defaultState = {
   pot: 0,
   deck: deck,
   round: 0,
-  dealer: 0,
   turn: 0,
   stage: [],
   looped: false,
@@ -52,7 +50,11 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
 
+    
     this.state = defaultState;
+    this.state.dealer = 0;
+    this.state.players[0].bank = 1000;
+    this.state.players[1].bank = 1000;
   }
 
   nextSet() {
@@ -60,10 +62,11 @@ class Game extends React.Component {
     let player2Bank = this.state.players[1].bank;
 
     let newState = merge({}, defaultState);
+    newState.dealer = (this.state.dealer + 1) % 2;
     newState.players[0].bank = player1Bank;
     newState.players[1].bank = player2Bank;
 
-    this.setState(newState, this.deal);
+    this.setState(newState);
   }  
 
   deal() {
@@ -137,7 +140,7 @@ class Game extends React.Component {
     debugger;
 
 
-    this.setState({}, this.nextSet);
+    this.setState({players}, this.nextSet);
 
     // console.log("winner:", winner);
     
@@ -254,13 +257,15 @@ class Game extends React.Component {
     return(
       <div className="game">
         <ul className="players">
-          <Player 
+          <Player
             num={0}
+            dealer={this.state.dealer}
             round={this.state.round}
             turn={this.state.turn}
             player={this.state.players[0]} />
           <Player
             num={1}
+            dealer={this.state.dealer}
             round={this.state.round}
             turn={this.state.turn}
             player={this.state.players[1]} />
@@ -269,7 +274,7 @@ class Game extends React.Component {
         <Stage pot={this.state.pot} cards={this.state.stage} />
 
         <Interface
-          nextSet={this.nextSet.bind(this)} 
+          deal={this.deal.bind(this)} 
           round={this.state.round}
           turn={this.state.turn}
           players={this.state.players}

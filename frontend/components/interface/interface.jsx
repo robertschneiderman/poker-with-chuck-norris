@@ -58,7 +58,7 @@ class Interface extends React.Component {
           <button id="btn-fold" className="btn-fold">Fold</button>
         </div>
         <div className={this.dealClass}>
-          <button onClick={this.props.nextSet} className="btn-deal">Deal</button>
+          <button onClick={this.props.deal} className="btn-deal">Deal</button>
         </div>        
       </div>
     )

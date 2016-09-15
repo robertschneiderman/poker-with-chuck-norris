@@ -191,12 +191,34 @@ export class PokerHand {
       };      
     };
 
+    if (this.specialStraight(sortedRanks)) {
+      // debugger;
+      return [14, 5, 4, 3, 2]; 
+    }
+
     return false;
   }
 
-  specialStraight() {
-    return this.hand === []
+  specialStraight(sortedRanks) {
+    let needles = [14, 5, 4, 3, 2];
+
+    let rank_i = 0;
+    let needle_finds = 0;
+
+    while (rank_i < sortedRanks.length) {
+      if (needles.includes(sortedRanks[rank_i])) {
+        needle_finds++;
+      }
+      rank_i++
+    }
+
+    if (needle_finds === 5) {
+      return [5, 4, 3, 2];
+    } else {
+      return null;
+    }
   }
+
 
   triples() {
     return this.findByCount(3);
