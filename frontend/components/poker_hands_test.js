@@ -1,6 +1,5 @@
-import { take, drop, uniq, isEqual } from './lodash';
 
-export const RANKS = {
+const RANKS = {
   'straightFlush': 9,
   'fourOfAKind': 8,
   'fullHouse': 7,
@@ -12,10 +11,12 @@ export const RANKS = {
   'singles': 1
 };
 
-// const uniq = _.uniq;
-// const take = _.take;
+const uniq = _.uniq;
+const take = _.take;
+const isEqual = _.isEqual;
+const drop = _.drop;
 
-export const count = (array, value) => {
+const count = (array, value) => {
   let count = 0;
   for(let i = 0; i < array.length; i++){
     if(array[i] === value)
@@ -24,11 +25,11 @@ export const count = (array, value) => {
   return count;
 }
 
-export const sortNumber = (a,b) => {
+const sortNumber = (a,b) => {
   return b - a;
 }
 
-export const greatestHold = (stage, holds) => {
+const greatestHold = (stage, holds) => {
   let greatistHand = greatestHand(stage, holds);
 
   for (let i = 0; i < holds.length; i++) {
@@ -43,7 +44,7 @@ export const greatestHold = (stage, holds) => {
   return null;
 }
 
-export const greatestHand = (stage, hands) => {
+const greatestHand = (stage, hands) => {
   let pokerHands = hands.map( hand => new PokerHand(stage, hand).bestHand());
   let handsSortedByValue = pokerHands.sort((hand, nextHand) => hand.value > nextHand.value);
   let greatestValue = handsSortedByValue[pokerHands.length - 1].value;
@@ -65,7 +66,7 @@ export const greatestHand = (stage, hands) => {
 
 }
 
-export const tiebreaker = (hands) => {
+const tiebreaker = (hands) => {
 
   let greatestHands = hands;
 
@@ -89,7 +90,7 @@ export const tiebreaker = (hands) => {
   return null;
 }
 
-export class PokerHand {
+class PokerHand {
 
   constructor(stage, hand) {
     
@@ -177,7 +178,7 @@ export class PokerHand {
   }
 
   straight() {
-    let sortedRanks = this.ranks.sort(sortNumber);
+    let sortedRanks = uniq(this.ranks.sort(sortNumber));
 
     for (let i = 0; i < sortedRanks.length; i++) {
       for (let j = i; j <= (i + 3); j++) {
@@ -190,12 +191,34 @@ export class PokerHand {
         }
       };      
     };
+    
+    if (this.specialStraight(sortedRanks)) {
+      // debugger;
+      return [14, 5, 4, 3, 2]; 
+    }
 
     return false;
   }
 
-  specialStraight() {
-    return this.hand === []
+  specialStraight(sortedRanks) {
+    let needles = [14, 5, 4, 3, 2];
+
+    let rank_i = 0;
+    let needle_finds = 0;
+
+    while (rank_i < sortedRanks.length) {
+      if (needles.includes(sortedRanks[rank_i])) {
+        needle_finds++;
+      }
+      rank_i++
+    }
+
+    if (needle_finds === 5) {
+      return [5, 4, 3, 2];
+    } else {
+      return null;
+    }
+
   }
 
   triples() {
@@ -271,15 +294,15 @@ export class PokerHand {
 // ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 
 let gh = greatestHand(
-  [{rank: 6, suit: 'clubs'},
-  {rank: 7, suit: 'clubs'},
-  {rank: 2, suit: 'spades'},
+  [{rank: 3, suit: 'clubs'},
+  {rank: 4, suit: 'clubs'},
+  {rank: 5, suit: 'spades'},
   {rank: 2, suit: 'clubs'},
   {rank: 10, suit: 'hearts'}],
-  [[{rank: 12, suit: 'spades' },
+  [[{rank: 10, suit: 'spades' },
   {rank: 5, suit: 'hearts'}],
-  [{rank: 8, suit: 'diamonds'},
-  {rank: 9, suit: 'clubs'}]]
+  [{rank: 14, suit: 'diamonds'},
+  {rank: 2, suit: 'clubs'}]]
 );
 
 console.log("gh:", gh);

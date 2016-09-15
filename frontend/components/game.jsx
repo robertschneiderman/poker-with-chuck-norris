@@ -117,15 +117,14 @@ class Game extends React.Component {
   collectWinnings() {
     // debugger;
     let holds = [this.state.players[0].hold, this.state.players[1].hold];
-    let winningHand = greatestHand(this.state.stage, holds);
+    let winningHold = greatestHold(this.state.stage, holds);
 
     let players = merge([], this.state.players);
 
 
-    if (winningHand) {
+    if (winningHold) {
       players = players.map(player => {
-        if (isEqual(player.hold, winningHand)) {
-          debugger;
+        if (isEqual(player.hold, winningHold)) {
           player.bank += this.state.pot;
         }
         return player;        
@@ -134,7 +133,9 @@ class Game extends React.Component {
       player.bank += this.state.pot;
     }
 
+    console.log("winningHold:", winningHold);
     debugger;
+
 
     this.setState({}, this.nextSet);
 
