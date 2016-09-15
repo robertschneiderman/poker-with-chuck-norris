@@ -40,7 +40,6 @@ function greatestHand(stage, hands) {
 
 }
 
-
 function tiebreaker(hands) {
 
   let greatestHands = hands;
@@ -62,26 +61,12 @@ function tiebreaker(hands) {
   return 'tie';
 }
 
-function fourOfAKind(array) {
-  let fours = []
-  array.forEach(card => {
-    if (count(array, card) === 4) {
-      fours.push(card);
-    }
-  });
-
-  return fours.length !== 0 ? fours : false;
-}
-
-console.log("fourOfAKind([3, 3, 3, 4, 5, 6, 7]):", fourOfAKind([3, 3, 3, 4, 5, 6, 7]));
-console.log("fourOfAKind([3, 3, 3, 3, 5, 6, 7]):", fourOfAKind([3, 3, 3, 3, 5, 6, 7]));
-
-
 class PokerHand {
 
   constructor(stage, hand) {
-    let pile = stage.concat(hand);
-    this.pile = this.bestHand(pile);
+    debugger;
+    this.pile = ranks(stage.concat(hand));
+    // this.pile = this.bestHand(pile);
   }
 
   bestHand() {
@@ -126,6 +111,7 @@ class PokerHand {
 
   fourOfAKind() {
     let fours = []
+    debugger;
     this.pile.forEach(card => {
       if (count(this.pile, card) === 4) {
         fours.push(card);
@@ -136,11 +122,11 @@ class PokerHand {
   }
 
   fullHouse() {
-    let triples = this.triples();
-    let doubles = this.doubles();
+    let triplez = this.triples();
+    let doublez = this.doubles();
 
-    if (triples && doubles) {
-      return [triples[0], doubles[0]]
+    if ((triplez.length > 0) && (doublez.length > 0)) {
+      return [triplez[0], doublez[0]]
     }
 
     return false;
@@ -174,7 +160,11 @@ class PokerHand {
     };
 
     return false;
-  }  
+  }
+
+  specialStraight() {
+    return this.hand === []
+  }    
 
   triples() {
     return findByCount(3);
@@ -207,18 +197,23 @@ class PokerHand {
     });
 
     return arranged;
-  }  
-
-  straight() {
-
   }
 
-  specialStraight() {
-    return this.hand === []
+  ranks(cards) {
+    cards = cards.map(card => card.rank);
+    return cards;
+  }
+
+  suits(cards) {
+    cards = cards.map(card => card.suit);
+    return cards;    
   }
 }
 
-greatestHand([3, 5, 8],
+greatestHand(
+  [{rank: 3, suit: 'clubs'},
+  {rank: 5, suit: 'clubs'},
+  {rank: 8, suit: 'clubs'}],
   [[{rank: 3, suit: 'spades' },
   {rank: 7, suit: 'hearts'}],
   [{rank: 14, suit: 'spades' },
