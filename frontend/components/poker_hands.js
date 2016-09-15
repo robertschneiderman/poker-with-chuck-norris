@@ -12,6 +12,9 @@ const RANKS = {
   'singles': 1
 };
 
+const uniq = _.uniq;
+const take = _.take;
+
 function count(array, value) {
   let count = 0;
   for(let i = 0; i < array.length; i++){
@@ -26,11 +29,18 @@ function sortNumber(a,b) {
 }
 
 function greatestHand(stage, hands) {
-  let pokerHands = hands.map( hand => new PokerHand(stage, hand));
-  debugger;
-  let handsSortedByRank = pokerHands.sort(hand => hand.bestHand.value);
-  let greatestValue = handsSortedByRank[pokerHands.length - 1].value;
-  let greatestHands = handsSortedByRank.select(hand => hand.bestHand.value === greatestValue);
+  let pokerHands = hands.map( hand => new PokerHand(stage, hand).bestHand());
+  let handsSortedByValue = pokerHands.sort((hand, nextHand) => hand.value > nextHand.value);
+  let greatestValue = handsSortedByValue[pokerHands.length - 1].value;
+  
+  let greatestHands = []
+
+    // debugger;
+  handsSortedByValue.forEach(hand => {
+    if (hand.value === greatestValue) {
+      greatestHands.push(hand);
+    }
+  });
 
   if (greatestHands.length === 1) {
     return greatestHands[0];
@@ -44,14 +54,17 @@ function tiebreaker(hands) {
 
   let greatestHands = hands;
 
-  for (var i = 0; i < hands.tiebreakers.length; i++) {
-    let tiebreaker = greatestHands.tiebreakers[i];
+  for (var i = 0; i < greatestHands[0].tiebreakers.length; i++) {
 
-    let sortedHands = greatestHands.sort((hand, nextHand) => hand.tiebreakers[i] > nextHand.tiebreakers[i]);
+    greatestHands.sort((hand, nextHand) => hand.tiebreakers[i] < nextHand.tiebreakers[i]);
 
-    let largestTiebreaker = sortedHands[0].tiebreakers[i];
+    let largestTiebreaker = greatestHands[0].tiebreakers[i];
 
-    greatestHands = sortedHands.select(hand => hand.tiebreaker = largestTiebreaker);
+    greatestHands = greatestHands.filter(hand => {
+      if (hand.tiebreakers[i] === largestTiebreaker) {
+        return hand;
+      }
+    });
 
     if (greatestHands.length === 1) {
       return greatestHands[0];
@@ -64,56 +77,59 @@ function tiebreaker(hands) {
 class PokerHand {
 
   constructor(stage, hand) {
-    debugger;
-    this.pile = ranks(stage.concat(hand));
+    
+    this.pile = stage.concat(hand);
+    this.ranks = this.ranks(this.pile);
     // this.pile = this.bestHand(pile);
   }
 
   bestHand() {
-    for (hand in this.hands()) {
+    let hands = this.hands();
+    for (let hand in hands) {
       let value = RANKS[hand];
-      let tiebreakers = this.hands[hand];
+      let tiebreakers = hands[hand];
 
       if (tiebreakers && (value > 4)) {
         
         return { value, tiebreakers }
 
       } else if(tiebreakers && (value <= 4)) {
-        let sortedSingles = this.hands['singles'].sort(sortNumber)
-        let tiebreakers =  tiebreakers.concat(sortedSingles);
+        let sortedSingles = hands['singles'].sort(sortNumber)
+        tiebreakers = tiebreakers.concat(sortedSingles);
 
         return { value, tiebreakers }
       }
     }
   }
 
+      // 'straightFlush': this.straightFlush(),
   hands() {
-    this.hands = {
-      'straightFlush': this.straightFlush(),
+    return {
       'fourOfAKind': this.fourOfAKind(),
       'fullHouse': this.fullHouse(),
       'flush': this.flush(),
       'straight': this.straight(),      
       'triples': this.triples(),
-      'twoPair': this.doubles(),
+      'twoPair': this.pairs(),
       'pair': this.doubles(),
       'singles': this.singles()
     }
   }
 
-  straightFlush() {
-    let straight = this.straight(this.pile);
-    if (straight && this.flush(straight)) {
-      return true;
-    }
-    return false;
-  }
+  // straightFlush() {
+  //   debugger;
+  //   let straight = this.straight(this.ranks);
+  //   if (straight && this.flush(straight)) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   fourOfAKind() {
     let fours = []
-    debugger;
-    this.pile.forEach(card => {
-      if (count(this.pile, card) === 4) {
+    
+    this.ranks.forEach(card => {
+      if (count(this.ranks, card) === 4) {
         fours.push(card);
       }
     });
@@ -133,28 +149,29 @@ class PokerHand {
   }
 
   flush() {
-    let arrangedBySuit = arrangeBySuit(this.pile).values;
+    let arrangedBySuit = this.arrangeBySuit(this.pile)
 
-    arrangedBySuit.forEach(suitCards => {
-      if (suitCards.length >= 5) {
-        return take(suitCards.sorted(sortNumber), 5);
+    for (let suit in arrangedBySuit) {
+      let flushCards = arrangedBySuit[suit];
+      if (flushCards.length >= 5) {
+        return take(flushCards.sort(sortNumber), 5);
       }
-    })
+    }
 
     return false;
   }
 
   straight() {
-    let sortedPile = this.pile.sort(sortNumber);
+    let sortedRanks = this.ranks.sort(sortNumber);
 
-    for (let i = 0; i < sortedPile.length; i++) {
+    for (let i = 0; i < sortedRanks.length; i++) {
       for (let j = i; j <= (i + 3); j++) {
-        let cur = sortedPile[j];
-        let next = sortedPile[j+1];
+        let cur = sortedRanks[j];
+        let next = sortedRanks[j+1];
         if ( (cur - next) !== 1 ) {
-          next
+          break
         } else if(j === i + 3) {
-          return sortedPile.slice(i, i + 5); 
+          return sortedRanks.slice(i, i + 5); 
         }
       };      
     };
@@ -164,36 +181,50 @@ class PokerHand {
 
   specialStraight() {
     return this.hand === []
-  }    
+  }
 
   triples() {
-    return findByCount(3);
+    return this.findByCount(3);
+  }
+
+  pairs() {
+    let doubles = this.doubles();
+    if (doubles.length === 2) {
+      return doubles;
+    }
+    return false;
   }
 
   doubles() {
-    return findByCount(2);
+    return this.findByCount(2);
   }
 
   singles() {
-    return findByCount(1);
+    return this.findByCount(1);
   }  
 
   findByCount(num) {
     let finds = [];
-    this.hand.forEach(card => {
-      if (count(card.rank) === num) {
-        finds.push(card.rank);
+    this.ranks.forEach(card => {
+      
+      if (count(this.ranks, card) === num) {
+        finds.push(card);
       }
     });
+
     let uniqueVals = uniq(finds);
-    return uniqueVals.sort(sortNumber);
+    if (uniqueVals.length > 0) {
+      return uniqueVals.sort(sortNumber);
+    } else {
+      return false;
+    }
   }  
 
   arrangeBySuit(pile) {
     let arranged = {"spades": [], "hearts": [], "clubs": [], "diamonds": []};
     
     pile.forEach(card => {
-      arranged[card.suit].push(card);
+      arranged[card.suit].push(card.rank)
     });
 
     return arranged;
@@ -210,12 +241,30 @@ class PokerHand {
   }
 }
 
-greatestHand(
-  [{rank: 3, suit: 'clubs'},
-  {rank: 5, suit: 'clubs'},
-  {rank: 8, suit: 'clubs'}],
-  [[{rank: 3, suit: 'spades' },
-  {rank: 7, suit: 'hearts'}],
-  [{rank: 14, suit: 'spades' },
-  {rank: 6, suit: 'hearts'}]]   
+// let ph = new PokerHand(
+//   [{rank: 6, suit: 'hearts'},
+//   {rank: 2, suit: 'clubs'},
+//   {rank: 12, suit: 'spades'},
+//   {rank: 2, suit: 'hearts'},
+//   {rank: 2, suit: 'spades'}],
+//   [{rank: 12, suit: 'clubs' },
+//   {rank: 7, suit: 'clubs'}]   
+// );
+
+// console.log("ph.bestHand():", ph.bestHand());
+
+// ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
+
+let gh = greatestHand(
+  [{rank: 6, suit: 'clubs'},
+  {rank: 7, suit: 'clubs'},
+  {rank: 2, suit: 'spades'},
+  {rank: 2, suit: 'clubs'},
+  {rank: 10, suit: 'hearts'}],
+  [[{rank: 12, suit: 'spades' },
+  {rank: 5, suit: 'hearts'}],
+  [{rank: 8, suit: 'diamonds'},
+  {rank: 9, suit: 'clubs'}]]
 );
+
+console.log("gh:", gh);
