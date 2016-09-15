@@ -1,6 +1,6 @@
-// import { sortBy, drop, uniq } from './lodash';
+import { take, drop, uniq, isEqual } from './lodash';
 
-const RANKS = {
+export const RANKS = {
   'straightFlush': 9,
   'fourOfAKind': 8,
   'fullHouse': 7,
@@ -12,10 +12,10 @@ const RANKS = {
   'singles': 1
 };
 
-const uniq = _.uniq;
-const take = _.take;
+// const uniq = _.uniq;
+// const take = _.take;
 
-function count(array, value) {
+export const count = (array, value) => {
   let count = 0;
   for(let i = 0; i < array.length; i++){
     if(array[i] === value)
@@ -24,11 +24,26 @@ function count(array, value) {
   return count;
 }
 
-function sortNumber(a,b) {
-    return b - a;
+export const sortNumber = (a,b) => {
+  return b - a;
 }
 
-function greatestHand(stage, hands) {
+export const greatestHand = (stage, hands) => {
+  let greatistHold = greatestHold(stage, hands);
+
+  for (let i = 0; i < hands.length; i++) {
+    let hand = hands[i]
+    let hold = new PokerHand(stage, hand).bestHand();
+
+    if (isEqual(hold, greatistHold)) {
+      return hand;
+    }    
+  }
+
+  return null;
+}
+
+export const greatestHold = (stage, hands) => {
   let pokerHands = hands.map( hand => new PokerHand(stage, hand).bestHand());
   let handsSortedByValue = pokerHands.sort((hand, nextHand) => hand.value > nextHand.value);
   let greatestValue = handsSortedByValue[pokerHands.length - 1].value;
@@ -50,7 +65,7 @@ function greatestHand(stage, hands) {
 
 }
 
-function tiebreaker(hands) {
+export const tiebreaker = (hands) => {
 
   let greatestHands = hands;
 
@@ -71,10 +86,10 @@ function tiebreaker(hands) {
     }
   };
 
-  return 'tie';
+  return null;
 }
 
-class PokerHand {
+export class PokerHand {
 
   constructor(stage, hand) {
     
@@ -255,16 +270,16 @@ class PokerHand {
 
 // ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 
-let gh = greatestHand(
-  [{rank: 6, suit: 'clubs'},
-  {rank: 7, suit: 'clubs'},
-  {rank: 2, suit: 'spades'},
-  {rank: 2, suit: 'clubs'},
-  {rank: 10, suit: 'hearts'}],
-  [[{rank: 12, suit: 'spades' },
-  {rank: 5, suit: 'hearts'}],
-  [{rank: 8, suit: 'diamonds'},
-  {rank: 9, suit: 'clubs'}]]
-);
+// let gh = greatestHand(
+//   [{rank: 6, suit: 'clubs'},
+//   {rank: 7, suit: 'clubs'},
+//   {rank: 2, suit: 'spades'},
+//   {rank: 2, suit: 'clubs'},
+//   {rank: 10, suit: 'hearts'}],
+//   [[{rank: 12, suit: 'spades' },
+//   {rank: 5, suit: 'hearts'}],
+//   [{rank: 8, suit: 'diamonds'},
+//   {rank: 9, suit: 'clubs'}]]
+// );
 
-console.log("gh:", gh);
+// console.log("gh:", gh);

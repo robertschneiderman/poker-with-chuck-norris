@@ -8,7 +8,8 @@ import merge from 'lodash/merge';
 import uniq from 'lodash/uniq';
 import drop from 'lodash/drop';
 import take from 'lodash/take';
-import greatestHand from 'lodash/take';
+import isEqual from 'lodash/isEqual';
+import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand} from './poker_hands';
 
 Array.prototype.myRotate = function (pivot = 1) {
 
@@ -22,7 +23,7 @@ Array.prototype.myRotate = function (pivot = 1) {
 };
 
 const defaultPlayer = {
-  hand: [{
+  hold: [{
     suit: '',
     rank: ''
   },{
@@ -70,8 +71,8 @@ class Game extends React.Component {
     let cardsToDeal = deck.splice(48);
     let newState = merge({}, this.state);
 
-    newState.players[0].hand = cardsToDeal.slice(0, 2);
-    newState.players[1].hand = cardsToDeal.slice(2);
+    newState.players[0].hold = cardsToDeal.slice(0, 2);
+    newState.players[1].hold = cardsToDeal.slice(2);
     newState.deck = deck;
     newState.round = 1;
 
@@ -114,10 +115,34 @@ class Game extends React.Component {
   }
 
   collectWinnings() {
-    let hands = [this.state.players[0].hand, this.state.players[1].hand];
-    let winner = greatestHand(this.state.stage, hands);
+    // debugger;
+    let holds = [this.state.players[0].hold, this.state.players[1].hold];
+    let winningHand = greatestHand(this.state.stage, holds);
 
+    let players = merge([], this.state.players);
+
+
+    if (winningHand) {
+      players = players.map(player => {
+        if (isEqual(player.hold, winningHand)) {
+          debugger;
+          player.bank += this.state.pot;
+        }
+        return player;        
+      });      
+    } else {
+      player.bank += this.state.pot;
+    }
+
+    debugger;
+
+    this.setState({}, this.nextSet);
+
+    // console.log("winner:", winner);
+    
   }
+
+
 
   resetPlayerStakes() {
     let newState = merge({}, this.state);
@@ -185,9 +210,6 @@ class Game extends React.Component {
       newState.players[turnStr].bank -= (otherStake - oldStake);
     }
 
-    debugger;
-
-    // debugger;
     this.setState(newState, this.nextTurn);
   }
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import PlayerTag from './player_tag';
-import Hand from './hand';
 
 class Player extends React.Component {
 
@@ -24,9 +23,9 @@ class Player extends React.Component {
 
   getCardClasses() {
     // debugger;
-    let hand = this.props.player.hand;
-    this.card1Class = `card ${hand[0].suit} rank${hand[0].rank}`
-    this.card2Class = `card ${hand[1].suit} rank${hand[1].rank}`
+    let hold = this.props.player.hold;
+    this.card1Class = `card ${hold[0].suit} rank${hold[0].rank}`
+    this.card2Class = `card ${hold[1].suit} rank${hold[1].rank}`
   }
 
   render() {
@@ -48,7 +47,7 @@ class Player extends React.Component {
           <img className="player-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" alt=""/>
         </div>
 
-        <div className="player-hand">
+        <div className="player-hold">
           <div className={this.card1Class}>
             <div className="face"></div>
           </div>
