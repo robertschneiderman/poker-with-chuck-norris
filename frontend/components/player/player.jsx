@@ -20,10 +20,15 @@ class Player extends React.Component {
   }
 
   getCardClasses() {
-    // debugger;
     let hold = this.props.player.hold;
-    this.card1Class = `card ${hold[0].suit} rank${hold[0].rank}`
-    this.card2Class = `card ${hold[1].suit} rank${hold[1].rank}`
+
+    if (hold[this.props.num].suit) {
+      this.card1Class = `card ${hold[0].suit} rank${hold[0].rank}`;
+      this.card2Class = `card ${hold[1].suit} rank${hold[1].rank}`;
+    } else {
+      this.card1Class = 'hidden';
+      this.card2Class = 'hidden';
+    }
   }
 
   getMessageClass() {
@@ -39,6 +44,8 @@ class Player extends React.Component {
     
     let player = this.props.player;
 
+    let avatarLink = (this.props.num === 0) ? "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" : "http://res.cloudinary.com/stellar-pixels/image/upload/v1473995713/chuck_norris_avatar_ptumq3.jpg";
+
 
           // <p className={this.messageClass}>{this.props.message}</p>
     return(
@@ -53,7 +60,7 @@ class Player extends React.Component {
             <p className="player-worth">{player.bank}</p>
           </div>
 
-          <img className="player-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" alt=""/>
+          <img className="player-avatar" src={avatarLink} alt=""/>
         </div>
 
         <div className="player-hold">

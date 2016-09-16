@@ -55,7 +55,7 @@ class Interface extends React.Component {
             onClick={this.props.callOrCheck}>
               Call/Check
           </button>
-          <button id="btn-fold" className="btn-fold">Fold</button>
+          <button id="btn-fold" onClick={this.props.fold} className="btn-fold">Fold</button>
         </div>
         <div className={this.dealClass}>
           <button onClick={this.props.deal} className="btn-deal">Deal</button>

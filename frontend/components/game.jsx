@@ -24,11 +24,11 @@ Array.prototype.myRotate = function (pivot = 1) {
 
 const defaultPlayer = {
   hold: [{
-    suit: '',
-    rank: ''
+    suit: null,
+    rank: null
   },{
-    suit: '',
-    rank: ''
+    suit: null,
+    rank: null
   }],
   stake: 0
 };
@@ -46,7 +46,7 @@ const defaultState = {
 
 // rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
 
-const roundTimes = 0;
+const roundTimes = 1000;
 
 class Game extends React.Component {
 
@@ -126,32 +126,47 @@ class Game extends React.Component {
     }
   } 
 
-  collectWinnings() {
+  collectWinnings(playerWhoDidntFold) {
     // debugger;
-    let holds = [this.state.players[0].hold, this.state.players[1].hold];
-    let winningHold = greatestHold(this.state.stage, holds);
+
+    let winningPlayer = this.determineWinner(playerWhoDidntFold);
+
 
     let players = merge([], this.state.players);
-    let winningPlayer;
 
-    if (winningHold) {
-      players = players.map(player => {
-        if (isEqual(player.hold, winningHold)) {
-          winningPlayer = player
-          player.bank += this.state.pot;
-        }
-        return player;        
-      });      
-    } else {
-      // IMPLEMENT TIEING!
-      player.bank += this.state.pot;
-    }
-
+    players.map(player => {
+      if (isEqual(player, winningPlayer)) {
+        player.bank += this.state.pot;
+      }
+    });
     // console.log("winningHold:", winningHold);
     // debugger;
     this.setState({players}, this.displayWinner.bind(this, `${winningPlayer.name} won!`));
   }
 
+
+  determineWinner(playerWhoDidntFold) {
+    if (playerWhoDidntFold) {
+      return playerWhoDidntFold
+    } else {
+      let holds = [this.state.players[0].hold, this.state.players[1].hold];
+      let winningHold = greatestHold(this.state.stage, holds);
+
+      let players = merge([], this.state.players);
+
+
+      if (winningHold) {
+
+        for (var i = 0; i < players.length; i++) {
+          if (isEqual(players[i].hold, winningHold)) {
+            return players[i];
+          }
+        };      
+      } else {
+        // IMPLEMENT TIEING!
+      }      
+    }
+  }
 
 
   resetPlayerStakes() {
@@ -218,9 +233,20 @@ class Game extends React.Component {
 
   aiMove() {
     // debugger;
+    let randomMove = this.aiFormulateMove();
     if (this.state.turn === 1) {
-      setTimeout(this.callOrCheck.bind(this), roundTimes);
+      setTimeout(randomMove.bind(this), roundTimes);
     }
+  }
+
+  aiFormulateMove() {
+    let randomIndeces = [0, 0, 0, 0, 1, 1, 1];
+    let randomIndex = randomIndeces[Math.floor(Math.random() * randomIndeces.length)];
+
+    let moves = [this.callOrCheck, this.raise, this.fold]
+    let randomMove = moves[randomIndex];    
+
+    return randomMove;
   }
 
   callOrCheck() {
@@ -244,19 +270,25 @@ class Game extends React.Component {
   raise() {
     let turnStr = String(this.state.turn)    
     let newState = merge({}, this.state);
-    newState.players[turnStr].stake += 50;
-    newState.players[turnStr].bank -= 50;
+    let highestStake = this.highestStake();
+
+    let differenceInStake = highestStake - newState.players[turnStr].stake;
+
+    let amountToWager = differenceInStake + 50;
+
+    newState.players[turnStr].stake += amountToWager;
+    newState.players[turnStr].bank -= amountToWager;
 
     this.setState(newState, this.displayMessage.bind(this, 'Raised'));
   }
 
   fold() {
-    let pot = (this.state.pot + this.currentPlayer().stake);
-    let otherPlayerBank = this.otherPlayer().bank + pot;
+    // duplicated in 'nextRound'
+    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
 
-    let newState = merge({}, this.state);
-    newState.pot = 0;
-    newState.players[this.otherIndex()].bank = otherPlayerBank;
+    this.setState({
+      pot: pot,
+    }, this.collectWinnings.bind(this, this.otherPlayer()));
   }
 
   displayWinner(message) {
@@ -267,6 +299,14 @@ class Game extends React.Component {
   displayMessage(message) {
     this.setState({message});
     setTimeout(this.nextTurn.bind(this), roundTimes)
+  }
+
+  highestStake() {
+    let highestStake = 0;
+    this.state.players.forEach(player => {
+      if (player.stake > highestStake) highestStake = player.stake;
+    });
+    return highestStake;
   }
 
   currentPlayer() {

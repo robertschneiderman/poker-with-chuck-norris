@@ -44,16 +44,14 @@ body {font-family: Roboto;}
 
 }
 
-.interface-container {position: absolute;display: flex;bottom: -72px;width: 82%;left: 50%;transform: translateX(-50%);justify-content: space-between;}
+.interface-container {position: absolute;display: flex;bottom: -72px;width: 93%;left: 50%;transform: translateX(-50%);justify-content: space-between;}
 
-.interface-betting {display: flex;width: 30%;justify-content: space-between;}
+.interface-betting {width: 55%;}
 
-.btn-raise {
-
-}
+.btn-raise {margin-right: 1rem;}
 
 .btn-call-check {
-  
+  margin-right: 1rem;
 }
 
 .btn-fold {
@@ -84,15 +82,15 @@ body {font-family: Roboto;}
 
 .player-tag {background-color: #c5c5c5;border: 3px solid #dedede;display: flex;margin: 1rem;}
 
-.player-info {display: flex;text-align: center;width: 80%;align-items: center;justify-content: center;flex-direction: column;}
+.player-info {display: flex;text-align: center;/* padding: 0 1rem; */width: 8.6rem;/* margin-right: 1rem; */align-items: center;justify-content: center;flex-direction: column;}
 
-.player-name {text-transform: uppercase;}
+.player-name {font-weight: 700;text-transform: uppercase;}
 
 .player-worth {
 
 }
 
-.player-avatar {border-radius: 5px;height: 20%;width: 34%;}
+.player-avatar {border-radius: 5px;height: 4rem;width: 4rem;}
 
 .player-hold {position: absolute;justify-content: space-between;display: flex;height: 10rem;width: 8.5rem;right: -132px;top: 3px;}
 
