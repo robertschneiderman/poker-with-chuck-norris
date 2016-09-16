@@ -23,6 +23,24 @@ body {font-family: Roboto;}
 	margin: 0 auto;
 }
 
+.modal {
+  width: 100%;
+  height: 100%;
+  transform: translate3d(-50%, -50%, 0);
+  top: 50%;
+  left: 50%;
+  position: fixed;
+  background-color: rgba(255, 255, 255, .8);
+  z-index: 9999;
+}
+
+.modal-title {
+  color: #777;
+  text-align: center;
+}
+
+.modal-btn {transform: translate3d(-50%, -50%, 0);top: 50%;position: absolute;left: 50%;display: block;font-size: 1.6rem;em !important;m 3rem !important;padding: 1.4rem 2.6rem !important;}
+
 .stage {text-align: center;position: absolute;top: 50%;left: 50%;transform: translate3d(-50%, -50%, 0);}
 
 .pot {background-color: rgba(0,0,0, 0.45);color: #fff;padding: 0.7rem 0.7rem;display: block;width: 6rem;margin: 0 auto 1rem;display: block;}

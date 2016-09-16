@@ -1,6 +1,7 @@
 import React from 'react';
 import Player from './player/player';
 import Stage from './stage/stage';
+import Modal from './player/modal';
 import Interface from './interface/interface';
 import { deck } from '../util/deck';
 import shuffle from 'lodash/shuffle';
@@ -30,6 +31,7 @@ const defaultPlayer = {
     suit: null,
     rank: null
   }],
+  hand: '',
   stake: 0
 };
 
@@ -42,6 +44,8 @@ const defaultState = {
   looped: false,
   message: '',
   setOver: false,
+  gameOver: false,
+  playerAllIn: false,
   players: [ merge({}, defaultPlayer), merge({}, defaultPlayer) ]
 }
 
@@ -61,6 +65,7 @@ class Game extends React.Component {
     this.state.players[0].name = 'You';
     this.state.players[1].bank = 1000;
     this.state.players[1].name = 'Chuck Norris';
+
   }
 
   nextSet() {
@@ -155,7 +160,6 @@ class Game extends React.Component {
 
       let players = merge([], this.state.players);
 
-
       if (winningHold) {
 
         for (var i = 0; i < players.length; i++) {
@@ -169,6 +173,9 @@ class Game extends React.Component {
     }
   }
 
+  // winnersHand() {
+
+  // }
 
   resetPlayerStakes() {
     let newState = merge({}, this.state);
@@ -197,20 +204,6 @@ class Game extends React.Component {
         return [];       
     }
   }
-
-  // nextTurn() {
-  //   if ( (this.allStakesEven()) && (this.state.looped)) {
-  //     this.nextRound();
-  //   } else {
-  //     let nextTurn = (this.state.turn + 1) % 2;
-
-  //     if (nextTurn === this.state.dealer) { //FIX!!!!!!!!!
-  //       this.setState({ turn: nextTurn, looped: true }, this.aiMove);
-  //     } else {
-  //       this.setState({ turn: nextTurn }, this.aiMove);        
-  //     }   
-  //   }
-  // }
 
   nextTurn() {
     if ( (this.allStakesEven()) && (this.state.looped)) {
@@ -280,6 +273,8 @@ class Game extends React.Component {
 
     let amountToWager = differenceInStake + 50;
 
+    amountToWager = (amountToWager > newState.players[turnStr].bank) ? amountToWager : newState.players[turnStr].bank;
+
     newState.players[turnStr].stake += amountToWager;
     newState.players[turnStr].bank -= amountToWager;
 
@@ -306,7 +301,16 @@ class Game extends React.Component {
   }
 
   displayWinner(message) {
-    this.setState({message, setOver: true});
+
+    let gameOver = false;
+
+    this.state.players.forEach(player => {
+      if (player.bank === 0) {
+        gameOver = true;
+      }
+    })
+
+    this.setState({message, setOver: true, gameOver});
     // setTimeout(this.nextSet.bind(this), 2000);
   }  
 
@@ -343,6 +347,7 @@ class Game extends React.Component {
     window.state = this.state;
     return(
       <div className="game">
+        <Modal gameOver={this.state.gameOver} />
         <ul className="players">
           <Player
             num={0}
