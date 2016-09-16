@@ -67,19 +67,12 @@
 .card.joker.rank3 {
   color: #d40000;
 }
-.card.joker.rank1:before,
-.card.joker.rank2:before,
-.card.joker.rank3:before,
-.card.joker.rank1:after,
-.card.joker.rank2:after,
-.card.joker.rank3:after {
-  content: "J\a O\a K\a E\a R";
-  letter-spacing: 0;
-  font-size: 0.4rem;
-  line-height: 0.4rem;
-  padding: 0.15rem 0.05rem;
-  width: 0.5rem;
+
+.hiddenCards .card:before, .hiddenCards .card:after {
+  content: "" !important;
 }
+
+
 .card.rank14:before,
 .card.rank14:after {
   content: "A";

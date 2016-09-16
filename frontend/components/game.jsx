@@ -41,6 +41,7 @@ const defaultState = {
   stage: [],
   looped: false,
   message: '',
+  setOver: false,
   players: [ merge({}, defaultPlayer), merge({}, defaultPlayer) ]
 }
 
@@ -55,7 +56,7 @@ class Game extends React.Component {
 
     
     this.state = defaultState;
-    this.state.dealer = 0;
+    this.state.dealer = -1;
     this.state.players[0].bank = 1000;
     this.state.players[0].name = 'You';
     this.state.players[1].bank = 1000;
@@ -71,7 +72,7 @@ class Game extends React.Component {
     newState.players[0].bank = player1Bank;
     newState.players[1].bank = player2Bank;
 
-    this.setState(newState);
+    this.setState(newState, this.deal.bind(this));
   }  
 
   deal() {
@@ -305,8 +306,8 @@ class Game extends React.Component {
   }
 
   displayWinner(message) {
-    this.setState({message});
-    setTimeout(this.nextSet.bind(this), roundTimes)
+    this.setState({message, setOver: true});
+    // setTimeout(this.nextSet.bind(this), 2000);
   }  
 
   displayMessage(message) {
@@ -352,6 +353,7 @@ class Game extends React.Component {
             player={this.state.players[0]} />
           <Player
             num={1}
+            setOver={this.state.setOver}
             dealer={this.state.dealer}
             round={this.state.round}
             turn={this.state.turn}
@@ -365,7 +367,8 @@ class Game extends React.Component {
           message={this.state.message} />
 
         <Interface
-          deal={this.deal.bind(this)} 
+          nextSet={this.nextSet.bind(this)}
+          setOver={this.state.setOver}           
           round={this.state.round}
           turn={this.state.turn}
           players={this.state.players}

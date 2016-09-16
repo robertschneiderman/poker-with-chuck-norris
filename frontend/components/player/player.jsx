@@ -8,10 +8,18 @@ class Player extends React.Component {
   }
 
   getPlayerClass() {
-    this.playerClass = `player player-${this.props.num}`;
+    if (this.props.num !== 0) {
+      this.playerClass = `player player-${this.props.num} hiddenCards`;
+    } else {
+      this.playerClass = `player player-${this.props.num}`;      
+    }
 
     if (this.props.turn === this.props.num) {
-      this.playerClass = `player player-${this.props.num} active`;
+      this.playerClass = `${this.playerClass} active`;
+    }
+
+    if (this.props.setOver) {
+      this.playerClass = `player player-${this.props.num}`;
     }
   }
 
@@ -28,6 +36,14 @@ class Player extends React.Component {
     } else {
       this.card1Class = 'hidden';
       this.card2Class = 'hidden';
+    }
+
+    if ((this.props.num === 0) || (this.props.setOver)) {
+      this.face1Class = 'face';
+      this.face2Class = 'face';      
+    } else {
+      this.face1Class = 'back';
+      this.face2Class = 'back';       
     }
   }
 
@@ -65,11 +81,11 @@ class Player extends React.Component {
 
         <div className="player-hold">
           <div className={this.card1Class}>
-            <div className="face"></div>
+            <div className={this.face1Class}></div>
           </div>
 
           <div className={this.card2Class}>
-            <div className="face"></div>
+            <div className={this.face2Class}></div>
           </div>
         </div>        
       </li>
