@@ -4,6 +4,8 @@
 @import url('player.css');
 @import url('stage.css');
 @import url('cards.css');
+@import url('load.css');
+@import url('logo.css');
 
 * {
   box-sizing: border-box;
@@ -14,14 +16,29 @@ body {font-family: Roboto;}
 
 .root {padding: 1.2rem 2.5rem;}
 
-.game {
-	/* padding: 4rem; */
-	border-radius: 50%;
-	background-color: #c6e4c6;
-	height: 32rem;
-	width: 32rem;
-	margin: 0 auto;
+.game-container {
+  animation: fadeIn 1s ease 0s 1 normal forwards;
+  /*opacity: 0;  */
 }
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.game {
+  /* padding: 4rem; */
+  border-radius: 50%;
+  background-color: #c6e4c6;
+  height: 32rem;
+  width: 32rem;
+  margin: 0 auto;
+}
+
 
 .modal {
   width: 100%;
@@ -126,9 +143,4 @@ body {font-family: Roboto;}
 
 .player-card {
 
-}
-
-.logo {
-  margin-bottom: 2rem;
-  width: 14rem;
 }

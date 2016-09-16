@@ -1,0 +1,37 @@
+.load-fade-out {
+  animation: loadFadeOut 1s ease 0s 1 normal forwards;
+}
+
+@keyframes loadFadeOut {
+
+  0% {
+    background-color: rgba(255, 255, 255, 1);
+    opacity: 1;
+  }
+
+  100% {
+    background-color: rgba(255, 255, 255, 0);
+    opacity: 0;
+  }
+
+}
+
+.load-fade-in {
+  animation: loadFadeIn 1s ease 0s 1 normal forwards;
+}
+
+@keyframes loadFadeIn {
+
+  0% {
+    background-color: rgba(255, 255, 255, 0);
+    opacity: 0;
+    transform: translateY(2%);
+  }
+
+  100% {
+    background-color: rgba(255, 255, 255, 1);
+    opacity: 1;
+    transform: translateY(0%);    
+  }
+
+}

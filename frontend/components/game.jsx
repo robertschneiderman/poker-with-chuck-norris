@@ -273,7 +273,7 @@ class Game extends React.Component {
 
     let amountToWager = differenceInStake + 50;
 
-    amountToWager = (amountToWager > newState.players[turnStr].bank) ? amountToWager : newState.players[turnStr].bank;
+    amountToWager = (amountToWager > newState.players[turnStr].bank) ? newState.players[turnStr].bank : amountToWager;
 
     newState.players[turnStr].stake += amountToWager;
     newState.players[turnStr].bank -= amountToWager;
