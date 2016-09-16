@@ -177,7 +177,7 @@ export class PokerHand {
   }
 
   straight() {
-    let sortedRanks = this.ranks.sort(sortNumber);
+    let sortedRanks = uniq(this.ranks.sort(sortNumber));
 
     for (let i = 0; i < sortedRanks.length; i++) {
       for (let j = i; j <= (i + 3); j++) {

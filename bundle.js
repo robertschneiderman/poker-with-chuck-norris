@@ -29270,7 +29270,7 @@
 	  }, {
 	    key: 'straight',
 	    value: function straight() {
-	      var sortedRanks = this.ranks.sort(sortNumber);
+	      var sortedRanks = (0, _lodash.uniq)(this.ranks.sort(sortNumber));
 	
 	      for (var i = 0; i < sortedRanks.length; i++) {
 	        for (var j = i; j <= i + 3; j++) {
