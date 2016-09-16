@@ -32,10 +32,8 @@ body {font-family: Roboto;}
 
 .game {
   /* padding: 4rem; */
-  border-radius: 50%;
-  background-color: #c6e4c6;
-  height: 32rem;
-  width: 32rem;
+  height: 34rem;
+  width: 34rem;
   margin: 0 auto;
 }
 
@@ -81,7 +79,7 @@ body {font-family: Roboto;}
 
 }
 
-.interface-container {position: absolute;display: flex;bottom: -4.5rem;width: 93%;left: 50%;transform: translateX(-50%);justify-content: space-between;}
+.interface-container {/* position: absolute; */display: flex;/* bottom: -4.5rem; */width: 93%;left: 50%;transform: translateX(-50%);justify-content: space-between;padding-bottom: 2rem;}
 
 .interface-betting {width: 55%;}
 
@@ -114,9 +112,12 @@ body {font-family: Roboto;}
 
 .players {
   list-style: none;
-  position: absolute;
-  height: 100%;
-  width: 100%;
+  border-radius: 50%;
+  background-color: #c6e4c6;
+  /* position: absolute; */
+  height: 91%;
+  width: 91%;
+  margin-bottom: 2rem;
 }
 
 .player {position: absolute;/* left: 13rem; */}
