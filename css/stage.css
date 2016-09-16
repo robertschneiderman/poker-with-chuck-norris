@@ -1,0 +1,9 @@
+.message {position: absolute;font-size: 1.4rem;font-weight: 700;text-transform: uppercase;left: -13%;transform: translate3d(-50%, -50%, 0);top: 37%;}
+
+.message-0 {
+  /* top: 90%; */
+}
+
+.message-1 {
+  top: 30%;
+}

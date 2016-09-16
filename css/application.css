@@ -2,6 +2,7 @@
 @import url('defaults.css');
 @import url('helpers.css');
 @import url('player.css');
+@import url('stage.css');
 @import url('cards.css');
 
 * {
@@ -20,14 +21,23 @@ body {font-family: Roboto;}
 	height: 32rem;
 }
 
-.stage {position: absolute;top: 50%;left: 50%;text-align: center;width: 18rem;transform: translate3d(-50%, -50%, 0);}
+.stage {text-align: center;position: absolute;top: 50%;left: 50%;transform: translate3d(-50%, -50%, 0);}
 
-.pot {background-color: rgba(0,0,0, 0.45);color: #fff;padding: 0.7rem 0.7rem;display: block;width: 6rem;margin: 0 auto 1rem;}
+.pot {background-color: rgba(0,0,0, 0.45);color: #fff;padding: 0.7rem 0.7rem;display: block;width: 6rem;margin: 0 auto 1rem;display: block;}
 
 
 .stage-cards {
-  display: flex;
-  justify-content: space-between;
+  /* display: flex; */
+  width: 22.6rem;
+  text-align: right;
+}
+
+.stage-cards .card {
+  margin-left: 0.8rem;
+}
+
+.stage-cards .card:first-child {
+  margin-left: 0;
 }
 
 .stage-card {

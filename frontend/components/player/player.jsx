@@ -15,12 +15,6 @@ class Player extends React.Component {
     }
   }
 
-  aiMove() {
-    if (this.props.turn === this.props.num) {
-      this.props.call();
-    }    
-  }
-
   getDealerClass() {
     this.dealerClass = (this.props.dealer === this.props.num) ? 'dealer' : 'hidden'
   }
@@ -32,13 +26,21 @@ class Player extends React.Component {
     this.card2Class = `card ${hold[1].suit} rank${hold[1].rank}`
   }
 
+  getMessageClass() {
+    this.messageClass = (this.props.turn === this.props.num) ? 'message' : 'message hidden';
+  }
+
   render() {
     this.getPlayerClass();
     this.getDealerClass();
     this.getCardClasses();
+    this.getMessageClass();
     // aiMove()
     
     let player = this.props.player;
+
+
+          // <p className={this.messageClass}>{this.props.message}</p>
     return(
       <li className={this.playerClass}>
 
@@ -47,7 +49,7 @@ class Player extends React.Component {
           <div className={this.dealerClass}>D</div>
 
           <div className="player-info">
-            <p className="player-name">John</p>
+            <p className="player-name">{player.name}</p>
             <p className="player-worth">{player.bank}</p>
           </div>
 

@@ -40,10 +40,13 @@ const defaultState = {
   turn: 0,
   stage: [],
   looped: false,
+  message: '',
   players: [ merge({}, defaultPlayer), merge({}, defaultPlayer) ]
 }
 
 // rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
+
+const roundTimes = 0;
 
 class Game extends React.Component {
 
@@ -54,7 +57,9 @@ class Game extends React.Component {
     this.state = defaultState;
     this.state.dealer = 0;
     this.state.players[0].bank = 1000;
+    this.state.players[0].name = 'You';
     this.state.players[1].bank = 1000;
+    this.state.players[1].name = 'Chuck Norris';
   }
 
   nextSet() {
@@ -100,12 +105,16 @@ class Game extends React.Component {
 
   nextRound() {
     let nextRound = (this.state.round + 1);
+    // debugger;
+    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
+    
     this.resetPlayerStakes();
 
     if (nextRound > 4) {
-      this.collectWinnings();
+      this.setState({
+        pot: pot,
+      }, this.collectWinnings);
     } else {
-      let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
       this.setState({
         deck: this.alterDeck(nextRound).deck,
         stage: this.alterDeck(nextRound).cards,
@@ -115,7 +124,7 @@ class Game extends React.Component {
         looped: false
       }, this.nextTurn);      
     }
-  }
+  } 
 
   collectWinnings() {
     // debugger;
@@ -123,27 +132,24 @@ class Game extends React.Component {
     let winningHold = greatestHold(this.state.stage, holds);
 
     let players = merge([], this.state.players);
-
+    let winningPlayer;
 
     if (winningHold) {
       players = players.map(player => {
         if (isEqual(player.hold, winningHold)) {
+          winningPlayer = player
           player.bank += this.state.pot;
         }
         return player;        
       });      
     } else {
+      // IMPLEMENT TIEING!
       player.bank += this.state.pot;
     }
 
-    console.log("winningHold:", winningHold);
-    debugger;
-
-
-    this.setState({players}, this.nextSet);
-
-    // console.log("winner:", winner);
-    
+    // console.log("winningHold:", winningHold);
+    // debugger;
+    this.setState({players}, this.displayWinner.bind(this, `${winningPlayer.name} won!`));
   }
 
 
@@ -176,6 +182,20 @@ class Game extends React.Component {
     }
   }
 
+  // nextTurn() {
+  //   if ( (this.allStakesEven()) && (this.state.looped)) {
+  //     this.nextRound();
+  //   } else {
+  //     let nextTurn = (this.state.turn + 1) % 2;
+
+  //     if (nextTurn === this.state.dealer) { //FIX!!!!!!!!!
+  //       this.setState({ turn: nextTurn, looped: true }, this.aiMove);
+  //     } else {
+  //       this.setState({ turn: nextTurn }, this.aiMove);        
+  //     }   
+  //   }
+  // }
+
   nextTurn() {
     if ( (this.allStakesEven()) && (this.state.looped)) {
       this.nextRound();
@@ -183,12 +203,12 @@ class Game extends React.Component {
       let nextTurn = (this.state.turn + 1) % 2;
 
       if (nextTurn === this.state.dealer) { //FIX!!!!!!!!!
-        this.setState({ turn: nextTurn, looped: true }, this.aiMove);
+        this.setState({ turn: nextTurn, message: '', looped: true }, this.aiMove);
       } else {
-        this.setState({ turn: nextTurn }, this.aiMove);        
+        this.setState({ turn: nextTurn, message: '', }, this.aiMove);        
       }   
     }
-  }
+  }  
 
   allStakesEven() {
     let stakes = this.state.players.map(player => player.stake);
@@ -199,7 +219,7 @@ class Game extends React.Component {
   aiMove() {
     // debugger;
     if (this.state.turn === 1) {
-      this.callOrCheck();
+      setTimeout(this.callOrCheck.bind(this), roundTimes);
     }
   }
 
@@ -209,12 +229,16 @@ class Game extends React.Component {
     let oldStake = newState.players[this.currentIndex()].stake;
     let otherStake = newState.players[this.otherIndex()].stake;
 
+    let message = 'Checked';
+
     if (oldStake < otherStake) {
       newState.players[turnStr].stake = otherStake;
       newState.players[turnStr].bank -= (otherStake - oldStake);
+      
+      message = 'Called';
     }
 
-    this.setState(newState, this.nextTurn);
+    this.setState(newState, this.displayMessage.bind(this, message));
   }
 
   raise() {
@@ -223,17 +247,26 @@ class Game extends React.Component {
     newState.players[turnStr].stake += 50;
     newState.players[turnStr].bank -= 50;
 
-    this.setState(newState, this.nextTurn);
+    this.setState(newState, this.displayMessage.bind(this, 'Raised'));
   }
 
   fold() {
-
     let pot = (this.state.pot + this.currentPlayer().stake);
     let otherPlayerBank = this.otherPlayer().bank + pot;
 
     let newState = merge({}, this.state);
     newState.pot = 0;
     newState.players[this.otherIndex()].bank = otherPlayerBank;
+  }
+
+  displayWinner(message) {
+    this.setState({message});
+    setTimeout(this.nextSet.bind(this), roundTimes)
+  }  
+
+  displayMessage(message) {
+    this.setState({message});
+    setTimeout(this.nextTurn.bind(this), roundTimes)
   }
 
   currentPlayer() {
@@ -262,16 +295,21 @@ class Game extends React.Component {
             dealer={this.state.dealer}
             round={this.state.round}
             turn={this.state.turn}
+            message={this.state.message}            
             player={this.state.players[0]} />
           <Player
             num={1}
             dealer={this.state.dealer}
             round={this.state.round}
             turn={this.state.turn}
+            message={this.state.message}            
             player={this.state.players[1]} />
         </ul>
 
-        <Stage pot={this.state.pot} cards={this.state.stage} />
+        <Stage 
+          pot={this.state.pot} 
+          cards={this.state.stage}
+          message={this.state.message} />
 
         <Interface
           deal={this.deal.bind(this)} 
