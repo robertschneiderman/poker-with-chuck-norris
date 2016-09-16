@@ -272,14 +272,27 @@ class Game extends React.Component {
     let newState = merge({}, this.state);
     let highestStake = this.highestStake();
 
-    let differenceInStake = highestStake - newState.players[turnStr].stake;
+    let playerStake = newState.players[turnStr].stake;
+    let otherPlayerStake = this.otherPlayer().stake;
+
+    let differenceInStake = highestStake - playerStake;
 
     let amountToWager = differenceInStake + 50;
 
     newState.players[turnStr].stake += amountToWager;
     newState.players[turnStr].bank -= amountToWager;
 
-    this.setState(newState, this.displayMessage.bind(this, 'Raised'));
+    let message = 'Reraised';
+
+    if (highestStake === 0) {
+      message = 'Raised';
+    }
+
+    if ( (this.state.round === 1) && ((otherPlayerStake === 25) || (otherPlayerStake === 50)) ) {
+      message = 'Raised';
+    }
+    
+    this.setState(newState, this.displayMessage.bind(this, message));
   }
 
   fold() {

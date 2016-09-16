@@ -44,7 +44,7 @@ class Player extends React.Component {
     
     let player = this.props.player;
 
-    let avatarLink = (this.props.num === 0) ? "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" : "http://res.cloudinary.com/stellar-pixels/image/upload/v1473995713/chuck_norris_avatar_ptumq3.jpg";
+    let avatarLink = (this.props.num === 0) ? "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" : "http://res.cloudinary.com/stellar-pixels/image/upload/v1474005893/chuck-norris_loijrf.jpg";
 
 
           // <p className={this.messageClass}>{this.props.message}</p>

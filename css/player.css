@@ -24,10 +24,10 @@
 }
 
 .player-0 .player-stake {
-  top: -50px;  
+  top: -3.125rem;
 }
 
-.player-0 .dealer {top: -40px;}
+.player-0 .dealer {top: -2.5rem;}
 
 .player-1 {
   top: 0;
@@ -37,7 +37,7 @@
 }
 
 .player-1 .player-stake {
-  bottom: -50px;  
+  bottom: -3.125rem;
 }
 
-.player-1 .dealer {bottom: -40px;right: 0;}
+.player-1 .dealer {bottom: -2.5rem;right: 0;}

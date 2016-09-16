@@ -1,8 +1,38 @@
+html {
+  font-size: 16px;
+}
+
+@media (min-width: 800px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 1000px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 1200px) {
+  html {
+    font-size: 21px;
+  }
+}
+
 h1, h2, h3, p, ul, li {
   margin: 0;
   padding: 0;
 }
 
-button {
+button, input[type="submit"] {
+  background: none;
+  border: none;
   cursor: pointer;
+  transition: filter .3s, -webkit-filter .3s;
+}
+
+button:hover, input[type="submit"]:hover {
+  filter: brightness(85%);  
+  -webkit-filter: brightness(85%);  
 }

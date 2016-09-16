@@ -43,7 +43,7 @@ class Interface extends React.Component {
         <div className={this.bettingClass}>
           <button 
             id="btn-raise"
-            className="btn-raise"
+            className="btn btn-raise"
             onClick={this.props.raise}
             >
             Raise 50
@@ -51,14 +51,14 @@ class Interface extends React.Component {
 
           <button 
             id="btn-call-check" 
-            className="btn-call-check"
+            className="btn btn-call-check"
             onClick={this.props.callOrCheck}>
               Call/Check
           </button>
-          <button id="btn-fold" onClick={this.props.fold} className="btn-fold">Fold</button>
+          <button id="btn-fold" onClick={this.props.fold} className="btn btn-fold">Fold</button>
         </div>
         <div className={this.dealClass}>
-          <button onClick={this.props.deal} className="btn-deal">Deal</button>
+          <button onClick={this.props.deal} className="btn btn-deal">Deal</button>
         </div>        
       </div>
     )
