@@ -28,3 +28,13 @@ export class PokerHand {
 
   ...
 ```
+
+## Bonus Features
+
+
+- Make a players banroll increment when there he/she wins a hand.
+- Say the type of hand that the player won with.  
+- Make a smarter AI that will make moves based on his hand and the way that the user is betting the hand.
+- Use the cardsJs library to handle cool transitions of the cards and chips.
+- Incorparate sound effects for winning and the different types of player actions
+- Make more than one AI's that the user can play against
