@@ -1,18 +1,52 @@
 .logo {
-  margin-bottom: 2rem;
+  /*margin-bottom: 2rem;*/
   width: 14rem;
-  animation: logoAnimation 2s ease 0s 1 normal forwards;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  z-index: 8000;
 }
 
-@keyframes logoAnimation {
+.zoomIn {
+  animation: zoomIn 1.5s cubic-bezier(0.190, 1.000, 0.220, 1.000) 0s 1 normal forwards;
+}
+
+@keyframes zoomIn {
   0% {
-    transform: rotate(0deg) scale(3) translate3d(90%, 50%, 0);
-    /*top: 80%;*/
-    /*left: 80%;*/
+    transform: translate3d(-50%, -50%, 0) scale(.1);
   } 
   100% {
-    transform: rotate(360deg) scale(1) translate3d(0%, 0%, 0);
-    /*top: 0%;*/
-    /*left: 0%;       */
+    transform: translate3d(-50%, -50%, 0) scale(3);    
+  }
+}
+
+.logo #chucks-head {
+  animation: spin 1s ease 1.5s 1 normal forwards;
+  transform-origin: 50% 50% 0;
+  transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092);
+}
+
+@keyframes spin {
+  0% {
+    transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(0deg);
+  } 
+  100% {
+    transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(360deg);    
+  }
+}
+
+.recede {
+
+}
+
+@keyframes recede {
+  0% {
+    transform: translate3d(-50%, -50%, 0) scale(.1);
+    top: 50%;
+  } 
+  100% {
+    top: 0%;
+    transform: translate3d(-50%, -50%, 0) scale(3);    
   }
 }
