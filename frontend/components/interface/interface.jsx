@@ -38,8 +38,10 @@ class Interface extends React.Component {
   render() {
     this.interfaceClasses();
     this.btnEnabledness();
+    let messageClass = `message message-${this.props.turn}`;    
     return(
       <div className="interface-container">
+        <p className="message">{this.props.message}</p>      
         <div className={this.bettingClass}>
           <button 
             id="btn-raise"

@@ -10,7 +10,7 @@ import uniq from 'lodash/uniq';
 import drop from 'lodash/drop';
 import take from 'lodash/take';
 import isEqual from 'lodash/isEqual';
-import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand} from './poker_hands';
+import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName} from './poker_hands';
 
 Array.prototype.myRotate = function (pivot = 1) {
 
@@ -51,7 +51,8 @@ const defaultState = {
 
 // rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
 
-const roundTimes = 1000;
+const roundTimes = 100000;
+const aiTime = 0;
 
 class Game extends React.Component {
 
@@ -141,19 +142,22 @@ class Game extends React.Component {
     let players = merge([], this.state.players);
 
     players.map(player => {
+      player.hand = handName(this.state.stage, player.hold);
       if (isEqual(player, winningPlayer)) {
         player.bank += this.state.pot;
       }
     });
-    // console.log("winningHold:", winningHold);
-    // debugger;
-    this.setState({players}, this.displayWinner.bind(this, `${winningPlayer.name} won!`));
+
+    console.log("winningPlayer:", winningPlayer);
+ 
+    let message = `${winningPlayer.name} won! ${winningPlayer.hand} over ${players[1].hand}`;
+    this.setState({players}, this.displayWinner.bind(this, message));
   }
 
 
   determineWinner(playerWhoDidntFold) {
     if (playerWhoDidntFold) {
-      return playerWhoDidntFold
+      return playerWhoDidntFold;
     } else {
       let holds = [this.state.players[0].hold, this.state.players[1].hold];
       let winningHold = greatestHold(this.state.stage, holds);
@@ -229,7 +233,7 @@ class Game extends React.Component {
     // debugger;
     let randomMove = this.aiFormulateMove();
     if (this.state.turn === 1) {
-      setTimeout(randomMove.bind(this), roundTimes);
+      setTimeout(randomMove.bind(this), aiTime);
     }
   }
 
@@ -347,30 +351,30 @@ class Game extends React.Component {
     window.state = this.state;
     return(
       <div className="game">
-        <Modal gameOver={this.state.gameOver} />
-        <ul className="players">
-          <Player
-            num={0}
-            dealer={this.state.dealer}
-            round={this.state.round}
-            turn={this.state.turn}
-            message={this.state.message}            
-            player={this.state.players[0]} />
-          <Player
-            num={1}
-            setOver={this.state.setOver}
-            dealer={this.state.dealer}
-            round={this.state.round}
-            turn={this.state.turn}
-            message={this.state.message}            
-            player={this.state.players[1]} />
-        </ul>
-
-        <Stage 
-          pot={this.state.pot} 
-          cards={this.state.stage}
-          message={this.state.message} />
-
+        <div className="table">
+          <Modal gameOver={this.state.gameOver} />
+          <ul className="players">
+            <Player
+              num={0}
+              dealer={this.state.dealer}
+              round={this.state.round}
+              turn={this.state.turn}
+              message={this.state.message}            
+              player={this.state.players[0]} />
+            <Player
+              num={1}
+              setOver={this.state.setOver}
+              dealer={this.state.dealer}
+              round={this.state.round}
+              turn={this.state.turn}
+              message={this.state.message}            
+              player={this.state.players[1]} />
+          </ul>
+        
+          <Stage 
+            pot={this.state.pot} 
+            cards={this.state.stage} />
+        </div>
         <Interface
           nextSet={this.nextSet.bind(this)}
           setOver={this.state.setOver}           
@@ -380,7 +384,7 @@ class Game extends React.Component {
           callOrCheck={this.callOrCheck.bind(this)}
           fold={this.fold.bind(this)}
           raise={this.raise.bind(this)}
-          />
+          message={this.state.message} />
       </div>
     );
   }

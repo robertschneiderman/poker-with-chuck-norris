@@ -6,19 +6,7 @@
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
   z-index: 8000;
-}
-
-.zoomIn {
-  animation: zoomIn 1.5s cubic-bezier(0.190, 1.000, 0.220, 1.000) 0s 1 normal forwards;
-}
-
-@keyframes zoomIn {
-  0% {
-    transform: translate3d(-50%, -50%, 0) scale(.1);
-  } 
-  100% {
-    transform: translate3d(-50%, -50%, 0) scale(3);    
-  }
+  width: 40rem;
 }
 
 .logo #chucks-head {
@@ -37,16 +25,19 @@
 }
 
 .recede {
-
+  animation: recede .8s ease 1s 1 normal forwards;
 }
 
 @keyframes recede {
   0% {
-    transform: translate3d(-50%, -50%, 0) scale(.1);
+    left: 50%;
     top: 50%;
+    transform: translate3d(-50%, -50%, 0);
   } 
   100% {
-    top: 0%;
-    transform: translate3d(-50%, -50%, 0) scale(3);    
+    left: 3%;
+    top: 3%;
+    transform: translate3d(0%, 0%, 0);
+    width: 13rem;
   }
 }

@@ -1,16 +1,18 @@
 import { take, drop, uniq, isEqual } from './lodash';
 
 export const RANKS = {
-  'straightFlush': 9,
-  'fourOfAKind': 8,
-  'fullHouse': 7,
-  'flush': 6,
-  'straight': 5,
-  'triples': 4,
-  'twoPair': 3,
-  'pair': 2,
-  'singles': 1
+  'Straight Flush': 9,
+  'Four of a Kind': 8,
+  'Full House': 7,
+  'Flush': 6,
+  'Straight': 5,
+  'Three of a Kind': 4,
+  'Two Pair': 3,
+  'Pair': 2,
+  'High Card': 1
 };
+
+const LETTER_CARDS = ['Jack', 'Queen', 'King', 'Ace']
 
 // const uniq = _.uniq;
 // const take = _.take;
@@ -26,6 +28,11 @@ export const count = (array, value) => {
 
 export const sortNumber = (a,b) => {
   return b - a;
+}
+
+export const handName = (stage, hold) => {
+  let ph = new PokerHand(stage, hold);
+  return ph.bestHandName();
 }
 
 export const greatestHold = (stage, holds) => {
@@ -94,8 +101,42 @@ export class PokerHand {
   constructor(stage, hand) {
     
     this.pile = stage.concat(hand);
-    this.ranks = this.ranks(this.pile);
+    this.ranks = this.getRanks(this.pile);
     // this.pile = this.bestHand(pile);
+  }
+
+  bestHandName() {
+    let rank;
+    let tb;
+
+    for (let key in RANKS) {
+      if (RANKS[key] === this.bestHand().value) rank = key
+    }
+
+    let tb1 = this.bestHand().tiebreakers[0];
+    let tb2 = this.bestHand().tiebreakers[1];
+
+    if (tb1 > 10) tb1 = LETTER_CARDS[tb1 - 11];
+    if (tb2 > 10) tb2 = LETTER_CARDS[tb2 - 11];
+
+    switch (rank) {
+      case 'Full House':
+        tb = `(${tb1}'s full of ${tb2}'s')`;
+        break
+      case 'Three of a Kind':
+        tb = `(${tb1}'s)`;
+        break
+      case 'Two Pair':
+        tb = `(${tb1}'s and ${tb2}'s )`;
+        break
+      case 'Pair':
+        tb = `of ${tb1}'s`;
+        break
+      default:
+        tb = `(${tb1} high)`;      
+    }
+
+    return `${rank} ${tb}`;
   }
 
   bestHand() {
@@ -109,7 +150,7 @@ export class PokerHand {
         return { value, tiebreakers }
 
       } else if(tiebreakers && (value <= 4)) {
-        let sortedSingles = hands['singles'].sort(sortNumber)
+        let sortedSingles = hands['High Card'].sort(sortNumber)
         tiebreakers = tiebreakers.concat(sortedSingles);
 
         return { value, tiebreakers }
@@ -120,14 +161,14 @@ export class PokerHand {
       // 'straightFlush': this.straightFlush(),
   hands() {
     return {
-      'fourOfAKind': this.fourOfAKind(),
-      'fullHouse': this.fullHouse(),
-      'flush': this.flush(),
-      'straight': this.straight(),      
-      'triples': this.triples(),
-      'twoPair': this.pairs(),
-      'pair': this.doubles(),
-      'singles': this.singles()
+      'Four of a Kind': this.fourOfAKind(),
+      'Full House': this.fullHouse(),
+      'Flush': this.flush(),
+      'Straight': this.straight(),      
+      'Three of a Kind': this.triples(),
+      'Two Pair': this.pairs(),
+      'Pair': this.doubles(),
+      'High Card': this.singles()
     }
   }
 
@@ -267,7 +308,7 @@ export class PokerHand {
     return arranged;
   }
 
-  ranks(cards) {
+  getRanks(cards) {
     cards = cards.map(card => card.rank);
     return cards;
   }
@@ -292,16 +333,16 @@ export class PokerHand {
 
 // ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 
-let gh = greatestHand(
-  [{rank: 6, suit: 'clubs'},
-  {rank: 7, suit: 'clubs'},
-  {rank: 2, suit: 'spades'},
-  {rank: 2, suit: 'clubs'},
-  {rank: 10, suit: 'hearts'}],
-  [[{rank: 12, suit: 'spades' },
-  {rank: 5, suit: 'hearts'}],
-  [{rank: 8, suit: 'diamonds'},
-  {rank: 9, suit: 'clubs'}]]
-);
+// let gh = greatestHand(
+//   [{rank: 6, suit: 'clubs'},
+//   {rank: 7, suit: 'clubs'},
+//   {rank: 2, suit: 'spades'},
+//   {rank: 2, suit: 'clubs'},
+//   {rank: 10, suit: 'hearts'}],
+//   [[{rank: 12, suit: 'spades' },
+//   {rank: 5, suit: 'hearts'}],
+//   [{rank: 8, suit: 'diamonds'},
+//   {rank: 9, suit: 'clubs'}]]
+// );
 
-console.log("gh:", gh);
+// console.log("gh:", gh);
