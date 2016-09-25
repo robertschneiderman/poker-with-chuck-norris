@@ -21470,6 +21470,10 @@
 	
 	var _logo2 = _interopRequireDefault(_logo);
 	
+	var _audio = __webpack_require__(359);
+	
+	var _audio2 = _interopRequireDefault(_audio);
+	
 	var _loading = __webpack_require__(355);
 	
 	var _loading2 = _interopRequireDefault(_loading);
@@ -21519,6 +21523,7 @@
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'app' },
+	        _react2.default.createElement(_audio2.default, null),
 	        _react2.default.createElement(_logo2.default, null),
 	        _react2.default.createElement(
 	          _loading2.default,
@@ -23292,6 +23297,8 @@
 	      newState.deck = deck;
 	      newState.round = 1;
 	
+	      this.playSound('deal-sound');
+	
 	      this.setState(newState, this.collectAntes);
 	    }
 	  }, {
@@ -23322,6 +23329,7 @@
 	          pot: pot
 	        }, this.collectWinnings);
 	      } else {
+	        this.playSound('next-card-sound');
 	        this.setState({
 	          deck: this.alterDeck(nextRound).deck,
 	          stage: this.alterDeck(nextRound).cards,
@@ -23506,6 +23514,9 @@
 	        newState.players[turnStr].bank -= otherStake - oldStake;
 	
 	        message = 'Called';
+	        this.playSound('call-sound');
+	      } else {
+	        // this.playSound('check-sound');
 	      }
 	
 	      this.setState(newState, this.displayMessage.bind(this, message));
@@ -23528,6 +23539,8 @@
 	
 	      newState.players[turnStr].stake += amountToWager;
 	      newState.players[turnStr].bank -= amountToWager;
+	
+	      this.playSound('raise-sound');
 	
 	      var message = 'Reraised';
 	
@@ -23554,6 +23567,12 @@
 	        setOver: true
 	      }, this.displayMessage.bind(this, message));
 	      // this.collectWinnings.bind(this, this.otherPlayer())
+	    }
+	  }, {
+	    key: 'playSound',
+	    value: function playSound(selector) {
+	      var sound = document.getElementById(selector);
+	      sound.play();
 	    }
 	  }, {
 	    key: 'displayWinner',
@@ -29671,6 +29690,13 @@
 	      setTimeout(function () {
 	        $('.logo').addClass('recede');
 	      }, 1000);
+	      this.playSound('nice-meeting-you');
+	    }
+	  }, {
+	    key: 'playSound',
+	    value: function playSound(selector) {
+	      var sound = document.getElementById(selector);
+	      sound.play();
 	    }
 	  }, {
 	    key: 'render',
@@ -39148,6 +39174,83 @@
 	}(_react2.default.Component);
 	
 	exports.default = Message;
+
+/***/ },
+/* 359 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Audio = function (_React$Component) {
+	  _inherits(Audio, _React$Component);
+	
+	  function Audio(props) {
+	    _classCallCheck(this, Audio);
+	
+	    return _possibleConstructorReturn(this, (Audio.__proto__ || Object.getPrototypeOf(Audio)).call(this, props));
+	  }
+	
+	  _createClass(Audio, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "div",
+	        { className: "sounds" },
+	        _react2.default.createElement(
+	          "audio",
+	          { id: "nice-meeting-you" },
+	          _react2.default.createElement("source", { src: "./audio/chuck_norris/nice_meeting_you.mp3" })
+	        ),
+	        _react2.default.createElement(
+	          "audio",
+	          { id: "deal-sound" },
+	          _react2.default.createElement("source", { src: "./audio/deal.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/deal.wav" })
+	        ),
+	        _react2.default.createElement(
+	          "audio",
+	          { id: "raise-sound" },
+	          _react2.default.createElement("source", { src: "./audio/raise.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/raise.wav" })
+	        ),
+	        _react2.default.createElement(
+	          "audio",
+	          { id: "call-sound" },
+	          _react2.default.createElement("source", { src: "./audio/call.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/call.wav" })
+	        ),
+	        _react2.default.createElement(
+	          "audio",
+	          { id: "next-card-sound" },
+	          _react2.default.createElement("source", { src: "./audio/next-card.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/next-card.wav" })
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return Audio;
+	}(_react2.default.Component);
+	
+	exports.default = Audio;
 
 /***/ }
 /******/ ]);

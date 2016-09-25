@@ -11,7 +11,14 @@ class Logo extends React.Component {
     setTimeout(() => {
       $('.logo').addClass('recede')
     }, 1000);
+    this.playSound('nice-meeting-you');    
   }
+
+  playSound(selector) {
+    let sound = document.getElementById(selector);
+    sound.play();    
+  }  
+
 
   render() {
     return(

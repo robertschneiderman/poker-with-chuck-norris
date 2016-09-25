@@ -1,5 +1,6 @@
 const React = require('react');
 
+
 const Loading = ({loading, children}) => {
 
   if (loading) {

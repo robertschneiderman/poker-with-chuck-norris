@@ -82,6 +82,8 @@ class Game extends React.Component {
     newState.deck = deck;
     newState.round = 1;
 
+    this.playSound('deal-sound');
+
     this.setState(newState, this.collectAntes);
   }
 
@@ -101,7 +103,7 @@ class Game extends React.Component {
 
   nextRound() {
     let nextRound = (this.state.round + 1);
-    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
+    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake);
     
     this.resetPlayerStakes();
 
@@ -110,6 +112,7 @@ class Game extends React.Component {
         pot: pot,
       }, this.collectWinnings);
     } else {
+      this.playSound('next-card-sound');
       this.setState({
         deck: this.alterDeck(nextRound).deck,
         stage: this.alterDeck(nextRound).cards,
@@ -279,6 +282,9 @@ class Game extends React.Component {
       newState.players[turnStr].bank -= (otherStake - oldStake);
       
       message = 'Called';
+      this.playSound('call-sound');
+    } else {
+      // this.playSound('check-sound');
     }
 
     this.setState(newState, this.displayMessage.bind(this, message));
@@ -300,6 +306,8 @@ class Game extends React.Component {
 
     newState.players[turnStr].stake += amountToWager;
     newState.players[turnStr].bank -= amountToWager;
+
+    this.playSound('raise-sound');
 
     let message = 'Reraised';
 
@@ -326,6 +334,11 @@ class Game extends React.Component {
     }, this.displayMessage.bind(this, message));
 // this.collectWinnings.bind(this, this.otherPlayer())
 
+  }
+
+  playSound(selector) {
+    let sound = document.getElementById(selector);
+    sound.play();    
   }
 
   displayWinner(message) {
