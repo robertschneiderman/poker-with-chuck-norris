@@ -1,10 +1,18 @@
+:root {
+  --mult: .95;
+}
+
+.player-hold .card:first-child {
+  margin-right: 1rem;
+}
+
 .card {
   /* position: absolute; */
   display: inline-block;
   /* left: -1.9375rem; */
   /* top: -2.75rem; */
-  width: 3.875rem;
-  height: 5.5rem;
+  width: calc(4.875rem * var(--mult));
+  height: calc(6.919rem * var(--mult));
   background-color: #fff;
   -webkit-border-radius: 4px;
   border-radius: 4px;

@@ -23172,6 +23172,10 @@
 	
 	var _modal2 = _interopRequireDefault(_modal);
 	
+	var _message = __webpack_require__(358);
+	
+	var _message2 = _interopRequireDefault(_message);
+	
 	var _interface = __webpack_require__(202);
 	
 	var _interface2 = _interopRequireDefault(_interface);
@@ -23212,17 +23216,8 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	Array.prototype.myRotate = function () {
-	  var pivot = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
-	
-	
-	  var pivotConv = pivot % this.length;
-	
-	  var left = this.slice(0, pivotConv);
-	  var right = this.slice(pivotConv);
-	
-	  return right.concat(left);
-	};
+	var roundTimes = 1000;
+	var aiTime = 1000;
 	
 	var defaultPlayer = {
 	  hold: [{
@@ -23252,8 +23247,6 @@
 	
 	// rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
 	
-	var roundTimes = 0;
-	var aiTime = 0;
 	
 	var Game = function (_React$Component) {
 	  _inherits(Game, _React$Component);
@@ -23349,13 +23342,10 @@
 	
 	      var players = (0, _merge2.default)([], this.state.players);
 	
-	      // debugger;
-	
 	      players.map(function (player) {
 	        if ((0, _isEqual2.default)(player, winningPlayer)) {
 	          player.hand = (0, _poker_hands.handName)(_this2.state.stage, player.hold);
 	          player.bank += _this2.state.pot;
-	          // debugger;
 	          winningPlayer = player;
 	          winningPlayer.hand = player.hand;
 	        } else {
@@ -23429,7 +23419,6 @@
 	    key: 'nextTurn',
 	    value: function nextTurn() {
 	      if (this.state.setOver) {
-	        // debugger;
 	        var message = this.otherPlayer().name + ' won!';
 	        this.displayWinner(message);
 	      } else if (this.allStakesEven() && this.state.looped) {
@@ -23624,42 +23613,45 @@
 	        'div',
 	        { className: 'game' },
 	        _react2.default.createElement(
-	          'div',
-	          { className: 'table' },
-	          _react2.default.createElement(_modal2.default, { gameOver: this.state.gameOver }),
+	          'main',
+	          { className: 'main' },
 	          _react2.default.createElement(
-	            'ul',
-	            { className: 'players' },
-	            _react2.default.createElement(_player2.default, {
-	              num: 0,
-	              dealer: this.state.dealer,
-	              round: this.state.round,
-	              turn: this.state.turn,
-	              message: this.state.message,
-	              player: this.state.players[0] }),
-	            _react2.default.createElement(_player2.default, {
-	              num: 1,
-	              setOver: this.state.setOver,
-	              dealer: this.state.dealer,
-	              round: this.state.round,
-	              turn: this.state.turn,
-	              message: this.state.message,
-	              player: this.state.players[1] })
+	            'div',
+	            { className: 'table' },
+	            _react2.default.createElement(_modal2.default, { gameOver: this.state.gameOver }),
+	            _react2.default.createElement(
+	              'ul',
+	              { className: 'players' },
+	              _react2.default.createElement(_player2.default, {
+	                num: 0,
+	                dealer: this.state.dealer,
+	                round: this.state.round,
+	                turn: this.state.turn,
+	                player: this.state.players[0] }),
+	              _react2.default.createElement(_player2.default, {
+	                num: 1,
+	                setOver: this.state.setOver,
+	                dealer: this.state.dealer,
+	                round: this.state.round,
+	                turn: this.state.turn,
+	                player: this.state.players[1] })
+	            ),
+	            _react2.default.createElement(_stage2.default, {
+	              pot: this.state.pot,
+	              cards: this.state.stage })
 	          ),
-	          _react2.default.createElement(_stage2.default, {
-	            pot: this.state.pot,
-	            cards: this.state.stage })
+	          _react2.default.createElement(_interface2.default, {
+	            nextSet: this.nextSet.bind(this),
+	            setOver: this.state.setOver,
+	            round: this.state.round,
+	            turn: this.state.turn,
+	            players: this.state.players,
+	            callOrCheck: this.callOrCheck.bind(this),
+	            fold: this.fold.bind(this),
+	            message: this.state.message,
+	            raise: this.raise.bind(this) })
 	        ),
-	        _react2.default.createElement(_interface2.default, {
-	          nextSet: this.nextSet.bind(this),
-	          setOver: this.state.setOver,
-	          round: this.state.round,
-	          turn: this.state.turn,
-	          players: this.state.players,
-	          callOrCheck: this.callOrCheck.bind(this),
-	          fold: this.fold.bind(this),
-	          raise: this.raise.bind(this),
-	          message: this.state.message })
+	        _react2.default.createElement(_message2.default, { message: this.state.message })
 	      );
 	    }
 	  }]);
@@ -24075,8 +24067,8 @@
 	      }
 	    }
 	  }, {
-	    key: 'clickHand',
-	    value: function clickHand(str) {
+	    key: 'clickHandle',
+	    value: function clickHandle(str) {
 	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
 	        button.disabled = true;
 	      });
@@ -24093,40 +24085,14 @@
 	      }
 	    }
 	  }, {
-	    key: 'formatMessage',
-	    value: function formatMessage() {
-	      var message = void 0;
-	      var subMessage = void 0;
-	      if (this.props.message.match(/won!/g)) {
-	        this.message = this.props.message.match(/^(.*?)!/g)[0];
-	        // debugger;
-	        this.subMessage = this.props.message.substr(this.message.indexOf("!") + 2);
-	      } else {
-	        this.message = this.props.message;
-	        this.subMessage = '';
-	      }
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      this.interfaceClasses();
 	      this.btnEnabledness();
-	      this.formatMessage();
-	      var messageClass = 'message message-' + this.props.turn;
-	      var subMessageClass = 'message-sub';
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'interface-container' },
-	        _react2.default.createElement(
-	          'p',
-	          { className: 'message' },
-	          this.message,
-	          _react2.default.createElement(
-	            'span',
-	            { className: 'message-sub' },
-	            this.subMessage
-	          )
-	        ),
 	        _react2.default.createElement(
 	          'div',
 	          { className: this.bettingClass },
@@ -24135,7 +24101,7 @@
 	            {
 	              id: 'btn-raise',
 	              className: 'btn btn-raise',
-	              onClick: this.clickHand.bind(this, 'raise') },
+	              onClick: this.clickHandle.bind(this, 'raise') },
 	            'Raise 50'
 	          ),
 	          _react2.default.createElement(
@@ -24143,14 +24109,14 @@
 	            {
 	              id: 'btn-call-check',
 	              className: 'btn btn-call-check',
-	              onClick: this.clickHand.bind(this, 'callOrCheck') },
+	              onClick: this.clickHandle.bind(this, 'callOrCheck') },
 	            'Call/Check'
 	          ),
 	          _react2.default.createElement(
 	            'button',
 	            { id: 'btn-fold',
 	              className: 'btn btn-fold',
-	              onClick: this.clickHand.bind(this, 'fold') },
+	              onClick: this.clickHandle.bind(this, 'fold') },
 	            'Fold'
 	          )
 	        ),
@@ -39105,6 +39071,83 @@
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
+
+/***/ },
+/* 358 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	// import Container from './/_container';
+	
+	var Message = function (_React$Component) {
+	  _inherits(Message, _React$Component);
+	
+	  function Message(props) {
+	    _classCallCheck(this, Message);
+	
+	    return _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
+	  }
+	
+	  _createClass(Message, [{
+	    key: 'formatMessage',
+	    value: function formatMessage() {
+	      var message = void 0;
+	      var subMessage = void 0;
+	      if (this.props.message.match(/won!/g)) {
+	        this.message = this.props.message.match(/^(.*?)!/g)[0];
+	        // debugger;
+	        this.subMessage = this.props.message.substr(this.message.indexOf("!") + 2);
+	      } else {
+	        this.message = this.props.message;
+	        this.subMessage = '';
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      this.formatMessage();
+	      var messageContainerClass = this.props.message === '' ? 'message-container hidden' : 'message-container';
+	      var subMessageClass = this.subMessage === '' ? 'message-sub none' : 'message-sub';;
+	      return _react2.default.createElement(
+	        'div',
+	        { className: messageContainerClass },
+	        _react2.default.createElement(
+	          'h2',
+	          { className: 'message' },
+	          this.message
+	        ),
+	        _react2.default.createElement(
+	          'p',
+	          { className: subMessageClass },
+	          this.subMessage
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return Message;
+	}(_react2.default.Component);
+	
+	exports.default = Message;
 
 /***/ }
 /******/ ]);

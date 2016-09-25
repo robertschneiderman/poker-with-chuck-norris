@@ -33,7 +33,7 @@ class Interface extends React.Component {
     }
   }
 
-  clickHand(str) {
+  clickHandle(str) {
     document.querySelectorAll(".interface-betting > button").forEach(button => {
       button.disabled = true;
     });
@@ -50,47 +50,33 @@ class Interface extends React.Component {
     }
   }
 
-  formatMessage() {
-    let message;
-    let subMessage;
-    if (this.props.message.match(/won!/g)) {
-      this.message = this.props.message.match(/^(.*?)!/g)[0];
-      // debugger;
-      this.subMessage = this.props.message.substr(this.message.indexOf("!") + 2);
-    } else {
-      this.message = this.props.message;
-      this.subMessage = '';      
-    }
-  }
+
 
   render() {
     this.interfaceClasses();
     this.btnEnabledness();
-    this.formatMessage();
-    let messageClass = `message message-${this.props.turn}`;
-    let subMessageClass = 'message-sub';
+
     return(
-      <div className="interface-container">
-        <p className="message">{this.message}<span className='message-sub'>{this.subMessage}</span></p>   
+      <div className="interface-container">  
         <div className={this.bettingClass}>
 
           <button 
             id="btn-raise"
             className="btn btn-raise"
-            onClick={this.clickHand.bind(this, 'raise')}>
+            onClick={this.clickHandle.bind(this, 'raise')}>
             Raise 50
           </button>
 
           <button 
             id="btn-call-check" 
             className="btn btn-call-check"
-            onClick={this.clickHand.bind(this, 'callOrCheck')}>
+            onClick={this.clickHandle.bind(this, 'callOrCheck')}>
               Call/Check
           </button>
 
           <button id="btn-fold" 
             className="btn btn-fold"
-            onClick={this.clickHand.bind(this, 'fold')}>
+            onClick={this.clickHandle.bind(this, 'fold')}>
             Fold
           </button>
 

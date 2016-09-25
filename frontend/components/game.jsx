@@ -2,6 +2,7 @@ import React from 'react';
 import Player from './player/player';
 import Stage from './stage/stage';
 import Modal from './player/modal';
+import Message from './message';
 import Interface from './interface/interface';
 import { deck } from '../util/deck';
 import shuffle from 'lodash/shuffle';
@@ -12,16 +13,8 @@ import take from 'lodash/take';
 import isEqual from 'lodash/isEqual';
 import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds} from './poker_hands';
 
-Array.prototype.myRotate = function (pivot = 1) {
-
-  let pivotConv = pivot % this.length;
-
-  let left = this.slice(0, pivotConv);
-  let right = this.slice(pivotConv);
-
-  return right.concat(left);
-
-};
+const roundTimes = 1000;
+const aiTime = 1000;
 
 const defaultPlayer = {
   hold: [{
@@ -51,8 +44,6 @@ const defaultState = {
 
 // rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
 
-const roundTimes = 0;
-const aiTime = 0;
 
 class Game extends React.Component {
 
@@ -136,13 +127,11 @@ class Game extends React.Component {
 
     let players = merge([], this.state.players);
 
-    // debugger;
 
     players.map(player => {
       if (isEqual(player, winningPlayer)) {
         player.hand = handName(this.state.stage, player.hold);
         player.bank += this.state.pot;
-        // debugger;
         winningPlayer = player;
         winningPlayer.hand = player.hand;
       } else {
@@ -212,7 +201,6 @@ class Game extends React.Component {
 
   nextTurn() {
     if (this.state.setOver) {
-      // debugger;
       let message = `${this.otherPlayer().name} won!`;
       this.displayWinner(message);
     } else if ( (this.allStakesEven()) && (this.state.looped)) {
@@ -387,40 +375,41 @@ class Game extends React.Component {
     window.state = this.state;
     return(
       <div className="game">
-        <div className="table">
-          <Modal gameOver={this.state.gameOver} />
-          <ul className="players">
-            <Player
-              num={0}
-              dealer={this.state.dealer}
-              round={this.state.round}
-              turn={this.state.turn}
-              message={this.state.message}            
-              player={this.state.players[0]} />
-            <Player
-              num={1}
-              setOver={this.state.setOver}
-              dealer={this.state.dealer}
-              round={this.state.round}
-              turn={this.state.turn}
-              message={this.state.message}            
-              player={this.state.players[1]} />
-          </ul>
-        
-          <Stage 
-            pot={this.state.pot} 
-            cards={this.state.stage} />
-        </div>
-        <Interface
-          nextSet={this.nextSet.bind(this)}
-          setOver={this.state.setOver}           
-          round={this.state.round}
-          turn={this.state.turn}
-          players={this.state.players}
-          callOrCheck={this.callOrCheck.bind(this)}
-          fold={this.fold.bind(this)}
-          raise={this.raise.bind(this)}
-          message={this.state.message} />
+        <main className="main">
+          <div className="table">
+            <Modal gameOver={this.state.gameOver} />
+            <ul className="players">
+              <Player
+                num={0}
+                dealer={this.state.dealer}
+                round={this.state.round}
+                turn={this.state.turn}
+                player={this.state.players[0]} />
+              <Player
+                num={1}
+                setOver={this.state.setOver}
+                dealer={this.state.dealer}
+                round={this.state.round}
+                turn={this.state.turn}
+                player={this.state.players[1]} />
+            </ul>
+          
+            <Stage 
+              pot={this.state.pot} 
+              cards={this.state.stage} />
+          </div>
+          <Interface
+            nextSet={this.nextSet.bind(this)}
+            setOver={this.state.setOver}           
+            round={this.state.round}
+            turn={this.state.turn}
+            players={this.state.players}
+            callOrCheck={this.callOrCheck.bind(this)}
+            fold={this.fold.bind(this)}
+            message={this.state.message}
+            raise={this.raise.bind(this)} />
+        </main>
+        <Message message={this.state.message} />
       </div>
     );
   }

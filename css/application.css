@@ -19,16 +19,35 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 .app {
   margin: 0 auto;
+  height: 100%;
+  width: 100%;
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
 }
 
 .game-container {
   animation: fadeIn 1s ease 0s 1 normal forwards;
+  /* width: 100%; */
+  /* height: 100%; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .game {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
+  /* display: flex; */
+  /* justify-content: space-between; */
+  /*margin: 9rem auto 0;*/
+  /* height: 48%; */
+  width: 100%;
+  text-align: center;
+  /* max-width: 1250px; */
+}
+
+.main {
+  display: inline-block;
+  margin: 9rem auto 0;
 }
 
 @keyframes fadeIn {
@@ -41,15 +60,27 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 }
 
 .table {
+  /* border: 5px solid gainsboro; */
   /* padding: 4rem; */
-  background-color: #c6e4c6;
-  border-radius: 50%;
-  height: 34rem;
-  width: 34rem;
+  /* background-color: #8fccae; */
+  background-image: url('../images/felt-pattern.png');
+  background-repeat: repeat;
   /* margin: 0 auto; */
+  height: 31rem;
+  width: 31rem;
+  border-radius: 50%;
+  /* display: inline-block; */
+  vertical-align: middle;
+  /* margin-right: 3.5rem; */
+  margin-bottom: 3rem;
   display: inline-block;
-  vertical-align: bottom;
-  margin-right: 3.5rem;
+}
+
+@media (min-width: 1441px) {
+  .table {
+    height: 34rem;
+    width: 34rem;    
+  }
 }
 
 
@@ -78,7 +109,7 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 .stage-cards {
   /* display: flex; */
-  width: 22.6rem;
+  width: 26.6rem;
   text-align: right;
 }
 
@@ -94,17 +125,17 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 }
 
-.interface-container {/* position: absolute; *//* display: flex; *//* bottom: -4.5rem; *//* width: 93%; */right: 0;height: 100%;/* transform: translateX(-50%); *//* justify-content: space-between; */padding-bottom: 2rem;/* display: inline-block; *//* vertical-align: bottom; */margin-top: auto;}
+.interface-container {/* position: absolute; *//* display: flex; *//* bottom: -4.5rem; */width: 28rem;/* width: 13rem; */right: 0;/* height: 35rem; *//* display: inline-block; *//* transform: translateX(-50%); *//* justify-content: space-between; */padding-bottom: 2rem;/* display: inline-block; *//* vertical-align: middle; *//* margin-top: auto; */}
 
-.interface-betting {display: flex;/* width: 86%; */}
+.interface-betting {/* width: 86%; */position: absolute;/* bottom: 2rem; */}
 
 .btn {
   background-color: #52add2;
   border: none;
   border-radius: 5px;
-  /* font-size: 1rem; */
+  font-size: 1.1rem;
   color: #fff;
-  padding: 0.6rem;
+  padding: 0.8rem 1.4rem;
 }
 
 .btn[disabled] {
@@ -126,7 +157,7 @@ body {font-family: Roboto;width: 100%;height: 100%;}
   background-color: #d25352;
 }
 
-.interface-deal {}
+.interface-deal {/* position: absolute; *//* bottom: 2rem; */}
 
 .btn-deal {
   
@@ -136,8 +167,8 @@ body {font-family: Roboto;width: 100%;height: 100%;}
   list-style: none;
   border-radius: 50%;
   /* position: absolute; */
-  height: 91%;
-  width: 91%;
+  height: 100%;
+  width: 100%;
   /* margin-bottom: 2rem; */
 }
 
@@ -161,7 +192,7 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 .player-avatar {border-radius: 5px;height: 4rem;width: 4rem;}
 
-.player-hold {position: absolute;justify-content: space-between;display: flex;height: 10rem;width: 8.5rem;right: -8.25rem;top: .189rem;}
+.player-hold {position: absolute;/* justify-content: space-between; *//* display: flex; */height: 10rem;width: 10.5rem;right: -10.25rem;top: .189rem;}
 
 .player-card {
 
