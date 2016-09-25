@@ -10,7 +10,7 @@ import uniq from 'lodash/uniq';
 import drop from 'lodash/drop';
 import take from 'lodash/take';
 import isEqual from 'lodash/isEqual';
-import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName} from './poker_hands';
+import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds} from './poker_hands';
 
 Array.prototype.myRotate = function (pivot = 1) {
 
@@ -51,14 +51,13 @@ const defaultState = {
 
 // rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
 
-const roundTimes = 100000;
+const roundTimes = 0;
 const aiTime = 0;
 
 class Game extends React.Component {
 
   constructor(props) {
     super(props);
-
     
     this.state = defaultState;
     this.state.dealer = -1;
@@ -66,7 +65,8 @@ class Game extends React.Component {
     this.state.players[0].name = 'You';
     this.state.players[1].bank = 1000;
     this.state.players[1].name = 'Chuck Norris';
-
+    
+    window.state = this.state;
   }
 
   nextSet() {
@@ -91,7 +91,6 @@ class Game extends React.Component {
     newState.deck = deck;
     newState.round = 1;
 
-    // debugger;
     this.setState(newState, this.collectAntes);
   }
 
@@ -106,13 +105,11 @@ class Game extends React.Component {
     newState.players[bigIdx].bank -= 50;
     newState.players[bigIdx].stake += 50;
 
-    // debugger;
     this.setState(newState, this.nextTurn);
   }
 
   nextRound() {
     let nextRound = (this.state.round + 1);
-    // debugger;
     let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
     
     this.resetPlayerStakes();
@@ -134,23 +131,27 @@ class Game extends React.Component {
   } 
 
   collectWinnings(playerWhoDidntFold) {
-    // debugger;
-
     let winningPlayer = this.determineWinner(playerWhoDidntFold);
-
+    let losingPlayer;
 
     let players = merge([], this.state.players);
 
+    // debugger;
+
     players.map(player => {
-      player.hand = handName(this.state.stage, player.hold);
       if (isEqual(player, winningPlayer)) {
+        player.hand = handName(this.state.stage, player.hold);
         player.bank += this.state.pot;
+        // debugger;
+        winningPlayer = player;
+        winningPlayer.hand = player.hand;
+      } else {
+        player.hand = handName(this.state.stage, player.hold);        
+        losingPlayer = player;
       }
     });
 
-    console.log("winningPlayer:", winningPlayer);
- 
-    let message = `${winningPlayer.name} won! ${winningPlayer.hand} over ${players[1].hand}`;
+    let message = `${winningPlayer.name} won! ${winningPlayer.hand} over ${losingPlayer.hand}`;
     this.setState({players}, this.displayWinner.bind(this, message));
   }
 
@@ -210,15 +211,19 @@ class Game extends React.Component {
   }
 
   nextTurn() {
-    if ( (this.allStakesEven()) && (this.state.looped)) {
+    if (this.state.setOver) {
+      // debugger;
+      let message = `${this.otherPlayer().name} won!`;
+      this.displayWinner(message);
+    } else if ( (this.allStakesEven()) && (this.state.looped)) {
       this.nextRound();
     } else {
       let nextTurn = (this.state.turn + 1) % 2;
 
       if (nextTurn === this.state.dealer) { //FIX!!!!!!!!!
-        this.setState({ turn: nextTurn, message: '', looped: true }, this.aiMove);
+        this.setState({ turn: nextTurn, message: '', looped: true }, this.aiFormulateMove);
       } else {
-        this.setState({ turn: nextTurn, message: '', }, this.aiMove);        
+        this.setState({ turn: nextTurn, message: '', }, this.aiFormulateMove);        
       }   
     }
   }  
@@ -229,15 +234,41 @@ class Game extends React.Component {
     return val;
   }
 
-  aiMove() {
-    // debugger;
-    let randomMove = this.aiFormulateMove();
-    if (this.state.turn === 1) {
-      setTimeout(randomMove.bind(this), aiTime);
-    }
+  aiMove(odds) {
+    let move;
+    let wOdds = odds.win;
+    if ((wOdds < 0.33) && (this.state.players[1].stake < this.state.players[0].stake)) {
+      move = this.fold;
+    } else if (wOdds < 0.66) {
+      move = this.callOrCheck;
+    } else {
+      move = this.raise;
+    }    
+
+    setTimeout(move.bind(this), aiTime);
   }
 
   aiFormulateMove() {
+    if (this.state.turn !== 1) return;
+
+    let randomNumber = Math.floor(Math.random() * 5);
+
+    // implement a confidence factor based on how much human player bets... bluff only when safe...
+
+    if (randomNumber === 0) {
+      setTimeout(this.raise.bind(this), aiTime); // bluff
+    } else if (randomNumber === 1) {
+      setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
+    } else {
+      let odds = getHandOdds(this.state.stage, this.state.players[1].hold, this.aiMove.bind(this));
+    }
+  }
+
+  smartMove(odds) {
+    // return (this.state.players[1].pot * odds); 
+  }  
+
+  aiFormulateMoveDEPRECATED() {
     let randomIndeces = [0, 0, 0, 0, 1, 1, 1];
     let randomIndex = randomIndeces[Math.floor(Math.random() * randomIndeces.length)];
 
@@ -297,11 +328,16 @@ class Game extends React.Component {
 
   fold() {
     // duplicated in 'nextRound'
-    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake)
+    let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake);
+
+    let message = `${this.currentPlayer().name} folded`;
 
     this.setState({
       pot: pot,
-    }, this.collectWinnings.bind(this, this.otherPlayer()));
+      setOver: true
+    }, this.displayMessage.bind(this, message));
+// this.collectWinnings.bind(this, this.otherPlayer())
+
   }
 
   displayWinner(message) {
@@ -312,7 +348,7 @@ class Game extends React.Component {
       if (player.bank === 0) {
         gameOver = true;
       }
-    })
+    });
 
     this.setState({message, setOver: true, gameOver});
     // setTimeout(this.nextSet.bind(this), 2000);
@@ -320,7 +356,7 @@ class Game extends React.Component {
 
   displayMessage(message) {
     this.setState({message});
-    setTimeout(this.nextTurn.bind(this), roundTimes)
+    setTimeout(this.nextTurn.bind(this), roundTimes);
   }
 
   highestStake() {

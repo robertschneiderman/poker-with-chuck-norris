@@ -1,5 +1,16 @@
 .message {/* position: fixed; */color: #277a9c;font-size: 2.9rem;font-weight: 700;text-transform: uppercase;left: 0;top: -157%;width: 100%;position: absolute;z-index: 8000;font-family: Hammerhead;}
 
+.message-sub {
+  color: #999;
+  display: inline-block;
+  font-family: Lato;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  font-weight: 400;
+  text-transform: none;
+  /* font-style: italic; */
+}
+
 .message-0 {
   /* top: 90%; */
 }

@@ -23252,7 +23252,7 @@
 	
 	// rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
 	
-	var roundTimes = 100000;
+	var roundTimes = 0;
 	var aiTime = 0;
 	
 	var Game = function (_React$Component) {
@@ -23270,6 +23270,7 @@
 	    _this.state.players[1].bank = 1000;
 	    _this.state.players[1].name = 'Chuck Norris';
 	
+	    window.state = _this.state;
 	    return _this;
 	  }
 	
@@ -23298,7 +23299,6 @@
 	      newState.deck = deck;
 	      newState.round = 1;
 	
-	      // debugger;
 	      this.setState(newState, this.collectAntes);
 	    }
 	  }, {
@@ -23314,14 +23314,12 @@
 	      newState.players[bigIdx].bank -= 50;
 	      newState.players[bigIdx].stake += 50;
 	
-	      // debugger;
 	      this.setState(newState, this.nextTurn);
 	    }
 	  }, {
 	    key: 'nextRound',
 	    value: function nextRound() {
 	      var nextRound = this.state.round + 1;
-	      // debugger;
 	      var pot = this.state.pot + this.state.players[0].stake + this.state.players[1].stake;
 	
 	      this.resetPlayerStakes();
@@ -23346,22 +23344,27 @@
 	    value: function collectWinnings(playerWhoDidntFold) {
 	      var _this2 = this;
 	
-	      // debugger;
-	
 	      var winningPlayer = this.determineWinner(playerWhoDidntFold);
+	      var losingPlayer = void 0;
 	
 	      var players = (0, _merge2.default)([], this.state.players);
 	
+	      // debugger;
+	
 	      players.map(function (player) {
-	        player.hand = (0, _poker_hands.handName)(_this2.state.stage, player.hold);
 	        if ((0, _isEqual2.default)(player, winningPlayer)) {
+	          player.hand = (0, _poker_hands.handName)(_this2.state.stage, player.hold);
 	          player.bank += _this2.state.pot;
+	          // debugger;
+	          winningPlayer = player;
+	          winningPlayer.hand = player.hand;
+	        } else {
+	          player.hand = (0, _poker_hands.handName)(_this2.state.stage, player.hold);
+	          losingPlayer = player;
 	        }
 	      });
 	
-	      console.log("winningPlayer:", winningPlayer);
-	
-	      var message = winningPlayer.name + ' won! ' + winningPlayer.hand + ' over ' + players[1].hand;
+	      var message = winningPlayer.name + ' won! ' + winningPlayer.hand + ' over ' + losingPlayer.hand;
 	      this.setState({ players: players }, this.displayWinner.bind(this, message));
 	    }
 	  }, {
@@ -23425,16 +23428,20 @@
 	  }, {
 	    key: 'nextTurn',
 	    value: function nextTurn() {
-	      if (this.allStakesEven() && this.state.looped) {
+	      if (this.state.setOver) {
+	        // debugger;
+	        var message = this.otherPlayer().name + ' won!';
+	        this.displayWinner(message);
+	      } else if (this.allStakesEven() && this.state.looped) {
 	        this.nextRound();
 	      } else {
 	        var nextTurn = (this.state.turn + 1) % 2;
 	
 	        if (nextTurn === this.state.dealer) {
 	          //FIX!!!!!!!!!
-	          this.setState({ turn: nextTurn, message: '', looped: true }, this.aiMove);
+	          this.setState({ turn: nextTurn, message: '', looped: true }, this.aiFormulateMove);
 	        } else {
-	          this.setState({ turn: nextTurn, message: '' }, this.aiMove);
+	          this.setState({ turn: nextTurn, message: '' }, this.aiFormulateMove);
 	        }
 	      }
 	    }
@@ -23449,16 +23456,44 @@
 	    }
 	  }, {
 	    key: 'aiMove',
-	    value: function aiMove() {
-	      // debugger;
-	      var randomMove = this.aiFormulateMove();
-	      if (this.state.turn === 1) {
-	        setTimeout(randomMove.bind(this), aiTime);
+	    value: function aiMove(odds) {
+	      var move = void 0;
+	      var wOdds = odds.win;
+	      if (wOdds < 0.33 && this.state.players[1].stake < this.state.players[0].stake) {
+	        move = this.fold;
+	      } else if (wOdds < 0.66) {
+	        move = this.callOrCheck;
+	      } else {
+	        move = this.raise;
 	      }
+	
+	      setTimeout(move.bind(this), aiTime);
 	    }
 	  }, {
 	    key: 'aiFormulateMove',
 	    value: function aiFormulateMove() {
+	      if (this.state.turn !== 1) return;
+	
+	      var randomNumber = Math.floor(Math.random() * 5);
+	
+	      // implement a confidence factor based on how much human player bets... bluff only when safe...
+	
+	      if (randomNumber === 0) {
+	        setTimeout(this.raise.bind(this), aiTime); // bluff
+	      } else if (randomNumber === 1) {
+	        setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
+	      } else {
+	        var odds = (0, _poker_hands.getHandOdds)(this.state.stage, this.state.players[1].hold, this.aiMove.bind(this));
+	      }
+	    }
+	  }, {
+	    key: 'smartMove',
+	    value: function smartMove(odds) {
+	      // return (this.state.players[1].pot * odds); 
+	    }
+	  }, {
+	    key: 'aiFormulateMoveDEPRECATED',
+	    value: function aiFormulateMoveDEPRECATED() {
 	      var randomIndeces = [0, 0, 0, 0, 1, 1, 1];
 	      var randomIndex = randomIndeces[Math.floor(Math.random() * randomIndeces.length)];
 	
@@ -23523,9 +23558,13 @@
 	      // duplicated in 'nextRound'
 	      var pot = this.state.pot + this.state.players[0].stake + this.state.players[1].stake;
 	
+	      var message = this.currentPlayer().name + ' folded';
+	
 	      this.setState({
-	        pot: pot
-	      }, this.collectWinnings.bind(this, this.otherPlayer()));
+	        pot: pot,
+	        setOver: true
+	      }, this.displayMessage.bind(this, message));
+	      // this.collectWinnings.bind(this, this.otherPlayer())
 	    }
 	  }, {
 	    key: 'displayWinner',
@@ -24021,7 +24060,7 @@
 	  }, {
 	    key: 'btnEnabledness',
 	    value: function btnEnabledness() {
-	      if (this.props.turn !== 0) {
+	      if (this.props.turn !== 0 || this.props.message !== '') {
 	        document.querySelectorAll(".interface-betting > button").forEach(function (button) {
 	          button.disabled = true;
 	        });
@@ -24036,18 +24075,57 @@
 	      }
 	    }
 	  }, {
+	    key: 'clickHand',
+	    value: function clickHand(str) {
+	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
+	        button.disabled = true;
+	      });
+	      switch (str) {
+	        case 'raise':
+	          this.props.raise();
+	          break;
+	        case 'fold':
+	          this.props.fold();
+	          break;
+	        default:
+	          this.props.callOrCheck();
+	          break;
+	      }
+	    }
+	  }, {
+	    key: 'formatMessage',
+	    value: function formatMessage() {
+	      var message = void 0;
+	      var subMessage = void 0;
+	      if (this.props.message.match(/won!/g)) {
+	        this.message = this.props.message.match(/^(.*?)!/g)[0];
+	        // debugger;
+	        this.subMessage = this.props.message.substr(this.message.indexOf("!") + 2);
+	      } else {
+	        this.message = this.props.message;
+	        this.subMessage = '';
+	      }
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      this.interfaceClasses();
 	      this.btnEnabledness();
+	      this.formatMessage();
 	      var messageClass = 'message message-' + this.props.turn;
+	      var subMessageClass = 'message-sub';
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'interface-container' },
 	        _react2.default.createElement(
 	          'p',
 	          { className: 'message' },
-	          this.props.message
+	          this.message,
+	          _react2.default.createElement(
+	            'span',
+	            { className: 'message-sub' },
+	            this.subMessage
+	          )
 	        ),
 	        _react2.default.createElement(
 	          'div',
@@ -24057,8 +24135,7 @@
 	            {
 	              id: 'btn-raise',
 	              className: 'btn btn-raise',
-	              onClick: this.props.raise
-	            },
+	              onClick: this.clickHand.bind(this, 'raise') },
 	            'Raise 50'
 	          ),
 	          _react2.default.createElement(
@@ -24066,12 +24143,14 @@
 	            {
 	              id: 'btn-call-check',
 	              className: 'btn btn-call-check',
-	              onClick: this.props.callOrCheck },
+	              onClick: this.clickHand.bind(this, 'callOrCheck') },
 	            'Call/Check'
 	          ),
 	          _react2.default.createElement(
 	            'button',
-	            { id: 'btn-fold', onClick: this.props.fold, className: 'btn btn-fold' },
+	            { id: 'btn-fold',
+	              className: 'btn btn-fold',
+	              onClick: this.clickHand.bind(this, 'fold') },
 	            'Fold'
 	          )
 	        ),
@@ -29128,7 +29207,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.PokerHand = exports.tiebreaker = exports.greatestHand = exports.greatestHold = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
+	exports.PokerHand = exports.tiebreaker = exports.greatestHand = exports.greatestHold = exports.getHandOdds = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -29147,7 +29226,7 @@
 	  'Three of a Kind': 4,
 	  'Two Pair': 3,
 	  'Pair': 2,
-	  'High Card': 1
+	  'High card': 1
 	};
 	
 	var LETTER_CARDS = ['Jack', 'Queen', 'King', 'Ace'];
@@ -29171,6 +29250,29 @@
 	  var ph = new PokerHand(stage, hold);
 	  return ph.bestHandName();
 	};
+	
+	// 'https://poker-odds.p.mashape.com/hold-em/odds?community=5d%2C7c%2CAh&hand=As%2CKd&players=3'
+	// 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2'
+	
+	var getHandOdds = exports.getHandOdds = function getHandOdds(stage, hold, success) {
+	  var community = apiFormat(stage);
+	  var hand = apiFormat(hold);
+	  $.ajax({
+	    method: 'GET',
+	    data: {},
+	    dataType: 'json',
+	    url: 'https://poker-odds.p.mashape.com/hold-em/odds?community=' + community + '&hand=' + hand + '&players=2',
+	    beforeSend: function beforeSend(xhr) {
+	      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
+	      xhr.setRequestHeader('Accept', 'application/json');
+	    },
+	    success: success
+	  });
+	};
+	
+	// curl --get --include 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2' \
+	//   -H 'X-Mashape-Key: 3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP' \
+	//   -H 'Accept: application/json'
 	
 	var greatestHold = exports.greatestHold = function greatestHold(stage, holds) {
 	  var greatistHand = greatestHand(stage, holds);
@@ -29198,7 +29300,6 @@
 	
 	  var greatestHands = [];
 	
-	  // debugger;
 	  handsSortedByValue.forEach(function (hand) {
 	    if (hand.value === greatestValue) {
 	      greatestHands.push(hand);
@@ -29246,6 +29347,35 @@
 	  return null;
 	};
 	
+	var apiFormat = function apiFormat(cards) {
+	  // debugger;
+	  var cardsFormatted = cards.map(function (card) {
+	    return cardFormat(card);
+	  });
+	
+	  return cardsFormatted.join('%2C');
+	};
+	
+	var cardFormat = function cardFormat(card) {
+	  var rank = void 0;
+	  if (card.rank === 10) rank = convertFaceCard(card.rank.toString());else {
+	    rank = convertFaceCard(card.rank.toString())[0];
+	  }
+	
+	  return rank + card.suit[0];
+	};
+	
+	var separateWithPercent = function separateWithPercent(values) {
+	  return values.map(function (value, i) {
+	    if (i !== values.length - 1) return value + '%';
+	  }).join('');
+	};
+	
+	var convertFaceCard = function convertFaceCard(rank) {
+	  if (rank > 10) rank = LETTER_CARDS[rank - 11];
+	  return rank;
+	};
+	
 	var PokerHand = exports.PokerHand = function () {
 	  function PokerHand(stage, hand) {
 	    _classCallCheck(this, PokerHand);
@@ -29268,21 +29398,21 @@
 	      var tb1 = this.bestHand().tiebreakers[0];
 	      var tb2 = this.bestHand().tiebreakers[1];
 	
-	      if (tb1 > 10) tb1 = LETTER_CARDS[tb1 - 11];
-	      if (tb2 > 10) tb2 = LETTER_CARDS[tb2 - 11];
+	      tb1 = convertFaceCard(tb1);
+	      tb2 = convertFaceCard(tb2);
 	
 	      switch (rank) {
 	        case 'Full House':
-	          tb = '(' + tb1 + '\'s full of ' + tb2 + '\'s\')';
+	          tb = '(' + tb1 + 's full of ' + tb2 + 's\')';
 	          break;
 	        case 'Three of a Kind':
-	          tb = '(' + tb1 + '\'s)';
+	          tb = '(' + tb1 + 's)';
 	          break;
 	        case 'Two Pair':
-	          tb = '(' + tb1 + '\'s and ' + tb2 + '\'s )';
+	          tb = '(' + tb1 + 's and ' + tb2 + 's )';
 	          break;
 	        case 'Pair':
-	          tb = 'of ' + tb1 + '\'s';
+	          tb = 'of ' + tb1 + 's';
 	          break;
 	        default:
 	          tb = '(' + tb1 + ' high)';
@@ -29302,7 +29432,7 @@
 	
 	          return { value: value, tiebreakers: tiebreakers };
 	        } else if (tiebreakers && value <= 4) {
-	          var sortedSingles = hands['High Card'].sort(sortNumber);
+	          var sortedSingles = hands['High card'].sort(sortNumber);
 	          tiebreakers = tiebreakers.concat(sortedSingles);
 	
 	          return { value: value, tiebreakers: tiebreakers };
@@ -29323,7 +29453,7 @@
 	        'Three of a Kind': this.triples(),
 	        'Two Pair': this.pairs(),
 	        'Pair': this.doubles(),
-	        'High Card': this.singles()
+	        'High card': this.singles()
 	      };
 	    }
 	
@@ -29525,6 +29655,14 @@
 	// );
 	
 	// console.log("gh:", gh);
+	
+	// console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
+	
+	// let successCB = (res) => {
+	//   console.log("res.win:", res.win);
+	// }
+	
+	// console.log(getHandOdds([{rank: 7, suit: 'clubs'}, {rank: 2, suit: 'spades'}, {rank: 2, suit: 'clubs'}], [{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}], successCB));
 
 /***/ },
 /* 354 */

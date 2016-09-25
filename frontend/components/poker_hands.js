@@ -9,7 +9,7 @@ export const RANKS = {
   'Three of a Kind': 4,
   'Two Pair': 3,
   'Pair': 2,
-  'High Card': 1
+  'High card': 1
 };
 
 const LETTER_CARDS = ['Jack', 'Queen', 'King', 'Ace']
@@ -35,6 +35,29 @@ export const handName = (stage, hold) => {
   return ph.bestHandName();
 }
 
+// 'https://poker-odds.p.mashape.com/hold-em/odds?community=5d%2C7c%2CAh&hand=As%2CKd&players=3'
+// 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2'
+
+export const getHandOdds = (stage, hold, success) => {
+  let community = apiFormat(stage);
+  let hand = apiFormat(hold);
+  $.ajax({
+    method: 'GET',
+    data: {},
+    dataType: 'json',
+    url: `https://poker-odds.p.mashape.com/hold-em/odds?community=${community}&hand=${hand}&players=2`,
+    beforeSend: (xhr) => { 
+      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
+      xhr.setRequestHeader('Accept', 'application/json');
+    },
+    success
+  });
+};
+
+// curl --get --include 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2' \
+//   -H 'X-Mashape-Key: 3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP' \
+//   -H 'Accept: application/json'
+
 export const greatestHold = (stage, holds) => {
   let greatistHand = greatestHand(stage, holds);
 
@@ -57,7 +80,6 @@ export const greatestHand = (stage, hands) => {
   
   let greatestHands = []
 
-    // debugger;
   handsSortedByValue.forEach(hand => {
     if (hand.value === greatestValue) {
       greatestHands.push(hand);
@@ -96,6 +118,36 @@ export const tiebreaker = (hands) => {
   return null;
 }
 
+const apiFormat = (cards) => {
+  // debugger;
+  let cardsFormatted = cards.map(card => {
+    return cardFormat(card)
+  });
+
+  return cardsFormatted.join('%2C');
+}
+
+const cardFormat = (card) => {
+  let rank;
+  if (card.rank === 10)
+    rank = convertFaceCard(card.rank.toString());
+  else {
+    rank = convertFaceCard(card.rank.toString())[0];
+  }
+
+  return (rank + card.suit[0])
+}
+
+const separateWithPercent = (values) => {
+  return values.map((value, i) => { if (i !== (values.length - 1)) return `${value}%` }).join('');
+}
+
+
+const convertFaceCard = (rank) => {
+  if (rank > 10) rank = LETTER_CARDS[rank - 11] 
+  return rank;
+}
+
 export class PokerHand {
 
   constructor(stage, hand) {
@@ -116,21 +168,21 @@ export class PokerHand {
     let tb1 = this.bestHand().tiebreakers[0];
     let tb2 = this.bestHand().tiebreakers[1];
 
-    if (tb1 > 10) tb1 = LETTER_CARDS[tb1 - 11];
-    if (tb2 > 10) tb2 = LETTER_CARDS[tb2 - 11];
+    tb1 = convertFaceCard(tb1);
+    tb2 = convertFaceCard(tb2);
 
     switch (rank) {
       case 'Full House':
-        tb = `(${tb1}'s full of ${tb2}'s')`;
+        tb = `(${tb1}s full of ${tb2}s')`;
         break
       case 'Three of a Kind':
-        tb = `(${tb1}'s)`;
+        tb = `(${tb1}s)`;
         break
       case 'Two Pair':
-        tb = `(${tb1}'s and ${tb2}'s )`;
+        tb = `(${tb1}s and ${tb2}s )`;
         break
       case 'Pair':
-        tb = `of ${tb1}'s`;
+        tb = `of ${tb1}s`;
         break
       default:
         tb = `(${tb1} high)`;      
@@ -150,7 +202,7 @@ export class PokerHand {
         return { value, tiebreakers }
 
       } else if(tiebreakers && (value <= 4)) {
-        let sortedSingles = hands['High Card'].sort(sortNumber)
+        let sortedSingles = hands['High card'].sort(sortNumber)
         tiebreakers = tiebreakers.concat(sortedSingles);
 
         return { value, tiebreakers }
@@ -168,7 +220,7 @@ export class PokerHand {
       'Three of a Kind': this.triples(),
       'Two Pair': this.pairs(),
       'Pair': this.doubles(),
-      'High Card': this.singles()
+      'High card': this.singles()
     }
   }
 
@@ -346,3 +398,11 @@ export class PokerHand {
 // );
 
 // console.log("gh:", gh);
+
+// console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
+
+// let successCB = (res) => {
+//   console.log("res.win:", res.win);
+// }
+
+// console.log(getHandOdds([{rank: 7, suit: 'clubs'}, {rank: 2, suit: 'spades'}, {rank: 2, suit: 'clubs'}], [{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}], successCB));
