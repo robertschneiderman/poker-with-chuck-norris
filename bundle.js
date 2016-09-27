@@ -21512,7 +21512,7 @@
 	      // });    
 	      setTimeout(function () {
 	        _this2.setState({ loading: false });
-	      }, 2000);
+	      }, 8000);
 	    }
 	  }, {
 	    key: 'render',
@@ -29665,6 +29665,10 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _reactGsapEnhancer = __webpack_require__(360);
+	
+	var _reactGsapEnhancer2 = _interopRequireDefault(_reactGsapEnhancer);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29685,12 +29689,24 @@
 	  }
 	
 	  _createClass(Logo, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {}
+	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
+	      var _this2 = this;
+	
+	      this.addAnimation(this.initialAnimation);
+	
 	      setTimeout(function () {
-	        $('.logo').addClass('recede');
-	      }, 1000);
-	      this.playSound('nice-meeting-you');
+	        _this2.addAnimation(_this2.elasticGrowAnimation);
+	      }, 300);
+	
+	      setTimeout(function () {
+	        // $('.logo').addClass('recede');    
+	        _this2.addAnimation(_this2.recedeAnimation);
+	      }, 1300);
+	      // this.playSound('nice-meeting-you');    
 	    }
 	  }, {
 	    key: 'playSound',
@@ -29699,11 +29715,41 @@
 	      sound.play();
 	    }
 	  }, {
+	    key: 'addAnimation',
+	    value: function addAnimation(animationSource) {}
+	  }, {
+	    key: 'initialAnimation',
+	    value: function initialAnimation(_ref) {
+	      var target = _ref.target;
+	
+	      var logo = target;
+	      return TweenMax.fromTo(target, .3, { scale: .1 }, { scale: 1.7, ease: Power3.easeIn });
+	    }
+	  }, {
+	    key: 'elasticGrowAnimation',
+	    value: function elasticGrowAnimation(_ref2) {
+	      var target = _ref2.target;
+	
+	      var logo = target;
+	      debugger;
+	      return TweenMax.to(logo, 1, { scale: 3, ease: Elastic.easeOut.config(3, 0.3) });
+	    }
+	  }, {
+	    key: 'recedeAnimation',
+	    value: function recedeAnimation(_ref3) {
+	      var target = _ref3.target;
+	
+	      var logo = target;
+	      //   debugger;
+	
+	      return TweenMax.to(logo, 1, { css: { scale: 1, left: 200, top: 80 } });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'svg',
-	        { className: 'logo animated zoomInDown', xmlns: 'http://www.w3.org/2000/svg', xmlnsXlink: 'http://www.w3.org/1999/xlink', viewBox: '0 0 1173.2 402.6' },
+	        { className: 'logo', xmlns: 'http://www.w3.org/2000/svg', xmlnsXlink: 'http://www.w3.org/1999/xlink', viewBox: '0 0 1173.2 402.6' },
 	        _react2.default.createElement('image', { id: 'chucks-head', overflow: 'visible', width: '173', height: '200', xlinkHref: './images/chuck_norris_head.png', transform: 'translate(228.093 32.71) scale(1.0002)' }),
 	        _react2.default.createElement('path', { fill: '#E980BA', d: 'M220.9 104.8c0 15.6-2.1 27.9-6.4 37-4.3 9-9.8 15.9-16.4 20.6-6.7 4.7-14 7.8-22 9.1-8 1.3-15.6 2-23 2H89.9l-.3 18.4 35 1.1v23.1l-113.1 1.6-.8-27.9 19.2.5v-71.8H6.8L5.3 44.3l140.4 1.1c4.2 0 9 0 14.3.1 5.3.1 10.8.6 16.4 1.6 5.6 1 11.1 2.5 16.4 4.7 5.3 2.2 10.1 5.5 14.2 9.9s7.5 10.1 10 17.1c2.6 7 3.9 15.7 3.9 26zm-59.2 25.3c0-5.4-1.8-9.2-5.4-11.3-3.6-2.1-8.2-3.2-13.8-3.2-3.5 0-8.2 0-14.2.1s-11.8.2-17.6.4c-6.8.2-13.9.3-21.3.3l-.5 31.8c8.6 0 16.5-.1 23.7-.3 6.1 0 12.1 0 18-.1s9.9-.1 12-.1 4.3-.4 6.6-1.3 4.3-2.1 6.2-3.6c1.8-1.5 3.4-3.3 4.6-5.5 1.1-2.2 1.7-4.6 1.7-7.2z' }),
 	        _react2.default.createElement(
@@ -29728,7 +29774,7 @@
 	  return Logo;
 	}(_react2.default.Component);
 	
-	exports.default = Logo;
+	exports.default = (0, _reactGsapEnhancer2.default)()(Logo);
 
 /***/ },
 /* 355 */
@@ -39251,6 +39297,685 @@
 	}(_react2.default.Component);
 	
 	exports.default = Audio;
+
+/***/ },
+/* 360 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _gsapEnhancer = __webpack_require__(361);
+	
+	Object.defineProperty(exports, 'default', {
+	  enumerable: true,
+	  get: function get() {
+	    return _interopRequireDefault(_gsapEnhancer).default;
+	  }
+	});
+	
+	var _createTarget = __webpack_require__(364);
+	
+	Object.defineProperty(exports, 'createTarget', {
+	  enumerable: true,
+	  get: function get() {
+	    return _interopRequireDefault(_createTarget).default;
+	  }
+	});
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	//# sourceMappingURL=index.js.map
+
+/***/ },
+/* 361 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	exports.default = function (animationSourceMap) {
+	  if (animationSourceMap && animationSourceMap.prototype && animationSourceMap.prototype.render) {
+	    var ComposedComponent = animationSourceMap;
+	    return enhance(undefined, ComposedComponent);
+	  } else {
+	    return enhance.bind(undefined, animationSourceMap);
+	  }
+	};
+	
+	var _react = __webpack_require__(1);
+	
+	var _attachRefs = __webpack_require__(362);
+	
+	var _attachRefs2 = _interopRequireDefault(_attachRefs);
+	
+	var _Controller = __webpack_require__(363);
+	
+	var _Controller2 = _interopRequireDefault(_Controller);
+	
+	var _createTarget = __webpack_require__(364);
+	
+	var _createTarget2 = _interopRequireDefault(_createTarget);
+	
+	var _utils = __webpack_require__(365);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	function enhance(animationSourceMap, ComposedComponent) {
+	  var GSAPEnhancer = function (_ComposedComponent) {
+	    _inherits(GSAPEnhancer, _ComposedComponent);
+	
+	    function GSAPEnhancer(props) {
+	      _classCallCheck(this, GSAPEnhancer);
+	
+	      var _this = _possibleConstructorReturn(this, (GSAPEnhancer.__proto__ || Object.getPrototypeOf(GSAPEnhancer)).call(this, props));
+	
+	      _this.addAnimation = function (animationSource, options) {
+	        //if the animation is in the source map the if from there
+	        var sourceMap = _this.__animationSourceMap;
+	        if (sourceMap && sourceMap[animationSource]) {
+	          animationSource = sourceMap[animationSource];
+	        }
+	
+	        if (process.env.NODE_ENV !== 'production') {
+	          if (typeof animationSource !== 'function') {
+	            var error = '[react-gsap-enhancer] animationSource (the first parameter of ' + ('addAnimation(animationSource, options)) has to be a function instead of "' + animationSource + '"');
+	            if (sourceMap) {
+	              error += '\nYou provided a sourceMap so the animationSource also can' + (' be a string key of these: [' + Object.keys(sourceMap) + ']');
+	            }
+	            var name = Object.getPrototypeOf(Object.getPrototypeOf(_this)).constructor.name;
+	            error += '\nCheck out the addAnimation() call in ' + name;
+	            throw Error(error);
+	          }
+	        }
+	
+	        var target = (0, _createTarget2.default)(_this.__itemTree);
+	        var controller = new _Controller2.default(animationSource, options, target, function () {
+	          return (0, _utils.reattachAll)(_this.__itemTree, _this.__runningAnimations);
+	        }, function () {
+	          _this.__runningAnimations.delete(controller);
+	          //rerender the component without the animation
+	          _this.forceUpdate();
+	        });
+	        _this.__runningAnimations.add(controller);
+	        //the animation will be attached on the next render so force the update
+	        _this.forceUpdate();
+	
+	        return controller;
+	      };
+	
+	      _this.__itemTree = new Map();
+	      _this.__runningAnimations = new Set();
+	      _this.__animationSourceMap = animationSourceMap;
+	      return _this;
+	    }
+	
+	    _createClass(GSAPEnhancer, [{
+	      key: 'removeAnimation',
+	      value: function removeAnimation(controller) {
+	        if (process.env.NODE_ENV !== 'production') {
+	          console.warn('[react-gsap-enhancer] component.removeAnimation(controller)' + ' is deprecated. Use just controller.kill() instead!');
+	        }
+	        controller.kill();
+	      }
+	    }, {
+	      key: 'componentDidMount',
+	      value: function componentDidMount() {
+	        (0, _utils.saveRenderedStyles)(this.__itemTree);
+	
+	        if (_get(GSAPEnhancer.prototype.__proto__ || Object.getPrototypeOf(GSAPEnhancer.prototype), 'componentDidMount', this)) {
+	          var _get2;
+	
+	          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
+	          }
+	
+	          (_get2 = _get(GSAPEnhancer.prototype.__proto__ || Object.getPrototypeOf(GSAPEnhancer.prototype), 'componentDidMount', this)).call.apply(_get2, [this].concat(args));
+	        }
+	      }
+	    }, {
+	      key: 'componentWillUpdate',
+	      value: function componentWillUpdate() {
+	        (0, _utils.restoreRenderedStyles)(this.__itemTree);
+	
+	        if (_get(GSAPEnhancer.prototype.__proto__ || Object.getPrototypeOf(GSAPEnhancer.prototype), 'componentWillUpdate', this)) {
+	          var _get3;
+	
+	          for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+	            args[_key2] = arguments[_key2];
+	          }
+	
+	          (_get3 = _get(GSAPEnhancer.prototype.__proto__ || Object.getPrototypeOf(GSAPEnhancer.prototype), 'componentWillUpdate', this)).call.apply(_get3, [this].concat(args));
+	        }
+	      }
+	    }, {
+	      key: 'render',
+	      value: function render() {
+	        var _get4;
+	
+	        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+	          args[_key3] = arguments[_key3];
+	        }
+	
+	        var element = (_get4 = _get(GSAPEnhancer.prototype.__proto__ || Object.getPrototypeOf(GSAPEnhancer.prototype), 'render', this)).call.apply(_get4, [this].concat(args));
+	        if ((0, _react.isValidElement)(element)) {
+	          return (0, _attachRefs2.default)(element, this.__itemTree);
+	        } else {
+	          //let React throwing an error for invalid element
+	          return element;
+	        }
+	      }
+	    }, {
+	      key: 'componentDidUpdate',
+	      value: function componentDidUpdate() {
+	        (0, _utils.saveRenderedStyles)(this.__itemTree);
+	        (0, _utils.attachAll)(this.__runningAnimations);
+	
+	        if (_get(GSAPEnhancer.prototype.__proto__ || Object.getPrototypeOf(GSAPEnhancer.prototype), 'componentDidUpdate', this)) {
+	          var _get5;
+	
+	          for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+	            args[_key4] = arguments[_key4];
+	          }
+	
+	          (_get5 = _get(GSAPEnhancer.prototype.__proto__ || Object.getPrototypeOf(GSAPEnhancer.prototype), 'componentDidUpdate', this)).call.apply(_get5, [this].concat(args));
+	        }
+	      }
+	    }]);
+	
+	    return GSAPEnhancer;
+	  }(ComposedComponent);
+	
+	  //TODO test this
+	  // Class inheritance uses Object.create and because of __proto__ issues
+	  // with IE <10 any static properties of the superclass aren't inherited and
+	  // so need to be manually populated
+	  // See http://babeljs.io/docs/advanced/caveats/#classes-10-and-below-
+	  // var staticKeys = [
+	  //   'defaultProps',
+	  //   'propTypes',
+	  //   'contextTypes',
+	  //   'childContextTypes'
+	  // ]
+	  //
+	  // staticKeys.forEach((key) => {
+	  //   if (ComposedComponent.hasOwnProperty(key)) {
+	  //     GSAPEnhancer[key] = ComposedComponent[key]
+	  //   }
+	  // })
+	
+	  //TODO test this
+	  // if (process.env.NODE_ENV !== 'production') {
+	  //   // This fixes React Hot Loader by exposing the original components top level
+	  //   // prototype methods on the enhanced prototype as discussed in
+	  //   // https://github.com/FormidableLabs/radium/issues/219
+	  //   Object.keys(ComposedComponent.prototype).forEach(key => {
+	  //     if (!GSAPEnhancer.prototype.hasOwnProperty(key)) {
+	  //       var descriptor = Object.getOwnPropertyDescriptor(ComposedComponent.prototype, key)
+	  //       Object.defineProperty(GSAPEnhancer.prototype, key, descriptor)
+	  //     }
+	  //   })
+	  // }
+	
+	  var composedName = ComposedComponent.displayName || ComposedComponent.name || 'Component';
+	  var displayName = 'GSAP(' + composedName + ')';
+	  Object.defineProperty(GSAPEnhancer, 'displayName', { value: displayName, writable: true, configurable: true });
+	
+	  return GSAPEnhancer;
+	}
+	//# sourceMappingURL=gsap-enhancer.js.map
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 362 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	exports.default = attachRefs;
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactDom = __webpack_require__(34);
+	
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function attachRefs(element, itemMap) {
+	  var idx = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+	  var key = element.key;
+	  var previousRef = element.ref;
+	
+	  if (key === null) {
+	    key = idx;
+	  }
+	
+	  if (typeof previousRef === 'string') {
+	    throw Error('[react-gsap-enhancer] On one of the elements you have used a ' + ('string ref ("' + previousRef + '") but react-gsap-enhancer can only handle ') + 'callback refs. Please migrate the string refs to callback refs in the ' + 'enhanced component.\nExample: change <div ref=\'foo\'/> to <div ref={comp => this.foo = comp}/>\nSee also: https://github.com/azazdeaz/react-gsap-enhancer/issues/3');
+	  }
+	
+	  var item;
+	  if (itemMap.has(key)) {
+	    item = itemMap.get(key);
+	  } else {
+	    item = { children: new Map() };
+	    itemMap.set(key, item);
+	  }
+	
+	  if (!item.ref) {
+	    item.ref = function (component) {
+	      var node = _reactDom2.default.findDOMNode(component);
+	      item.props = element.props;
+	      item.node = node;
+	
+	      if (typeof previousRef === 'function') {
+	        previousRef(component);
+	      }
+	    };
+	  }
+	
+	  var originalChildren = element.props.children;
+	  var children = void 0;
+	  if ((typeof originalChildren === 'undefined' ? 'undefined' : _typeof(originalChildren)) !== 'object') {
+	    children = originalChildren;
+	  } else if ((0, _react.isValidElement)(originalChildren)) {
+	    children = cloneChild(originalChildren);
+	  } else {
+	    children = _react.Children.map(originalChildren, function (child, childIdx) {
+	      return cloneChild(child, childIdx);
+	    });
+	  }
+	
+	  function cloneChild(child, childIdx) {
+	    if (_react2.default.isValidElement(child)) {
+	      return attachRefs(child, item.children, childIdx);
+	    } else {
+	      return child;
+	    }
+	  }
+	
+	  return _react2.default.cloneElement(element, { ref: item.ref, children: children });
+	}
+	//# sourceMappingURL=attachRefs.js.map
+
+/***/ },
+/* 363 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Controller = function () {
+	  function Controller(animationSource, options, target, onNeedReattachAllAninmations, remove) {
+	    _classCallCheck(this, Controller);
+	
+	    this._animationSource = animationSource;
+	    this._target = target;
+	    this._options = options;
+	    this._onNeedReattachAllAninmations = onNeedReattachAllAninmations;
+	    this._remove = remove;
+	    this._commandsWaitingForAttach = [];
+	  }
+	
+	  //Not documented. For internal usage. (animachine)
+	
+	
+	  _createClass(Controller, [{
+	    key: 'replaceAnimationSource',
+	    value: function replaceAnimationSource(animationSource) {
+	      if (this._gsapAnimation) {
+	        this._gsapAnimation.kill();
+	        this._gsapAnimation = undefined;
+	        this._animationSource = animationSource;
+	        this._onNeedReattachAllAninmations();
+	      } else {
+	        //it's not attached yet
+	        this._animationSource = animationSource;
+	      }
+	    }
+	  }, {
+	    key: 'attach',
+	    value: function attach() {
+	      var _this = this;
+	
+	      if (this._gsapAnimation) {
+	        var time = this._gsapAnimation.time();
+	        var paused = this._gsapAnimation.paused();
+	        var reversed = this._gsapAnimation.reversed();
+	        this._gsapAnimation.invalidate().restart(false, true) //suppress events
+	        .time(time, true); //suppress events - http://greensock.com/docs/#/HTML5/GSAP/TimelineMax/time/
+	        if (paused) {
+	          this._gsapAnimation.pause(null, true); //suppress events
+	        }
+	        if (reversed) {
+	          this._gsapAnimation.reverse(null, true); //suppress events
+	        }
+	      } else {
+	        this._gsapAnimation = this._animationSource({
+	          target: this._target,
+	          options: this._options
+	        });
+	
+	        if (process.env.NODE_ENV !== 'production') {
+	          if (!this._gsapAnimation || typeof this._gsapAnimation.play !== 'function') {
+	            throw Error('[react-gsap-enhancer] The return value of the animation ' + 'source doesn\'t seems to be a GSAP Animation' + ('\nCheck out this animation source: \n' + this._animationSource) + ('\nbecause it returned this value: ' + this._gsapAnimation) + '\n\n' + 'If you\'re using something like TweenMax.staggerTo() witch returns' + ' an array of GSAP Animations please use Timeline (like' + ' TimelineMax.staggerTo()) instead. It has the same effect' + ' but returns one object.');
+	          }
+	        }
+	      }
+	
+	      this._commandsWaitingForAttach.splice(0).forEach(function (_ref) {
+	        var fnName = _ref.fnName;
+	        var args = _ref.args;
+	        return _this[fnName].apply(_this, _toConsumableArray(args));
+	      });
+	    }
+	  }, {
+	    key: 'kill',
+	    value: function kill() {
+	      if (this._gsapAnimation) {
+	        this._gsapAnimation.kill();
+	      }
+	      this._remove(this);
+	    }
+	  }]);
+	
+	  return Controller;
+	}();
+	
+	exports.default = Controller;
+	
+	
+	var EXPOSED_METHODS = ['currentLabel', 'delay', 'duration', 'endTime', 'eventCallback', 'from', 'fromTo', 'getLabelAfter', 'getLabelArray', 'getLabelBefore', 'getLabelTime', 'invalidate', 'isActive', 'pause', 'paused', 'play', 'progress', 'restart', 'resume', 'reverse', 'reversed', 'seek', 'startTime', 'time', 'timeScale', 'totalDuration', 'totalProgress', 'totalTime', 'tweenFromTo', 'tweenTo'];
+	
+	var ONLY_GETTER_METHODS = ['delay', 'duration', 'startTime', 'totalDuration', 'totalProgress', 'totalTime', 'endTime'];
+	
+	function bindAPI() {
+	  EXPOSED_METHODS
+	  //remove duplications
+	  .filter(function (item, pos, arr) {
+	    return arr.indexOf(item) === pos;
+	  }).forEach(function (fnName) {
+	    Controller.prototype[fnName] = function () {
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
+	      }
+	
+	      var result = void 0;
+	      var onlyGetter = ONLY_GETTER_METHODS.indexOf(fnName) !== -1;
+	
+	      if (!this._gsapAnimation) {
+	        //if the animation doesn't attached yet, schedule the API call
+	        this._commandsWaitingForAttach.push({ fnName: fnName, args: args });
+	      } else if (typeof this._gsapAnimation[fnName] === 'function') {
+	        var _gsapAnimation;
+	
+	        if (process.env.NODE_ENV !== 'production') {
+	          if (onlyGetter && args.length !== 0) {
+	            console.warn('[react-gsap-enhancer] controller.' + fnName + ' is only a getter ' + 'but it looks like you tried to use as a getter by calling ' + ('it with the following arguments: "' + args + '"'));
+	          }
+	        }
+	
+	        result = onlyGetter ? this._gsapAnimation[fnName]() : (_gsapAnimation = this._gsapAnimation)[fnName].apply(_gsapAnimation, args);
+	      } else {
+	        throw Error('[react-gsap-enhancer] Animation source has no method: \'' + fnName + '.\'' + '\nYou maybe tryed to use an only TweenMax method on TweenLite instance' + '\nCheck GSAP docs for more detailes: http://greensock.com/docs/#/HTML5/GSAP/');
+	      }
+	      return result === this._gsapAnimation ? this : result;
+	    };
+	  });
+	}
+	bindAPI();
+	//# sourceMappingURL=Controller.js.map
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 364 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = createTarget;
+	function find(selection, selector) {
+	  var result = [];
+	
+	  selection.forEach(function (item) {
+	    var match = void 0;
+	
+	    recurseChildren(item, function (childItem) {
+	      if (!match && testSelector(childItem, selector)) {
+	        match = childItem;
+	      }
+	    });
+	
+	    if (match) {
+	      result.push(match);
+	    }
+	  });
+	
+	  return convertToTarget(result);
+	}
+	
+	function findAll(selection, selector) {
+	  var result = [];
+	
+	  selection.forEach(function (item) {
+	    return recurseChildren(item, function (childItem) {
+	      if (testSelector(childItem, selector)) {
+	        result.push(childItem);
+	      }
+	    });
+	  });
+	  return convertToTarget(result);
+	}
+	
+	function findInChildren(selection, selector) {
+	  var result = [];
+	
+	  selection.forEach(function (item) {
+	    var match = void 0;
+	    iterateChildren(item, function (childItem) {
+	      if (!match && testSelector(childItem, selector)) {
+	        match = childItem;
+	      }
+	    });
+	
+	    if (match) {
+	      result.push(match);
+	    }
+	  });
+	
+	  return convertToTarget(result);
+	}
+	
+	function findAllInChildren(selection, selector) {
+	  var result = [];
+	
+	  selection.forEach(function (item) {
+	    return iterateChildren(item, function (childItem) {
+	      if (testSelector(childItem, selector)) {
+	        result.push(childItem);
+	      }
+	    });
+	  });
+	  return convertToTarget(result);
+	}
+	
+	function findWithCommands(target, commands) {
+	  commands.forEach(function (command) {
+	    if (!target[command.type]) {
+	      throw Error("[react-gsap-enhancer] unknown command type \"" + target[command.type] + "\"");
+	    }
+	    target = target[command.type](command.selector);
+	  });
+	  return target;
+	}
+	
+	function isMounted(item) {
+	  return !!item.node;
+	}
+	
+	function testSelector(childItem) {
+	  var selector = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	
+	  return Object.keys(selector).every(function (selectorKey) {
+	    return selector[selectorKey] === childItem.props[selectorKey];
+	  });
+	}
+	
+	function iterateChildren(item, callback) {
+	  item.children.forEach(function (childItem) {
+	    if (isMounted(childItem)) {
+	      callback(childItem);
+	    }
+	  });
+	}
+	
+	function recurseChildren(item, callback) {
+	  iterateChildren(item, function (childItem) {
+	    callback(childItem);
+	    recurseChildren(childItem, callback);
+	  });
+	}
+	
+	function convertToTarget(selection) {
+	  var target = selection.map(function (item) {
+	    return item.node;
+	  }).filter(function (node) {
+	    return !!node;
+	  });
+	
+	  target.find = function (selector) {
+	    return find(selection, selector);
+	  };
+	  target.findAll = function (selector) {
+	    return findAll(selection, selector);
+	  };
+	  target.findInChildren = function (selector) {
+	    return findInChildren(selection, selector);
+	  };
+	  target.findAllInChildren = function (selector) {
+	    return findAllInChildren(selection, selector);
+	  };
+	  target.findWithCommands = function (commands) {
+	    return findWithCommands(target, commands);
+	  };
+	
+	  return target;
+	}
+	
+	function createTarget(itemTree) {
+	  var target = convertToTarget([{ children: itemTree }]);
+	  //call find so target will refer to the first node which should be the root
+	  return target.find();
+	}
+	//# sourceMappingURL=createTarget.js.map
+
+/***/ },
+/* 365 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.walkItemTree = walkItemTree;
+	exports.reattachAll = reattachAll;
+	exports.attachAll = attachAll;
+	exports.restoreRenderedStyles = restoreRenderedStyles;
+	exports.saveRenderedStyles = saveRenderedStyles;
+	function walkItemTree(itemTree, callback) {
+	  function walk(map) {
+	    map.forEach(function (item) {
+	      if (item.node) {
+	        callback(item);
+	        if (item.children) {
+	          walk(item.children);
+	        }
+	      }
+	    });
+	  }
+	  walk(itemTree);
+	}
+	
+	function reattachAll(itemTree, runningAnimations) {
+	  restoreRenderedStyles(itemTree);
+	  attachAll(runningAnimations);
+	}
+	
+	function attachAll(runningAnimations) {
+	  runningAnimations.forEach(function (animation) {
+	    return animation.attach();
+	  });
+	}
+	
+	function restoreRenderedStyles(itemTree) {
+	  walkItemTree(itemTree, function (item) {
+	    var savedAttributeNames = Object.keys(item.savedAttributes || {});
+	    //restore the original attribute values
+	    savedAttributeNames.forEach(function (name) {
+	      item.node.setAttribute(name, item.savedAttributes[name]);
+	    });
+	    //remove the attributes added after the render
+	    for (var i = 0; i < item.node.attributes.length; ++i) {
+	      var name = item.node.attributes[i].name;
+	      if (savedAttributeNames.indexOf(name) === -1) {
+	        item.node.removeAttribute(name);
+	        --i;
+	      }
+	    }
+	  });
+	}
+	
+	function saveRenderedStyles(itemTree) {
+	  walkItemTree(itemTree, function (item) {
+	    item.savedAttributes = {};
+	    for (var i = 0; i < item.node.attributes.length; ++i) {
+	      var attribute = item.node.attributes[i];
+	      var name = attribute.name;
+	      var value = attribute.value;
+	      item.savedAttributes[name] = value;
+	    }
+	    item.node._gsTransform = null;
+	    item.node._gsTweenID = null;
+	  });
+	}
+	//# sourceMappingURL=utils.js.map
 
 /***/ }
 /******/ ]);
