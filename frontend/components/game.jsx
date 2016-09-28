@@ -411,17 +411,17 @@ class Game extends React.Component {
               pot={this.state.pot} 
               cards={this.state.stage} />
           </div>
-          <Interface
-            nextSet={this.nextSet.bind(this)}
-            setOver={this.state.setOver}           
-            round={this.state.round}
-            turn={this.state.turn}
-            players={this.state.players}
-            callOrCheck={this.callOrCheck.bind(this)}
-            fold={this.fold.bind(this)}
-            message={this.state.message}
-            raise={this.raise.bind(this)} />
         </main>
+        <Interface
+          nextSet={this.nextSet.bind(this)}
+          setOver={this.state.setOver}           
+          round={this.state.round}
+          turn={this.state.turn}
+          players={this.state.players}
+          callOrCheck={this.callOrCheck.bind(this)}
+          fold={this.fold.bind(this)}
+          message={this.state.message}
+          raise={this.raise.bind(this)} />
         <Message message={this.state.message} />
       </div>
     );

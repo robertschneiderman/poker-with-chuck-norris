@@ -71,12 +71,13 @@ class Player extends React.Component {
           <div className="player-stake">{player.stake}</div>
           <div className={this.dealerClass}>D</div>
 
+          <img className="player-avatar" src={avatarLink} alt=""/>
+          
           <div className="player-info">
             <p className="player-name">{player.name}</p>
             <p className="player-worth">{player.bank}</p>
           </div>
 
-          <img className="player-avatar" src={avatarLink} alt=""/>
         </div>
 
         <div className="player-hold">

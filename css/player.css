@@ -30,7 +30,7 @@
 .player-0 .dealer {top: -2.5rem;}
 
 .player-1 {
-  top: 0;
+  top: -53px;
   left: 50%;
   transform: translateX(-50%);
   position: absolute;
