@@ -4,9 +4,9 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate3d(-50%, -50%, 0); 
+  transform: translate3d(-50%, -50%, 0);
   z-index: 8000;
-  width: 16.5rem;
+  width: 11.5rem;
 }
 
 .logo #chucks-head {

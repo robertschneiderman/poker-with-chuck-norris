@@ -23169,6 +23169,10 @@
 	
 	var _player2 = _interopRequireDefault(_player);
 	
+	var _player_display = __webpack_require__(366);
+	
+	var _player_display2 = _interopRequireDefault(_player_display);
+	
 	var _stage = __webpack_require__(200);
 	
 	var _stage2 = _interopRequireDefault(_stage);
@@ -23266,7 +23270,7 @@
 	    _this.state.players[0].bank = 1000;
 	    _this.state.players[0].name = 'You';
 	    _this.state.players[1].bank = 1000;
-	    _this.state.players[1].name = 'Chuck Norris';
+	    _this.state.players[1].name = 'Chuck';
 	
 	    window.state = _this.state;
 	    return _this;
@@ -23660,6 +23664,8 @@
 	              cards: this.state.stage })
 	          )
 	        ),
+	        _react2.default.createElement(_player_display2.default, { player: this.state.players[0] }),
+	        _react2.default.createElement(_player_display2.default, { player: this.state.players[1] }),
 	        _react2.default.createElement(_interface2.default, {
 	          nextSet: this.nextSet.bind(this),
 	          setOver: this.state.setOver,
@@ -23737,7 +23743,7 @@
 	  }, {
 	    key: 'getDealerClass',
 	    value: function getDealerClass() {
-	      this.dealerClass = this.props.dealer === this.props.num ? 'dealer' : 'hidden';
+	      this.dealerClass = this.props.dealer === this.props.num ? 'dealer' : 'none';
 	    }
 	  }, {
 	    key: 'getCardClasses',
@@ -29488,7 +29494,7 @@
 	    key: 'pairs',
 	    value: function pairs() {
 	      var doubles = this.doubles();
-	      if (doubles.length === 2) {
+	      if (doubles.length >= 2) {
 	        return doubles;
 	      }
 	      return false;
@@ -29518,7 +29524,7 @@
 	
 	      var uniqueVals = (0, _lodash.uniq)(finds);
 	      if (uniqueVals.length > 0) {
-	        return uniqueVals.sort(sortNumber);
+	        return uniqueVals.sort(sortNumber).slice(0, 2);
 	      } else {
 	        return false;
 	      }
@@ -29569,19 +29575,9 @@
 	
 	// ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 	
-	// let gh = greatestHand(
-	//   [{rank: 6, suit: 'clubs'},
-	//   {rank: 7, suit: 'clubs'},
-	//   {rank: 2, suit: 'spades'},
-	//   {rank: 2, suit: 'clubs'},
-	//   {rank: 10, suit: 'hearts'}],
-	//   [[{rank: 12, suit: 'spades' },
-	//   {rank: 5, suit: 'hearts'}],
-	//   [{rank: 8, suit: 'diamonds'},
-	//   {rank: 9, suit: 'clubs'}]]
-	// );
+	var gh = greatestHand([{ rank: 6, suit: 'clubs' }, { rank: 7, suit: 'clubs' }, { rank: 2, suit: 'spades' }, { rank: 2, suit: 'clubs' }, { rank: 6, suit: 'hearts' }], [[{ rank: 7, suit: 'spades' }, { rank: 9, suit: 'hearts' }], [{ rank: 12, suit: 'diamonds' }, { rank: 13, suit: 'clubs' }]]);
 	
-	// console.log("gh:", gh);
+	console.log("gh:", gh);
 	
 	// console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
 	
@@ -39008,7 +39004,6 @@
 	      var target = _ref2.target;
 	
 	      var logo = target;
-	      debugger;
 	      return TweenMax.to(logo, 1, { scale: 3, ease: Elastic.easeOut.config(3, 0.3) });
 	    }
 	  }, {
@@ -39019,7 +39014,7 @@
 	      var logo = target;
 	      //   debugger;
 	
-	      return TweenMax.to(logo, 1, { css: { scale: 1, left: 200, top: 80 } });
+	      return TweenMax.to(logo, 1, { css: { scale: 1, left: 160, top: 60 } });
 	    }
 	  }, {
 	    key: 'render',
@@ -39976,6 +39971,68 @@
 	}(_react2.default.Component);
 	
 	exports.default = Interface;
+
+/***/ },
+/* 366 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	// import Container from './/_container';
+	
+	var PlayerDisplay = function (_React$Component) {
+	  _inherits(PlayerDisplay, _React$Component);
+	
+	  function PlayerDisplay(props) {
+	    _classCallCheck(this, PlayerDisplay);
+	
+	    return _possibleConstructorReturn(this, (PlayerDisplay.__proto__ || Object.getPrototypeOf(PlayerDisplay)).call(this, props));
+	  }
+	
+	  _createClass(PlayerDisplay, [{
+	    key: 'render',
+	    value: function render() {
+	      var className = this.props.player.name === 'You' ? "player-info outer you" : "player-info outer chuck";
+	
+	      return _react2.default.createElement(
+	        'div',
+	        { className: className },
+	        _react2.default.createElement(
+	          'p',
+	          { className: 'player-name' },
+	          this.props.player.name
+	        ),
+	        _react2.default.createElement(
+	          'p',
+	          { className: 'player-worth' },
+	          this.props.player.bank
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return PlayerDisplay;
+	}(_react2.default.Component);
+	
+	exports.default = PlayerDisplay;
 
 /***/ }
 /******/ ]);

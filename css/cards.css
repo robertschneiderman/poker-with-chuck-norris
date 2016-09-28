@@ -1,9 +1,10 @@
 :root {
-  --mult: .95;
+  --stageCard: .95;
+  --playerCard: .85;
 }
 
 .player-hold .card:first-child {
-  margin-right: 1rem;
+  margin-right: 0.4rem;
 }
 
 .card {
@@ -11,8 +12,8 @@
   display: inline-block;
   /* left: -1.9375rem; */
   /* top: -2.75rem; */
-  width: calc(4.875rem * var(--mult));
-  height: calc(6.919rem * var(--mult));
+  width: calc(4.875rem * var(--stageCard));
+  height: calc(6.919rem * var(--stageCard));
   background-color: #fff;
   -webkit-border-radius: 4px;
   border-radius: 4px;
@@ -20,6 +21,21 @@
   box-shadow: 0 1px 1px rgba(0,0,0,0.15);
   cursor: default;
 }
+
+.player-hold .card {
+  width: calc(4.875rem * var(--playerCard));
+  height: calc(6.919rem * var(--playerCard));
+}
+
+.player-hold .card.back:nth-child(2) {
+  left: -3rem;
+  top: 0.5rem;
+}
+
+.player-0 .player-hold {
+  top: 0;
+}
+
 .card:before,
 .card:after {
   position: absolute;

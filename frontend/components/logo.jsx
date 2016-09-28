@@ -42,7 +42,6 @@ class Logo extends React.Component {
 
   elasticGrowAnimation({target}) {
     let logo = target;
-    debugger;
     return TweenMax.to(logo, 1, {scale: 3, ease: Elastic.easeOut.config(3, 0.3)});
   }
 
@@ -50,7 +49,7 @@ class Logo extends React.Component {
     let logo = target;
   //   debugger;
 
-    return TweenMax.to(logo, 1, {css: {scale: 1, left:200, top:80} });
+    return TweenMax.to(logo, 1, {css: {scale: 1, left:160, top:60} });
   }   
 
   render() {

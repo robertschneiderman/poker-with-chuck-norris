@@ -1,5 +1,6 @@
 import React from 'react';
 import Player from './player/player';
+import PlayerDisplay from './player/player_display';
 import Stage from './stage/stage';
 import Modal from './player/modal';
 import Message from './message';
@@ -55,7 +56,7 @@ class Game extends React.Component {
     this.state.players[0].bank = 1000;
     this.state.players[0].name = 'You';
     this.state.players[1].bank = 1000;
-    this.state.players[1].name = 'Chuck Norris';
+    this.state.players[1].name = 'Chuck';
     
     window.state = this.state;
   }
@@ -388,6 +389,7 @@ class Game extends React.Component {
     window.state = this.state;
     return(
       <div className="game">
+
         <main className="main">
           <div className="table">
             <Modal gameOver={this.state.gameOver} />
@@ -412,6 +414,10 @@ class Game extends React.Component {
               cards={this.state.stage} />
           </div>
         </main>
+
+        <PlayerDisplay player={this.state.players[0]} />
+        <PlayerDisplay player={this.state.players[1]} />
+
         <Interface
           nextSet={this.nextSet.bind(this)}
           setOver={this.state.setOver}           

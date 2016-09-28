@@ -319,7 +319,7 @@ export class PokerHand {
 
   pairs() {
     let doubles = this.doubles();
-    if (doubles.length === 2) {
+    if (doubles.length >= 2) {
       return doubles;
     }
     return false;
@@ -344,7 +344,7 @@ export class PokerHand {
 
     let uniqueVals = uniq(finds);
     if (uniqueVals.length > 0) {
-      return uniqueVals.sort(sortNumber);
+      return uniqueVals.sort(sortNumber).slice(0, 2);
     } else {
       return false;
     }
@@ -385,19 +385,19 @@ export class PokerHand {
 
 // ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 
-// let gh = greatestHand(
-//   [{rank: 6, suit: 'clubs'},
-//   {rank: 7, suit: 'clubs'},
-//   {rank: 2, suit: 'spades'},
-//   {rank: 2, suit: 'clubs'},
-//   {rank: 10, suit: 'hearts'}],
-//   [[{rank: 12, suit: 'spades' },
-//   {rank: 5, suit: 'hearts'}],
-//   [{rank: 8, suit: 'diamonds'},
-//   {rank: 9, suit: 'clubs'}]]
-// );
+let gh = greatestHand(
+  [{rank: 6, suit: 'clubs'},
+  {rank: 7, suit: 'clubs'},
+  {rank: 2, suit: 'spades'},
+  {rank: 2, suit: 'clubs'},
+  {rank: 6, suit: 'hearts'}],
+  [[{rank: 7, suit: 'spades' },
+  {rank: 9, suit: 'hearts'}],
+  [{rank: 12, suit: 'diamonds'},
+  {rank: 13, suit: 'clubs'}]]
+);
 
-// console.log("gh:", gh);
+console.log("gh:", gh);
 
 // console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
 

@@ -24,7 +24,7 @@ class Player extends React.Component {
   }
 
   getDealerClass() {
-    this.dealerClass = (this.props.dealer === this.props.num) ? 'dealer' : 'hidden'
+    this.dealerClass = (this.props.dealer === this.props.num) ? 'dealer' : 'none'
   }
 
   getCardClasses() {
@@ -72,7 +72,7 @@ class Player extends React.Component {
           <div className={this.dealerClass}>D</div>
 
           <img className="player-avatar" src={avatarLink} alt=""/>
-          
+
           <div className="player-info">
             <p className="player-name">{player.name}</p>
             <p className="player-worth">{player.bank}</p>
