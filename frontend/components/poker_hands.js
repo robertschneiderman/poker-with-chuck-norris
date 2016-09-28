@@ -343,9 +343,11 @@ export class PokerHand {
     });
 
     let uniqueVals = uniq(finds);
-    if (uniqueVals.length > 0) {
+    if (uniqueVals.length > 2) {
       return uniqueVals.sort(sortNumber).slice(0, 2);
-    } else {
+    } else if (uniqueVals.length > 0)
+      return uniqueVals.sort(sortNumber)    
+    else {
       return false;
     }
   }  
@@ -386,7 +388,7 @@ export class PokerHand {
 // ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 
 let gh = greatestHand(
-  [{rank: 6, suit: 'clubs'},
+  [{rank: 9, suit: 'clubs'},
   {rank: 7, suit: 'clubs'},
   {rank: 2, suit: 'spades'},
   {rank: 2, suit: 'clubs'},
