@@ -23706,6 +23706,10 @@
 	
 	var _player_tag2 = _interopRequireDefault(_player_tag);
 	
+	var _counter = __webpack_require__(517);
+	
+	var _counter2 = _interopRequireDefault(_counter);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23784,7 +23788,19 @@
 	
 	      var avatarLink = this.props.num === 0 ? "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" : "http://res.cloudinary.com/stellar-pixels/image/upload/v1474005893/chuck-norris_loijrf.jpg";
 	
-	      // <p className={this.messageClass}>{this.props.message}</p>
+	      var oldBank = 1000;
+	
+	      debugger;
+	
+	      if (parseInt(document.querySelectorAll('.player-worth')[this.props.turn])) {
+	        if (oldBank === player.bank) {
+	          oldBank = oldBank.innerHTML;
+	        }
+	        var oldStake = parseInt(document.querySelectorAll('.player-stake')[this.props.turn].innerHTML);
+	      }
+	      // <p className="player-worth">{player.bank}</p>
+	
+	
 	      return _react2.default.createElement(
 	        'li',
 	        { className: this.playerClass },
@@ -23810,11 +23826,7 @@
 	              { className: 'player-name' },
 	              player.name
 	            ),
-	            _react2.default.createElement(
-	              'p',
-	              { className: 'player-worth' },
-	              player.bank
-	            )
+	            _react2.default.createElement(_counter2.default, { begin: oldBank, end: player.bank })
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -23956,6 +23968,11 @@
 	      return _react2.default.createElement(
 	        "section",
 	        { className: "stage" },
+	        _react2.default.createElement(
+	          "p",
+	          { className: "stage-pot" },
+	          this.props.pot
+	        ),
 	        _react2.default.createElement(
 	          "ul",
 	          { className: "stage-cards" },
@@ -29575,9 +29592,19 @@
 	
 	// ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 	
-	var gh = greatestHand([{ rank: 9, suit: 'clubs' }, { rank: 7, suit: 'clubs' }, { rank: 2, suit: 'spades' }, { rank: 2, suit: 'clubs' }, { rank: 6, suit: 'hearts' }], [[{ rank: 7, suit: 'spades' }, { rank: 9, suit: 'hearts' }], [{ rank: 12, suit: 'diamonds' }, { rank: 13, suit: 'clubs' }]]);
+	// let gh = greatestHand(
+	//   [{rank: 9, suit: 'clubs'},
+	//   {rank: 7, suit: 'clubs'},
+	//   {rank: 2, suit: 'spades'},
+	//   {rank: 2, suit: 'clubs'},
+	//   {rank: 6, suit: 'hearts'}],
+	//   [[{rank: 7, suit: 'spades' },
+	//   {rank: 9, suit: 'hearts'}],
+	//   [{rank: 12, suit: 'diamonds'},
+	//   {rank: 13, suit: 'clubs'}]]
+	// );
 	
-	console.log("gh:", gh);
+	// console.log("gh:", gh);
 	
 	// console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
 	
@@ -40033,6 +40060,228 @@
 	}(_react2.default.Component);
 	
 	exports.default = PlayerDisplay;
+
+/***/ },
+/* 367 */,
+/* 368 */,
+/* 369 */,
+/* 370 */,
+/* 371 */,
+/* 372 */,
+/* 373 */,
+/* 374 */,
+/* 375 */,
+/* 376 */,
+/* 377 */,
+/* 378 */,
+/* 379 */,
+/* 380 */,
+/* 381 */,
+/* 382 */,
+/* 383 */,
+/* 384 */,
+/* 385 */,
+/* 386 */,
+/* 387 */,
+/* 388 */,
+/* 389 */,
+/* 390 */,
+/* 391 */,
+/* 392 */,
+/* 393 */,
+/* 394 */,
+/* 395 */,
+/* 396 */,
+/* 397 */,
+/* 398 */,
+/* 399 */,
+/* 400 */,
+/* 401 */,
+/* 402 */,
+/* 403 */,
+/* 404 */,
+/* 405 */,
+/* 406 */,
+/* 407 */,
+/* 408 */,
+/* 409 */,
+/* 410 */,
+/* 411 */,
+/* 412 */,
+/* 413 */,
+/* 414 */,
+/* 415 */,
+/* 416 */,
+/* 417 */,
+/* 418 */,
+/* 419 */,
+/* 420 */,
+/* 421 */,
+/* 422 */,
+/* 423 */,
+/* 424 */,
+/* 425 */,
+/* 426 */,
+/* 427 */,
+/* 428 */,
+/* 429 */,
+/* 430 */,
+/* 431 */,
+/* 432 */,
+/* 433 */,
+/* 434 */,
+/* 435 */,
+/* 436 */,
+/* 437 */,
+/* 438 */,
+/* 439 */,
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */,
+/* 464 */,
+/* 465 */,
+/* 466 */,
+/* 467 */,
+/* 468 */,
+/* 469 */,
+/* 470 */,
+/* 471 */,
+/* 472 */,
+/* 473 */,
+/* 474 */,
+/* 475 */,
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */,
+/* 480 */,
+/* 481 */,
+/* 482 */,
+/* 483 */,
+/* 484 */,
+/* 485 */,
+/* 486 */,
+/* 487 */,
+/* 488 */,
+/* 489 */,
+/* 490 */,
+/* 491 */,
+/* 492 */,
+/* 493 */,
+/* 494 */,
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */,
+/* 499 */,
+/* 500 */,
+/* 501 */,
+/* 502 */,
+/* 503 */,
+/* 504 */,
+/* 505 */,
+/* 506 */,
+/* 507 */,
+/* 508 */,
+/* 509 */,
+/* 510 */,
+/* 511 */,
+/* 512 */,
+/* 513 */,
+/* 514 */,
+/* 515 */,
+/* 516 */,
+/* 517 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	// import Container from './/_container';
+	
+	var Counter = function (_React$Component) {
+	  _inherits(Counter, _React$Component);
+	
+	  function Counter(props) {
+	    _classCallCheck(this, Counter);
+	
+	    var _this = _possibleConstructorReturn(this, (Counter.__proto__ || Object.getPrototypeOf(Counter)).call(this, props));
+	
+	    _this.state = { bank: _this.props.begin };
+	    _this.interval = setInterval(_this.update.bind(_this), 5);
+	    return _this;
+	  }
+	
+	  _createClass(Counter, [{
+	    key: "update",
+	    value: function update() {
+	      // let to;
+	      if (this.state.bank === this.props.end) return;
+	      // debugger;
+	      else if (this.state.bank < this.props.end) {
+	
+	          this.setState({
+	            bank: this.state.bank + 1
+	          });
+	        } else {
+	          this.setState({
+	            bank: this.state.bank - 1
+	          });
+	        }
+	    }
+	  }, {
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "div",
+	        { className: "player-worth" },
+	        this.state.bank
+	      );
+	    }
+	  }]);
+	
+	  return Counter;
+	}(_react2.default.Component);
+	
+	exports.default = Counter;
 
 /***/ }
 /******/ ]);

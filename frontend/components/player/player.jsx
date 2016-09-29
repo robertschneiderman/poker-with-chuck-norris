@@ -1,5 +1,7 @@
 import React from 'react';
 import PlayerTag from './player_tag';
+import Counter from './counter';
+
 
 class Player extends React.Component {
 
@@ -62,8 +64,19 @@ class Player extends React.Component {
 
     let avatarLink = (this.props.num === 0) ? "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" : "http://res.cloudinary.com/stellar-pixels/image/upload/v1474005893/chuck-norris_loijrf.jpg";
 
+    let oldBank = 1000;
 
-          // <p className={this.messageClass}>{this.props.message}</p>
+    debugger;
+
+    if (parseInt(document.querySelectorAll('.player-worth')[this.props.turn])) {
+      if (oldBank === player.bank) {
+        oldBank = oldBank.innerHTML;
+      }
+      let oldStake = parseInt(document.querySelectorAll('.player-stake')[this.props.turn].innerHTML);
+    }
+            // <p className="player-worth">{player.bank}</p>
+
+
     return(
       <li className={this.playerClass}>
 
@@ -75,7 +88,7 @@ class Player extends React.Component {
 
           <div className="player-info">
             <p className="player-name">{player.name}</p>
-            <p className="player-worth">{player.bank}</p>
+            <Counter begin={oldBank} end={player.bank} />
           </div>
 
         </div>
