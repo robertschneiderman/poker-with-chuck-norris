@@ -66,8 +66,6 @@ class Player extends React.Component {
 
     let oldBank = 1000;
 
-    debugger;
-
     if (parseInt(document.querySelectorAll('.player-worth')[this.props.turn])) {
       if (oldBank === player.bank) {
         oldBank = oldBank.innerHTML;

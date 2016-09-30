@@ -144,6 +144,8 @@ class Game extends React.Component {
       }
     });
 
+    (winningPlayer.name === 'You') ? this.playSound('win-sound') : this.playSound('lose-sound');
+
     let message = `${winningPlayer.name} won! ${winningPlayer.hand} over ${losingPlayer.hand}`;
     this.setState({players}, this.displayWinner.bind(this, message));
   }
@@ -243,7 +245,7 @@ class Game extends React.Component {
   aiFormulateMove() {
     if (this.state.turn !== 1) return;
 
-    let randomNumber = Math.floor(Math.random() * 5);
+    let randomNumber = Math.floor(Math.random() * 1);
 
     // implement a confidence factor based on how much human player bets... bluff only when safe...
 
@@ -252,23 +254,13 @@ class Game extends React.Component {
     } else if (randomNumber === 1) {
       setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
     } else {
-      let odds = getHandOdds(this.state.stage, this.state.players[1].hold, this.aiMove.bind(this));
+      // let odds = getHandOdds(this.state.stage, this.state.players[1].hold, this.aiMove.bind(this));
     }
   }
 
   smartMove(odds) {
     // return (this.state.players[1].pot * odds); 
   }  
-
-  aiFormulateMoveDEPRECATED() {
-    let randomIndeces = [0, 0, 0, 0, 1, 1, 1];
-    let randomIndex = randomIndeces[Math.floor(Math.random() * randomIndeces.length)];
-
-    let moves = [this.callOrCheck, this.raise, this.fold]
-    let randomMove = moves[randomIndex];    
-
-    return randomMove;
-  }
 
   callOrCheck() {
     let newState = merge({}, this.state);
@@ -277,16 +269,19 @@ class Game extends React.Component {
     let otherStake = newState.players[this.otherIndex()].stake;
 
     let message = 'Checked';
+    let sound = 'checked-sound';
 
     if (oldStake < otherStake) {
       newState.players[turnStr].stake = otherStake;
       newState.players[turnStr].bank -= (otherStake - oldStake);
       
       message = 'Called';
-      this.playSound('call-sound');
+      sound = 'called-sound';
     } else {
       // this.playSound('check-sound');
     }
+
+    this.playSound(sound);
 
     this.setState(newState, this.displayMessage.bind(this, message));
   }

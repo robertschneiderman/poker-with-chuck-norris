@@ -25,15 +25,29 @@ class Audio extends React.Component {
           <source src="./audio/raise.wav" />
         </audio>
         
-        <audio id="call-sound">
+        <audio id="called-sound">
           <source src="./audio/call.mp3" />
           <source src="./audio/call.wav" />
         </audio>
+
+        <audio id="checked-sound">
+          <source src="./audio/check.mp3" />
+          <source src="./audio/check.wav" />
+        </audio>        
         
         <audio id="next-card-sound">
-          <source src="./audio/next-card.mp3" />
           <source src="./audio/next-card.wav" />
         </audio>
+
+        <audio id="win-sound">
+          <source src="./audio/win_money.mp3" />
+          <source src="./audio/win_money.wav" />
+        </audio>
+
+        <audio id="lose-sound">
+          <source src="./audio/lose_money.mp3" />
+          <source src="./audio/lose_money.wav" />
+        </audio>                
       </div>
     )
   }
