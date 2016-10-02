@@ -62,6 +62,7 @@ class Message extends React.Component {
     return(
       <div className={messageContainerClass}>
         <svg className="message raised"></svg>
+        <svg className="message reraised"></svg>
         <svg className="message called"></svg>
         <svg className="message checked"></svg>
         <svg className="message folded"></svg>

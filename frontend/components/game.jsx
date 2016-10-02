@@ -11,6 +11,7 @@ import merge from 'lodash/merge';
 import uniq from 'lodash/uniq';
 import drop from 'lodash/drop';
 import take from 'lodash/take';
+import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
@@ -60,6 +61,40 @@ class Game extends React.Component {
     this.state.players[1].name = 'Chuck';
     
     window.state = this.state;
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', debounce(e => {
+      this.handleKeypress(e);
+    }, 250));
+  }
+
+  handleKeypress(e) {
+    debugger;
+    if ((this.state.turn === 0) && (this.state.round !== 0)) {
+      switch(e.key) {
+        case 'r':
+          this.raise();
+          break;
+        case 'f': 
+          this.fold();
+          break;
+        case 'c':
+          this.callOrCheck();
+          break;
+        default:
+          break;
+      }
+    }
+    if ((this.state.round === 0) || (this.state.setOver)) {
+      switch(e.key) {
+        case 'd':
+          this.nextSet();
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   nextSet() {
@@ -311,14 +346,13 @@ class Game extends React.Component {
 
     let message = 'Reraised';
 
-    
 
     if (highestStake === 0) {
       svgMessages.raised();
-    }
-
-    if ( (this.state.round === 1) && ((otherPlayerStake === 25) || (otherPlayerStake === 50)) ) {
+    } else if ( (this.state.round === 1) && ((otherPlayerStake === 25) || (otherPlayerStake === 50)) ) {
       svgMessages.raised();    
+    } else {
+      svgMessages.reraised();
     }
     
     this.setState(newState, this.displayMessage.bind(this, message));

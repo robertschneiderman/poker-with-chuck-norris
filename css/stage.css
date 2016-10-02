@@ -30,6 +30,10 @@
   width: 390px;
 }
 
+.reraised {
+  width: 520px;
+}
+
 .called {
   width: 390px;  
 }
@@ -43,10 +47,12 @@
 }
 
 .chuck-won {
+  height: 240px;
   width: 708px;
 }
 
 .you-won {
+  height: 227px;  
   width: 223px;
 }
 
