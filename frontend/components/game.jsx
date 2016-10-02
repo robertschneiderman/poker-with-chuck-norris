@@ -39,6 +39,7 @@ const defaultState = {
   stage: [],
   looped: false,
   message: '',
+  subMessage: '',
   setOver: false,
   gameOver: false,
   playerAllIn: false,
@@ -70,7 +71,6 @@ class Game extends React.Component {
   }
 
   handleKeypress(e) {
-    debugger;
     if ((this.state.turn === 0) && (this.state.round !== 0)) {
       switch(e.key) {
         case 'r':
@@ -180,10 +180,16 @@ class Game extends React.Component {
       }
     });
 
-    (winningPlayer.name === 'You') ? this.playSound('win-sound') : this.playSound('lose-sound');
+    if (winningPlayer.name === 'You') {
+      this.playSound('win-sound')
+      svgMessages.youWon();
+    } else {
+      this.playSound('lose-sound');
+      svgMessages.chuckWon();
+    }
 
-    let message = `${winningPlayer.name} won! ${winningPlayer.hand} over ${losingPlayer.hand}`;
-    this.setState({players}, this.displayWinner.bind(this, message));
+    let subMessage = `${winningPlayer.hand} over ${losingPlayer.hand}`;
+    this.setState({players}, this.displayWinner.bind(this, subMessage));
   }
 
 
@@ -251,9 +257,9 @@ class Game extends React.Component {
       let nextTurn = (this.state.turn + 1) % 2;
 
       if (nextTurn === this.state.dealer) { //FIX!!!!!!!!!
-        this.setState({ turn: nextTurn, message: '', looped: true }, this.aiFormulateMove);
+        this.setState({ turn: nextTurn, message: '', subMessage: '', looped: true }, this.aiFormulateMove);
       } else {
-        this.setState({ turn: nextTurn, message: '', }, this.aiFormulateMove);        
+        this.setState({ turn: nextTurn, message: '', subMessage: '' }, this.aiFormulateMove);        
       }   
     }
   }  
@@ -304,7 +310,6 @@ class Game extends React.Component {
     let oldStake = newState.players[this.currentIndex()].stake;
     let otherStake = newState.players[this.otherIndex()].stake;
 
-    let message = 'Checked';
     let sound = 'checked-sound';
 
     if (oldStake < otherStake) {
@@ -322,7 +327,7 @@ class Game extends React.Component {
 
     this.playSound(sound);
 
-    this.setState(newState, this.displayMessage.bind(this, message));
+    this.setState(newState, this.displayMessage);
   }
 
   raise() {
@@ -344,9 +349,6 @@ class Game extends React.Component {
 
     this.playSound('raise-sound');
 
-    let message = 'Reraised';
-
-
     if (highestStake === 0) {
       svgMessages.raised();
     } else if ( (this.state.round === 1) && ((otherPlayerStake === 25) || (otherPlayerStake === 50)) ) {
@@ -355,7 +357,7 @@ class Game extends React.Component {
       svgMessages.reraised();
     }
     
-    this.setState(newState, this.displayMessage.bind(this, message));
+    this.setState(newState, this.displayMessage);
   }
 
   fold() {
@@ -364,12 +366,23 @@ class Game extends React.Component {
 
     svgMessages.folded();
 
-    let message = `${this.currentPlayer().name} folded`;
+    debugger;
+
+    setTimeout(() => {
+
+      if (this.currentPlayer().name === 'You') {
+        svgMessages.chuckWon();
+        this.playSound('lose-sound');
+      } else {
+        svgMessages.youWon();
+        this.playSound('win-sound');
+      }
+    }, 700);   
 
     this.setState({
       pot: pot,
       setOver: true
-    }, this.displayMessage.bind(this, message));
+    }, this.displayMessage);
 // this.collectWinnings.bind(this, this.otherPlayer())
 
   }
@@ -379,7 +392,7 @@ class Game extends React.Component {
     sound.play();    
   }
 
-  displayWinner(message) {
+  displayWinner(subMessage) {
 
     let gameOver = false;
 
@@ -388,15 +401,11 @@ class Game extends React.Component {
         gameOver = true;
       }
     });
-
-    svgMessages.chuckWon();
-
-    this.setState({message, setOver: true, gameOver});
+    this.setState({subMessage, setOver: true, gameOver});
     // setTimeout(this.nextSet.bind(this), 2000);
   }  
 
   displayMessage(message) {
-    this.setState({message});
     setTimeout(this.nextTurn.bind(this), 700);
   }
 
@@ -426,6 +435,7 @@ class Game extends React.Component {
 
   render() {
     window.state = this.state;
+    let subMessageClass = this.state.subMessage === '' ? 'message-sub none' : 'message-sub';    
     return(
       <div className="game">
 
@@ -468,7 +478,18 @@ class Game extends React.Component {
           message={this.state.message}
           raise={this.raise.bind(this)} />
 
-        <Message message={this.state.message} />
+        <div className="message-container">
+          <svg className="message raised"></svg>
+          <svg className="message reraised"></svg>
+          <svg className="message called"></svg>
+          <svg className="message checked"></svg>
+          <svg className="message folded"></svg>
+          <svg className="message chuck-won"></svg>
+          <svg className="message you-won"></svg>
+        </div>
+
+        <p className={subMessageClass}>{this.state.subMessage}</p>
+
       </div>
     );
   }

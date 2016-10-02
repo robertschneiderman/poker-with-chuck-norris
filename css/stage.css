@@ -58,7 +58,7 @@
 
 .message-sub {
   color: #999;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0,0,0,0.6);
   padding: 0.7rem;
   display: inline-block;
   color: #fff;
@@ -68,6 +68,9 @@
   font-weight: 400;
   text-transform: none;
   font-style: italic;
+  position: absolute;
+  bottom: 1rem;
+  right: 3rem;
 }
 
 .message-0 {
