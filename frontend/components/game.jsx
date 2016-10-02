@@ -355,6 +355,8 @@ class Game extends React.Component {
       }
     });
 
+    svgMessages.chuckWon();
+
     this.setState({message, setOver: true, gameOver});
     // setTimeout(this.nextSet.bind(this), 2000);
   }  

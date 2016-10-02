@@ -61,9 +61,12 @@ class Message extends React.Component {
     let subMessageClass = this.subMessage === '' ? 'message-sub none' : 'message-sub';;    
     return(
       <div className={messageContainerClass}>
-        <svg className="message"></svg>
-        <svg className="checked"></svg>
-        <svg className="folded"></svg>
+        <svg className="message raised"></svg>
+        <svg className="message called"></svg>
+        <svg className="message checked"></svg>
+        <svg className="message folded"></svg>
+        <svg className="message chuck-won"></svg>
+        <svg className="message you-won"></svg>
         <p className={subMessageClass}>{this.subMessage}</p>
       </div>
     )

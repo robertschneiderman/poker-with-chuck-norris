@@ -24,45 +24,38 @@
   position: absolute;
   z-index: 8000;
   font-family: Hammerhead;
+}
+
+.raised {
   width: 390px;
 }
 
-.checked {
-  color: #277a9c;
-  font-size: 5.9rem;
-  font-weight: 700;
-  line-height: 1;
-  text-transform: uppercase;
-  left: 50%;
-  top: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  margin-bottom: 0.3rem;
-  position: absolute;
-  z-index: 8000;
-  font-family: Hammerhead;
-  width: 478px;
+.called {
+  width: 390px;  
+}
 
+.checked {
+  width: 478px;
 }
 
 .folded {
-  color: #277a9c;
-  font-size: 5.9rem;
-  font-weight: 700;
-  line-height: 1;
-  text-transform: uppercase;
-  left: 50%;
-  top: 50%;
-  transform: translate3d(-50%, -50%, 0);
-  margin-bottom: 0.3rem;
-  position: absolute;
-  z-index: 8000;
-  font-family: Hammerhead;
   width: 410px;
+}
+
+.chuck-won {
+  width: 708px;
+}
+
+.you-won {
+  width: 223px;
 }
 
 .message-sub {
   color: #999;
+  background-color: rgba(0,0,0,0.8);
+  padding: 0.7rem;
   display: inline-block;
+  color: #fff;
   font-family: Lato;
   font-size: 1.2rem;
   line-height: 1.5;

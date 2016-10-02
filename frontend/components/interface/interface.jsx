@@ -64,20 +64,20 @@ class Interface extends React.Component {
             id="btn-raise"
             className="btn btn-raise"
             onClick={this.clickHandle.bind(this, 'raise')}>
-            Raise 50
+            Raise 50 (R)
           </button>
 
           <button 
             id="btn-call-check" 
             className="btn btn-call-check"
             onClick={this.clickHandle.bind(this, 'callOrCheck')}>
-              Call/Check
+              Call/Check (C)
           </button>
 
           <button id="btn-fold" 
             className="btn btn-fold"
             onClick={this.clickHandle.bind(this, 'fold')}>
-            Fold
+            Fold (F)
           </button>
 
         </div>
