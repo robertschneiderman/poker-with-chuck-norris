@@ -23292,7 +23292,7 @@
 	      if (this.state.round === 0 || this.state.setOver) {
 	        switch (e.key) {
 	          case 'd':
-	            this.nextSet();
+	            this.checkGameState();
 	            break;
 	          default:
 	            break;
@@ -23300,9 +23300,22 @@
 	      }
 	    }
 	  }, {
+	    key: 'checkGameState',
+	    value: function checkGameState() {
+	      this.state.winner ? this.collectWinnings() : this.splitPot();
+	
+	      var gameOver = false;
+	      this.state.players.forEach(function (player) {
+	        if (player.bank === 0) gameOver = true;
+	      });
+	
+	      if (gameOver) this.setState({ gameOver: gameOver });else {
+	        this.setState({ gameOver: gameOver }, this.nextSet);
+	      }
+	    }
+	  }, {
 	    key: 'nextSet',
 	    value: function nextSet() {
-	      if (this.state.pot !== 0) this.collectWinnings();
 	      var player1Bank = this.state.players[0].bank;
 	      var player2Bank = this.state.players[1].bank;
 	
@@ -23385,21 +23398,21 @@
 	        var players = (0, _lodash.merge)([], this.state.players);
 	
 	        if (winningHold) {
-	          var _winningPlayer = void 0;
+	          var winningPlayer = void 0;
 	          for (var i = 0; i < players.length; i++) {
 	            var player = players[i];
 	
 	            if ((0, _lodash.isEqual)(player.hold, winningHold)) {
 	              player.hand = (0, _poker_hands.handName)(this.state.stage, player.hold);
-	              _winningPlayer = player;
+	              winningPlayer = player;
 	            }
 	          }
 	
-	          this.setState({ setOver: true, winner: _winningPlayer }, this.displayWinner);
+	          this.setState({ setOver: true, winner: winningPlayer }, this.displayWinner);
 	        } else {
 	          // IMPLEMENT TIEING!
 	          svgMessages.tie();
-	          this.setState({ setOver: true, winner: winningPlayer }, this.displayWinner);
+	          this.setState({ setOver: true, winner: null }, this.displayWinner);
 	        }
 	      }
 	    }
@@ -23435,6 +23448,19 @@
 	        if (player.name === that.state.winner.name) {
 	          player.bank += _this3.state.pot;
 	        }
+	      });
+	
+	      this.setState({ players: players });
+	    }
+	  }, {
+	    key: 'splitPot',
+	    value: function splitPot() {
+	      var _this4 = this;
+	
+	      var players = (0, _lodash.merge)([], this.state.players);
+	
+	      players.map(function (player) {
+	        player.bank += _this4.state.pot / 2;
 	      });
 	
 	      this.setState({ players: players });
@@ -23602,7 +23628,7 @@
 	  }, {
 	    key: 'fold',
 	    value: function fold() {
-	      var _this4 = this;
+	      var _this5 = this;
 	
 	      // duplicated in 'nextRound'
 	      var pot = this.state.pot + this.state.players[0].stake + this.state.players[1].stake;
@@ -23611,12 +23637,12 @@
 	
 	      setTimeout(function () {
 	
-	        if (_this4.currentPlayer().name === 'You') {
+	        if (_this5.currentPlayer().name === 'You') {
 	          svgMessages.chuckWon();
-	          _this4.playSound('lose-sound');
+	          _this5.playSound('lose-sound');
 	        } else {
 	          svgMessages.youWon();
-	          _this4.playSound('win-sound');
+	          _this5.playSound('win-sound');
 	        }
 	      }, 700);
 	

@@ -84,7 +84,7 @@ class Game extends React.Component {
     if ((this.state.round === 0) || (this.state.setOver)) {
       switch(e.key) {
         case 'd':
-          this.nextSet();
+          this.checkGameState();
           break;
         default:
           break;
@@ -92,8 +92,22 @@ class Game extends React.Component {
     }
   }
 
+  checkGameState() {
+    this.state.winner ? this.collectWinnings() : this.splitPot();
+
+    let gameOver = false;
+    this.state.players.forEach(player => {
+      if (player.bank === 0) gameOver = true;
+    });
+
+    if (gameOver)
+      this.setState({gameOver});
+    else {
+      this.setState({gameOver}, this.nextSet);
+    }
+  } 
+
   nextSet() {
-    if (this.state.pot !== 0) this.collectWinnings();
     let player1Bank = this.state.players[0].bank;
     let player2Bank = this.state.players[1].bank;
 
@@ -186,7 +200,7 @@ class Game extends React.Component {
       } else {
         // IMPLEMENT TIEING!
         svgMessages.tie();        
-        this.setState({setOver: true, winner: winningPlayer}, this.displayWinner);        
+        this.setState({setOver: true, winner: null}, this.displayWinner);        
       }      
     }
   }
@@ -222,6 +236,16 @@ class Game extends React.Component {
     });
 
     this.setState({players});
+  }
+
+  splitPot() {
+    let players = merge([], this.state.players);
+
+    players.map(player => {
+      player.bank += (this.state.pot / 2);
+    });
+
+    this.setState({players});    
   }
 
   getLosingPlayer(winningPlayer) {
