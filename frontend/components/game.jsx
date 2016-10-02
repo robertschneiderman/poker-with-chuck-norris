@@ -13,6 +13,7 @@ import drop from 'lodash/drop';
 import take from 'lodash/take';
 import isEqual from 'lodash/isEqual';
 import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds} from './poker_hands';
+import * as svgMessages from './svg_messages';
 
 const roundTimes = 1000;
 const aiTime = 1000;
@@ -275,9 +276,12 @@ class Game extends React.Component {
       newState.players[turnStr].stake = otherStake;
       newState.players[turnStr].bank -= (otherStake - oldStake);
       
-      message = 'Called';
+      // message = 'Called';
+      svgMessages.called();
+
       sound = 'called-sound';
     } else {
+      svgMessages.checked();
       // this.playSound('check-sound');
     }
 
@@ -307,12 +311,14 @@ class Game extends React.Component {
 
     let message = 'Reraised';
 
+    
+
     if (highestStake === 0) {
-      message = 'Raised';
+      svgMessages.raised();
     }
 
     if ( (this.state.round === 1) && ((otherPlayerStake === 25) || (otherPlayerStake === 50)) ) {
-      message = 'Raised';
+      svgMessages.raised();    
     }
     
     this.setState(newState, this.displayMessage.bind(this, message));
@@ -321,6 +327,8 @@ class Game extends React.Component {
   fold() {
     // duplicated in 'nextRound'
     let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake);
+
+    svgMessages.folded();
 
     let message = `${this.currentPlayer().name} folded`;
 
@@ -353,7 +361,7 @@ class Game extends React.Component {
 
   displayMessage(message) {
     this.setState({message});
-    setTimeout(this.nextTurn.bind(this), roundTimes);
+    setTimeout(this.nextTurn.bind(this), 700);
   }
 
   highestStake() {
@@ -423,6 +431,7 @@ class Game extends React.Component {
           fold={this.fold.bind(this)}
           message={this.state.message}
           raise={this.raise.bind(this)} />
+
         <Message message={this.state.message} />
       </div>
     );

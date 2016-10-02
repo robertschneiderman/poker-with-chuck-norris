@@ -1,6 +1,6 @@
 .message-container {
-  background-color: rgba(255,255,255,1);
-  border: 3px solid #e2e2e2;
+  /*background-color: rgba(255,255,255,1);*/
+  /*border: 3px solid #e2e2e2;*/
   position: absolute;
   display: inline-block;
   top: 50%;
@@ -11,7 +11,54 @@
   transform: translate3d(-50%, -50%, 0);
 }
 
-.message {color: #277a9c;font-size: 2.9rem;font-weight: 700;line-height: 1;text-transform: uppercase;left: 0;margin-bottom: 0.3rem;/* max-width: 510px; *//* width: 59%; *//* display: block; */lock; *position: absolute;z-index: 8000;font-family: Hammerhead;}
+.message {
+  color: #277a9c;
+  font-size: 5.9rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  margin-bottom: 0.3rem;
+  position: absolute;
+  z-index: 8000;
+  font-family: Hammerhead;
+  width: 390px;
+}
+
+.checked {
+  color: #277a9c;
+  font-size: 5.9rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  margin-bottom: 0.3rem;
+  position: absolute;
+  z-index: 8000;
+  font-family: Hammerhead;
+  width: 478px;
+
+}
+
+.folded {
+  color: #277a9c;
+  font-size: 5.9rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  margin-bottom: 0.3rem;
+  position: absolute;
+  z-index: 8000;
+  font-family: Hammerhead;
+  width: 410px;
+}
 
 .message-sub {
   color: #999;
