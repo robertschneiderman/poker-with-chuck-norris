@@ -56,6 +56,11 @@
   width: 223px;
 }
 
+.you-won {
+  height: 100px;  
+  width: 160px;
+}
+
 .message-sub {
   color: #999;
   background-color: rgba(0,0,0,0.6);

@@ -23209,8 +23209,8 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var roundTimes = 1000;
-	var aiTime = 1000;
+	var roundTimes = 100;
+	var aiTime = 100;
 	
 	var defaultPlayer = {
 	  hold: [{
@@ -23236,7 +23236,8 @@
 	  setOver: false,
 	  gameOver: false,
 	  playerAllIn: false,
-	  players: [(0, _lodash.merge)({}, defaultPlayer), (0, _lodash.merge)({}, defaultPlayer)]
+	  players: [(0, _lodash.merge)({}, defaultPlayer), (0, _lodash.merge)({}, defaultPlayer)],
+	  winner: null
 	};
 	
 	// rounds = 'pre-round', 'pre-flop', 'flop', 'turn', 'river'
@@ -23301,12 +23302,12 @@
 	  }, {
 	    key: 'nextSet',
 	    value: function nextSet() {
+	      if (this.state.pot !== 0) this.collectWinnings();
 	      var player1Bank = this.state.players[0].bank;
 	      var player2Bank = this.state.players[1].bank;
 	
 	      var newState = (0, _lodash.merge)({}, defaultState);
 	      newState.dealer = (this.state.dealer + 1) % 2;
-	      newState.round = -1;
 	      newState.players[0].bank = player1Bank;
 	      newState.players[1].bank = player2Bank;
 	
@@ -23322,7 +23323,6 @@
 	      newState.players[0].hold = cardsToDeal.slice(0, 2);
 	      newState.players[1].hold = cardsToDeal.slice(2);
 	      newState.deck = deck;
-	      newState.round = 1;
 	
 	      this.playSound('deal-sound');
 	
@@ -23345,17 +23345,21 @@
 	    }
 	  }, {
 	    key: 'nextRound',
-	    value: function nextRound() {
-	      var nextRound = this.state.round + 1;
-	      var pot = this.state.pot + this.state.players[0].stake + this.state.players[1].stake;
+	    value: function nextRound(advanceRound) {
 	
-	      this.resetPlayerStakes();
+	      var nextRound = this.state.round + 1;
+	      var pot = void 0;
+	
+	      if (nextRound !== 1) {
+	        pot = this.state.pot + this.state.players[0].stake + this.state.players[1].stake;
+	        this.resetPlayerStakes();
+	      }
 	
 	      if (nextRound > 4) {
 	        this.setState({
 	          pot: pot
-	        }, this.collectWinnings);
-	      } else {
+	        }, this.determineWinner);
+	      } else if (advanceRound) {
 	        this.playSound('next-card-sound');
 	        this.setState({
 	          deck: this.alterDeck(nextRound).deck,
@@ -23365,40 +23369,9 @@
 	          turn: this.state.dealer,
 	          looped: false
 	        }, this.nextTurn);
-	      }
-	    }
-	  }, {
-	    key: 'collectWinnings',
-	    value: function collectWinnings(playerWhoDidntFold) {
-	      var _this3 = this;
-	
-	      var winningPlayer = this.determineWinner(playerWhoDidntFold);
-	      var losingPlayer = void 0;
-	
-	      var players = (0, _lodash.merge)([], this.state.players);
-	
-	      players.map(function (player) {
-	        if ((0, _lodash.isEqual)(player, winningPlayer)) {
-	          player.hand = (0, _poker_hands.handName)(_this3.state.stage, player.hold);
-	          player.bank += _this3.state.pot;
-	          winningPlayer = player;
-	          winningPlayer.hand = player.hand;
-	        } else {
-	          player.hand = (0, _poker_hands.handName)(_this3.state.stage, player.hold);
-	          losingPlayer = player;
-	        }
-	      });
-	
-	      if (winningPlayer.name === 'You') {
-	        this.playSound('win-sound');
-	        svgMessages.youWon();
 	      } else {
-	        this.playSound('lose-sound');
-	        svgMessages.chuckWon();
+	        this.setState({ round: nextRound }, this.nextTurn);
 	      }
-	
-	      var subMessage = winningPlayer.hand + ' over ' + losingPlayer.hand;
-	      this.setState({ players: players }, this.displayWinner.bind(this, subMessage));
 	    }
 	  }, {
 	    key: 'determineWinner',
@@ -23412,22 +23385,67 @@
 	        var players = (0, _lodash.merge)([], this.state.players);
 	
 	        if (winningHold) {
-	
+	          var _winningPlayer = void 0;
 	          for (var i = 0; i < players.length; i++) {
-	            if ((0, _lodash.isEqual)(players[i].hold, winningHold)) {
-	              return players[i];
+	            var player = players[i];
+	
+	            if ((0, _lodash.isEqual)(player.hold, winningHold)) {
+	              player.hand = (0, _poker_hands.handName)(this.state.stage, player.hold);
+	              _winningPlayer = player;
 	            }
-	          };
+	          }
+	
+	          this.setState({ setOver: true, winner: _winningPlayer }, this.displayWinner);
 	        } else {
 	          // IMPLEMENT TIEING!
+	          svgMessages.tie();
+	          this.setState({ setOver: true, winner: winningPlayer }, this.displayWinner);
 	        }
 	      }
 	    }
+	  }, {
+	    key: 'displayWinner',
+	    value: function displayWinner() {
 	
-	    // winnersHand() {
+	      var gameOver = false;
 	
-	    // }
+	      if (this.state.winner.name === 'You') {
+	        this.playSound('win-sound');
+	        svgMessages.youWon();
+	      } else {
+	        this.playSound('lose-sound');
+	        svgMessages.chuckWon();
+	      }
 	
+	      var losingPlayer = this.getLosingPlayer(this.state.winner);
+	
+	      var subMessage = this.state.winner.hand + ' over ' + losingPlayer.hand;
+	
+	      this.setState({ subMessage: subMessage });
+	    }
+	  }, {
+	    key: 'collectWinnings',
+	    value: function collectWinnings() {
+	      var _this3 = this;
+	
+	      var players = (0, _lodash.merge)([], this.state.players);
+	      var that = this;
+	
+	      players.map(function (player) {
+	        if (player.name === that.state.winner.name) {
+	          player.bank += _this3.state.pot;
+	        }
+	      });
+	
+	      this.setState({ players: players });
+	    }
+	  }, {
+	    key: 'getLosingPlayer',
+	    value: function getLosingPlayer(winningPlayer) {
+	      var i = winningPlayer.name === 'You' ? 1 : 0;
+	      this.state.players[i].hand = (0, _poker_hands.handName)(this.state.stage, this.state.players[i].hold);
+	      return this.state.players[i];
+	    }
 	  }, {
 	    key: 'resetPlayerStakes',
 	    value: function resetPlayerStakes() {
@@ -23463,17 +23481,17 @@
 	    value: function nextTurn() {
 	      if (this.state.setOver) {
 	        var message = this.otherPlayer().name + ' won!';
-	        this.collectWinnings(this.otherPlayer());
+	        this.determineWinner(this.otherPlayer()); // Player folded
 	      } else if (this.allStakesEven() && this.state.looped) {
-	        this.nextRound();
+	        this.nextRound(true);
 	      } else {
 	        var nextTurn = (this.state.turn + 1) % 2;
 	
 	        if (nextTurn === this.state.dealer) {
 	          //FIX!!!!!!!!!
-	          this.setState({ turn: nextTurn, message: '', subMessage: '', looped: true }, this.aiFormulateMove);
+	          this.setState({ turn: nextTurn, subMessage: '', looped: true }, this.aiFormulateMove);
 	        } else {
-	          this.setState({ turn: nextTurn, message: '', subMessage: '' }, this.aiFormulateMove);
+	          this.setState({ turn: nextTurn, subMessage: '' }, this.aiFormulateMove);
 	        }
 	      }
 	    }
@@ -23591,8 +23609,6 @@
 	
 	      svgMessages.folded();
 	
-	      debugger;
-	
 	      setTimeout(function () {
 	
 	        if (_this4.currentPlayer().name === 'You') {
@@ -23614,20 +23630,6 @@
 	    value: function playSound(selector) {
 	      var sound = document.getElementById(selector);
 	      sound.play();
-	    }
-	  }, {
-	    key: 'displayWinner',
-	    value: function displayWinner(subMessage) {
-	
-	      var gameOver = false;
-	
-	      this.state.players.forEach(function (player) {
-	        if (player.bank === 0) {
-	          gameOver = true;
-	        }
-	      });
-	      this.setState({ subMessage: subMessage, setOver: true, gameOver: gameOver });
-	      // setTimeout(this.nextSet.bind(this), 2000);
 	    }
 	  }, {
 	    key: 'displayMessage',
@@ -23721,7 +23723,8 @@
 	          _react2.default.createElement('svg', { className: 'message checked' }),
 	          _react2.default.createElement('svg', { className: 'message folded' }),
 	          _react2.default.createElement('svg', { className: 'message chuck-won' }),
-	          _react2.default.createElement('svg', { className: 'message you-won' })
+	          _react2.default.createElement('svg', { className: 'message you-won' }),
+	          _react2.default.createElement('svg', { className: 'message tie' })
 	        ),
 	        _react2.default.createElement(
 	          'p',
@@ -35412,6 +35415,16 @@
 	
 	  var p1 = s.path({ d: o1, fill: "#a142c1", strokeWidth: "2", stroke: "#c98de2", transform: "r0, 50, 50" });
 	  p1.animate({ d: "M69 10.2L55 37.3v29.8l4.9 1.6v7.5H35.1v-7.5l5.3-1.6V40.4L25.8 10.1 19 8V.3h24.3v7.5l-2.1.7 5.3 12.2v8.1h1.3l9.3-20-2.9-.8V.3h22.1V8L69 10.2zM127.1 70.7l-19.4 6.2H90.8L79.6 66.3V24.8l7.2-20.2L101.4 0H123l11.3 10.5v39.1l-7.2 21.1zm-7.5-59.4H94.3v53.3h25.3V11.3zM199.8 9.4v40.2l-7.2 21.2-19.4 6h-12.8l-11.2-10.5V9.4L144.4 8V.3h24.9V8L164 9.4v55.2h21.2V9.4l-5-1.4V.3H205V8l-5.2 1.4zM89.2 138.6l-21.7 68h-4.9l-12.2-35.4v-7.6h-1.3l-14.8 43h-4.8L5.8 138.1 0 136.4v-7.6h24.3v7.5l-3.4 1.1 10.9 32.4v8.5h1.3l9.5-28.9-3.6-11.3-5.8-1.8v-7.6h24.1v7.5l-3 .8 10.2 31.2v10h1.4l11.6-40.9-3.2-1v-7.6h22.3v7.6l-7.4 2.3zM147.4 199.1l-19.4 6.2h-16.9l-11.2-10.5v-41.6l7.2-20.2 14.6-4.6h21.6l11.3 10.5V178l-7.2 21.1zm-7.5-59.4h-25.3V193h25.3v-53.3zM218.1 137.8v68.8H209L189.4 170l-6.8-25.5h-1.3v51l5 1.6v7.6h-21.1v-7.6l5.3-1.6v-57.6l-4.8-2.2v-6.8h20.7l11.1 21.2L206 180h1.3v-42.2l-4.9-1.5v-7.6h21.1v7.6l-5.4 1.5z", transform: "r0, 50, 50" }, 500, mina.bounce, delayedRemove.bind(null, p1));
+	};
+	
+	var tie = exports.tie = function tie() {
+	
+	  var s = Snap('.tie');
+	
+	  var o1 = 'M54.3 28.7c-2-6.9-4.2-13.8-6.7-20.6-1.6.1-3.3.2-4.9.3 2.7 25 1.3 50.2-4.3 75.5 1.8.8 3.5 1.7 5.3 2.5-.7 3.4-1.4 6.7-2.2 10.1-10.5-.7-21.1-1.8-31.7-3.2 1.5-3.2 2.8-6.3 4.1-9.5 2.4-.4 4.7-.9 7-1.3C29 58.1 31.1 33.9 27.1 9.7c-1.9.2-3.9.4-5.8.6-.7 6.7-1.9 13.3-3.5 19.7l-6.3.3C11.1 20.2 9.1 10.1 5.4 0c11.4-1.9 22.8-3.3 34.2-4.3 6.9 1.8 13.5 3.9 19.9 6.1.6 8.9.9 17.8 1 26.8-2 .1-4.1.1-6.2.1zM63.4 97.6c.3-3.4.6-6.9.9-10.3 2.2-.7 4.3-1.3 6.4-2 1-26.4 1.3-52.7.8-78.8-1.9-.6-3.8-1.3-5.7-1.9-.1-3.4-.3-6.8-.5-10.2 9.2-.3 18.5-.2 27.7.1-.2 3.4-.4 6.8-.6 10.1-1.8.6-3.6 1.2-5.3 1.8-.8 26.1-.4 52.3 1.1 78.7 2 .7 4 1.4 6.1 2 .3 3.4.7 6.9 1.1 10.3-10.7.5-21.3.5-32 .2zM135.7 17.9c-.4-2.5-.7-5.1-.9-7.6-4.8-.5-9.7-1-14.5-1.3-1.2 8.6-1.7 17.3-1.6 25.9 3.1.1 6.2.1 9.3.2.7-2.4 1.4-4.8 2.2-7.2 2.8.1 5.6.3 8.4.4-.4 8.2.1 16.4 1.5 24.6-2.9.1-5.7.2-8.6.3-.9-2.2-1.8-4.3-2.7-6.5-3.2 0-6.4.1-9.6.1.8 11.1 2.7 22.1 5.5 33.2 4.8-.4 9.5-.8 14.3-1.3-.1-4.3-.1-8.5.1-12.7 3.3-.2 6.7-.5 10-.8 2 6.1 4.6 12.2 7.8 18.3-6.8 3.6-14 7.3-21.5 10.9-10.4 1.2-20.9 2-31.3 2.6-.6-3.4-1.1-6.8-1.6-10.2 1.9-.8 3.7-1.6 5.6-2.4-4.4-26-5.4-51.8-3.2-77.4-1.7-.7-3.4-1.5-5.1-2.2l.9-10.2c13.4.7 26.8 2 40.2 3.9 2.1 3.6 4.2 7.2 6.4 10.7-.8 3.2-1.5 6.4-2 9.5-3.3-.2-6.4-.5-9.6-.8z';
+	
+	  var p1 = s.path({ d: o1, fill: "#a142c1", strokeWidth: "2", stroke: "#c98de2", transform: "r0, 50, 50" });
+	  p1.animate({ d: "M50.3 30.4l-6.6-18.7h-5.5v68.4L44 82v9H14.2v-9l6.3-1.9V11.7H14L7.4 30.4H0V0h36.8l20.8 6.6v23.8h-7.3zM64.4 91v-9l6.3-1.9V10.9l-6.3-1.7v-9h29.8v9l-5.9 1.7v69.2l5.9 1.9v9H64.4zM144.6 18.8l-2.4-7.1h-16.4v23.9h10.9l2.4-6.9h9.8v24.1h-9.8l-2.2-6.2h-11.2v30.5h14.6l4.2-11.8h10.9v18.3L131.6 91h-29.3v-9l5.9-1.9V10.9l-5.9-1.7V0h43.3l9.9 9.3v9.5h-10.9z", transform: "r0, 50, 50" }, 500, mina.bounce, delayedRemove.bind(null, p1));
 	};
 
 /***/ },
