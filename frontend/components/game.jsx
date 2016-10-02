@@ -6,13 +6,7 @@ import Modal from './player/modal';
 import Message from './message';
 import Interface from './interface/interface';
 import { deck } from '../util/deck';
-import shuffle from 'lodash/shuffle';
-import merge from 'lodash/merge';
-import uniq from 'lodash/uniq';
-import drop from 'lodash/drop';
-import take from 'lodash/take';
-import debounce from 'lodash/debounce';
-import isEqual from 'lodash/isEqual';
+import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
 import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
 
@@ -250,7 +244,7 @@ class Game extends React.Component {
   nextTurn() {
     if (this.state.setOver) {
       let message = `${this.otherPlayer().name} won!`;
-      this.displayWinner(message);
+      this.collectWinnings(this.otherPlayer());
     } else if ( (this.allStakesEven()) && (this.state.looped)) {
       this.nextRound();
     } else {
@@ -383,8 +377,6 @@ class Game extends React.Component {
       pot: pot,
       setOver: true
     }, this.displayMessage);
-// this.collectWinnings.bind(this, this.otherPlayer())
-
   }
 
   playSound(selector) {
