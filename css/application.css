@@ -187,8 +187,23 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 .player-avatar {border-radius: 50%;height: 5rem;width: 5rem;margin-right: 1rem;}
 
+.btn-fb-login {
+  background-color: #efefef;
+  border-radius: 50%;
+  border: 1px solid #aaa;
+  color: #aaa;
+  font-weight: 100;
+  font-size: 1.8rem;
+  height: 5rem;
+  width: 5rem;
+  margin-right: 1rem;
+}
+
 .player-hold {position: absolute;/* justify-content: space-between; *//* display: flex; */height: 10rem;width: 10.5rem;right: -2.25rem;top: 3.189rem;text-align: left;}
 
 .player-card {
+
+}
+yer-card {
 
 }

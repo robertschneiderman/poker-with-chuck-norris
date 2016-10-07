@@ -8,6 +8,7 @@ class Player extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {};
   }
 
   getPlayerClass() {
@@ -58,8 +59,33 @@ class Player extends React.Component {
 
   }
 
-  responseFacebook() {
-    console.log(response);    
+  responseFacebook(response) {
+    console.log(response);
+    if (response.signedRequest) {
+      this.setState({loggedIn: true, response});
+    }
+  }
+
+  playerAvatar() {
+    if (this.props.num === 1) {
+      return(
+        <img id="login" className="player-avatar" src="http://res.cloudinary.com/stellar-pixels/image/upload/v1474005893/chuck-norris_loijrf.jpg" alt=""/>
+      );
+    } else if (this.state.loggedIn) {
+      return(
+        <img id="login" className="player-avatar" src={this.state.response.picture.data.url} alt=""/>
+      );
+    } else {
+      return (
+        <FacebookLogin
+        appId="1196099127116910"
+        autoLoad={true}
+        fields="name,email,picture.width(200).height(200)"
+        cssClass="btn-fb-login"
+        textButton="+"
+        callback={this.responseFacebook.bind(this)} />
+      );     
+    }
   }
 
   componentClicked() {
@@ -75,8 +101,6 @@ class Player extends React.Component {
     
     let player = this.props.player;
 
-    let avatarLink = (this.props.num === 0) ? "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" : "http://res.cloudinary.com/stellar-pixels/image/upload/v1474005893/chuck-norris_loijrf.jpg";
-
     let oldBank = 1000;
 
     if (parseInt(document.querySelectorAll('.player-worth')[this.props.turn])) {
@@ -86,9 +110,6 @@ class Player extends React.Component {
       let oldStake = parseInt(document.querySelectorAll('.player-stake')[this.props.turn].innerHTML);
     }
             // <p className="player-worth">{player.bank}</p>
-
-
-          // <img id="login" className="player-avatar" src={avatarLink} alt=""/>
     return(
       <li className={this.playerClass}>
 
@@ -96,12 +117,8 @@ class Player extends React.Component {
           <div className="player-stake">{player.stake}</div>
           <div className={this.dealerClass}>D</div>
 
-          <FacebookLogin
-            appId="1196099127116910"
-            autoLoad={true}
-            fields="name,email,picture"
-            onClick={this.componentClicked}
-            callback={this.responseFacebook} />
+
+          {this.playerAvatar()}
 
           <div className="player-info">
             <p className="player-name">{player.name}</p>
