@@ -92,6 +92,7 @@ class Game extends React.Component {
     this.state.winner ? this.collectWinnings() : this.splitPot();
 
     let gameOver = false;
+    debugger;
     this.state.players.forEach(player => {
       if (player.bank === 0) gameOver = true;
     });
@@ -110,7 +111,6 @@ class Game extends React.Component {
     let newState = merge({}, defaultState);
     newState.dealer = (this.state.dealer + 1) % 2;
     newState.turn = newState.dealer;
-    // debugger;
     newState.players[0].bank = player1Bank;
     newState.players[1].bank = player2Bank;
 
@@ -386,8 +386,6 @@ class Game extends React.Component {
 
     this.playSound('raise-sound');
 
-    debugger;
-
     if (this.highestStake() === 50) {
       svgMessages.raised();
     } else if (this.raisedinFirstRound()) {
@@ -518,7 +516,7 @@ class Game extends React.Component {
         <PlayerDisplay player={this.state.players[1]} />
 
         <Interface
-          nextSet={this.nextSet.bind(this)}
+          checkGameState={this.checkGameState.bind(this)}
           setOver={this.state.setOver}           
           round={this.state.round}
           turn={this.state.turn}

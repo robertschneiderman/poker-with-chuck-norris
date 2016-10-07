@@ -23301,6 +23301,7 @@
 	      this.state.winner ? this.collectWinnings() : this.splitPot();
 	
 	      var gameOver = false;
+	      debugger;
 	      this.state.players.forEach(function (player) {
 	        if (player.bank === 0) gameOver = true;
 	      });
@@ -23318,7 +23319,6 @@
 	      var newState = (0, _lodash.merge)({}, defaultState);
 	      newState.dealer = (this.state.dealer + 1) % 2;
 	      newState.turn = newState.dealer;
-	      // debugger;
 	      newState.players[0].bank = player1Bank;
 	      newState.players[1].bank = player2Bank;
 	
@@ -23620,8 +23620,6 @@
 	
 	      this.playSound('raise-sound');
 	
-	      debugger;
-	
 	      if (this.highestStake() === 50) {
 	        svgMessages.raised();
 	      } else if (this.raisedinFirstRound()) {
@@ -23770,7 +23768,7 @@
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[0] }),
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[1] }),
 	        _react2.default.createElement(_interface2.default, {
-	          nextSet: this.nextSet.bind(this),
+	          checkGameState: this.checkGameState.bind(this),
 	          setOver: this.state.setOver,
 	          round: this.state.round,
 	          turn: this.state.turn,
@@ -24517,7 +24515,7 @@
 	          { className: this.dealClass },
 	          _react2.default.createElement(
 	            'button',
-	            { onClick: this.props.nextSet, className: 'btn btn-deal' },
+	            { onClick: this.props.checkGameState, className: 'btn btn-deal' },
 	            'Deal'
 	          )
 	        )
