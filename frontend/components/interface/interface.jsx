@@ -18,7 +18,7 @@ class Interface extends React.Component {
   }
 
   btnEnabledness() {
-    if ((this.props.turn !== 0) || (this.props.message !== '')) {
+    if ((this.props.turn !== 0) || (this.props.message !== '') || (this.props.autoDeal)) {
       document.querySelectorAll(".interface-betting > button").forEach(button => {
         button.disabled = true;
       });

@@ -1,6 +1,7 @@
 import React from 'react';
 import PlayerTag from './player_tag';
 import Counter from './counter';
+import FacebookLogin from 'react-facebook-login';
 
 
 class Player extends React.Component {
@@ -53,6 +54,18 @@ class Player extends React.Component {
     this.messageClass = (this.props.turn === this.props.num) ? 'message' : 'message hidden';
   }
 
+  componentClicked() {
+
+  }
+
+  responseFacebook() {
+    console.log(response);    
+  }
+
+  componentClicked() {
+
+  }
+
   render() {
     this.getPlayerClass();
     this.getDealerClass();
@@ -75,6 +88,7 @@ class Player extends React.Component {
             // <p className="player-worth">{player.bank}</p>
 
 
+          // <img id="login" className="player-avatar" src={avatarLink} alt=""/>
     return(
       <li className={this.playerClass}>
 
@@ -82,7 +96,12 @@ class Player extends React.Component {
           <div className="player-stake">{player.stake}</div>
           <div className={this.dealerClass}>D</div>
 
-          <img className="player-avatar" src={avatarLink} alt=""/>
+          <FacebookLogin
+            appId="1196099127116910"
+            autoLoad={true}
+            fields="name,email,picture"
+            onClick={this.componentClicked}
+            callback={this.responseFacebook} />
 
           <div className="player-info">
             <p className="player-name">{player.name}</p>

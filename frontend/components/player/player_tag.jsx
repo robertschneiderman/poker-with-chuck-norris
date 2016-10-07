@@ -14,7 +14,7 @@ class PlayerTag extends React.Component {
           <p className="player-name">John</p>
           <p className="player-worth">1,000</p>
         </div>
-        <img className="player-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" alt=""/>
+        <img id="login" className="player-avatar" src="https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg" alt=""/>
       </div>
     )
   }
