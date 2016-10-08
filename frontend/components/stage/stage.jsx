@@ -20,7 +20,7 @@ class Stage extends React.Component {
 
     return(
       <section className="stage">
-        <p className="stage-pot">{this.props.pot}</p>
+        <p className="stage-pot-small">{this.props.pot}</p>
         <ul className="stage-cards">
           {cards}
         </ul>

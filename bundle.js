@@ -23786,10 +23786,11 @@
 	                player: this.state.players[1] })
 	            ),
 	            _react2.default.createElement(_stage2.default, {
+	              pot: this.state.pot,
 	              cards: this.state.stage })
 	          )
 	        ),
-	        _react2.default.createElement(_counter2.default, { id: 'stage-pot', className: 'stage-pot', begin: oldPot, end: this.state.pot }),
+	        _react2.default.createElement(_counter2.default, { id: 'stage-pot', className: 'stage-pot-big', begin: oldPot, end: this.state.pot }),
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[0] }),
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[1] }),
 	        _react2.default.createElement(_interface2.default, {
@@ -24285,7 +24286,7 @@
 	        { className: "stage" },
 	        _react2.default.createElement(
 	          "p",
-	          { className: "stage-pot" },
+	          { className: "stage-pot-small" },
 	          this.props.pot
 	        ),
 	        _react2.default.createElement(
