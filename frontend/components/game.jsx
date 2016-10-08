@@ -5,6 +5,7 @@ import Stage from './stage/stage';
 import Modal from './player/modal';
 import Message from './message';
 import Interface from './interface/interface';
+import Counter from './counter';
 import { deck } from '../util/deck';
 import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
 import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
@@ -94,7 +95,8 @@ class Game extends React.Component {
     let gameOver = false;
     debugger;
     this.state.players.forEach(player => {
-      if (player.bank === 0) gameOver = true;
+      if ((player.bank === 0) && (this.state.winner.name !== player.name)) { gameOver = true;
+      }
     });
 
     if (gameOver)
@@ -164,6 +166,7 @@ class Game extends React.Component {
         deck: this.alterDeck(nextRound).deck,
         stage: this.alterDeck(nextRound).cards,
         pot: pot,
+        turn: this.state.dealer,
         round: nextRound,
         looped: false
       }, this.nextTurn);      
@@ -492,7 +495,15 @@ class Game extends React.Component {
 
   render() {
     window.state = this.state;
-    let subMessageClass = this.state.subMessage === '' ? 'message-sub none' : 'message-sub';    
+    let subMessageClass = this.state.subMessage === '' ? 'message-sub none' : 'message-sub';
+
+
+    let oldPot = oldPot ? oldPot : 0;
+
+    if (oldPot !== this.state.pot) {
+      oldPot = document.getElementById('stage-pot').innerHTML;
+    }
+
     return(
       <div className="game">
 
@@ -516,10 +527,11 @@ class Game extends React.Component {
             </ul>
           
             <Stage 
-              pot={this.state.pot} 
               cards={this.state.stage} />
           </div>
         </main>
+
+        <Counter id="stage-pot" className="stage-pot" begin={oldPot} end={this.state.pot} />
 
         <PlayerDisplay player={this.state.players[0]} />
         <PlayerDisplay player={this.state.players[1]} />

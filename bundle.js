@@ -23189,6 +23189,10 @@
 	
 	var _interface2 = _interopRequireDefault(_interface);
 	
+	var _counter = __webpack_require__(200);
+	
+	var _counter2 = _interopRequireDefault(_counter);
+	
 	var _deck = __webpack_require__(207);
 	
 	var _lodash = __webpack_require__(208);
@@ -23298,12 +23302,16 @@
 	  }, {
 	    key: 'checkGameState',
 	    value: function checkGameState() {
+	      var _this3 = this;
+	
 	      this.state.winner ? this.collectWinnings() : this.splitPot();
 	
 	      var gameOver = false;
 	      debugger;
 	      this.state.players.forEach(function (player) {
-	        if (player.bank === 0) gameOver = true;
+	        if (player.bank === 0 && _this3.state.winner.name !== player.name) {
+	          gameOver = true;
+	        }
 	      });
 	
 	      if (gameOver) this.setState({ gameOver: gameOver });else {
@@ -23375,6 +23383,7 @@
 	          deck: this.alterDeck(nextRound).deck,
 	          stage: this.alterDeck(nextRound).cards,
 	          pot: pot,
+	          turn: this.state.dealer,
 	          round: nextRound,
 	          looped: false
 	        }, this.nextTurn);
@@ -23435,14 +23444,14 @@
 	  }, {
 	    key: 'collectWinnings',
 	    value: function collectWinnings() {
-	      var _this3 = this;
+	      var _this4 = this;
 	
 	      var players = (0, _lodash.merge)([], this.state.players);
 	      var that = this;
 	
 	      players.map(function (player) {
 	        if (player.name === that.state.winner.name) {
-	          player.bank += _this3.state.pot;
+	          player.bank += _this4.state.pot;
 	        }
 	      });
 	
@@ -23451,12 +23460,12 @@
 	  }, {
 	    key: 'splitPot',
 	    value: function splitPot() {
-	      var _this4 = this;
+	      var _this5 = this;
 	
 	      var players = (0, _lodash.merge)([], this.state.players);
 	
 	      players.map(function (player) {
-	        player.bank += _this4.state.pot / 2;
+	        player.bank += _this5.state.pot / 2;
 	      });
 	
 	      this.setState({ players: players });
@@ -23674,7 +23683,7 @@
 	  }, {
 	    key: 'fold',
 	    value: function fold() {
-	      var _this5 = this;
+	      var _this6 = this;
 	
 	      // duplicated in 'nextRound'
 	      var pot = this.state.pot + this.state.players[0].stake + this.state.players[1].stake;
@@ -23683,12 +23692,12 @@
 	
 	      setTimeout(function () {
 	
-	        if (_this5.currentPlayer().name === 'You') {
+	        if (_this6.currentPlayer().name === 'You') {
 	          svgMessages.chuckWon();
-	          _this5.playSound('lose-sound');
+	          _this6.playSound('lose-sound');
 	        } else {
 	          svgMessages.youWon();
-	          _this5.playSound('win-sound');
+	          _this6.playSound('win-sound');
 	        }
 	      }, 700);
 	
@@ -23742,6 +23751,13 @@
 	    value: function render() {
 	      window.state = this.state;
 	      var subMessageClass = this.state.subMessage === '' ? 'message-sub none' : 'message-sub';
+	
+	      var oldPot = oldPot ? oldPot : 0;
+	
+	      if (oldPot !== this.state.pot) {
+	        oldPot = document.getElementById('stage-pot').innerHTML;
+	      }
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'game' },
@@ -23770,10 +23786,10 @@
 	                player: this.state.players[1] })
 	            ),
 	            _react2.default.createElement(_stage2.default, {
-	              pot: this.state.pot,
 	              cards: this.state.stage })
 	          )
 	        ),
+	        _react2.default.createElement(_counter2.default, { id: 'stage-pot', className: 'stage-pot', begin: oldPot, end: this.state.pot }),
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[0] }),
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[1] }),
 	        _react2.default.createElement(_interface2.default, {
@@ -23985,7 +24001,7 @@
 	              { className: 'player-name' },
 	              player.name
 	            ),
-	            _react2.default.createElement(_counter2.default, { begin: oldBank, end: player.bank })
+	            _react2.default.createElement(_counter2.default, { id: '', className: 'player-worth', begin: oldBank, end: player.bank })
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -24081,7 +24097,7 @@
 /* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -24117,7 +24133,7 @@
 	  }
 	
 	  _createClass(Counter, [{
-	    key: "update",
+	    key: 'update',
 	    value: function update() {
 	      // let to;
 	      if (this.state.bank === this.props.end) return;
@@ -24134,11 +24150,11 @@
 	        }
 	    }
 	  }, {
-	    key: "render",
+	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
-	        "div",
-	        { className: "player-worth" },
+	        'div',
+	        { id: this.props.id, className: this.props.className },
 	        this.state.bank
 	      );
 	    }
@@ -24525,7 +24541,7 @@
 	          _react2.default.createElement(
 	            'button',
 	            { onClick: this.props.checkGameState, className: 'btn btn-deal' },
-	            'Deal'
+	            'Deal (D)'
 	          )
 	        )
 	      );

@@ -1,6 +1,6 @@
 import React from 'react';
 import PlayerTag from './player_tag';
-import Counter from './counter';
+import Counter from '../counter';
 import FacebookLogin from 'react-facebook-login';
 
 
@@ -122,7 +122,7 @@ class Player extends React.Component {
 
           <div className="player-info">
             <p className="player-name">{player.name}</p>
-            <Counter begin={oldBank} end={player.bank} />
+            <Counter id="" className="player-worth"begin={oldBank} end={player.bank} />
           </div>
 
         </div>

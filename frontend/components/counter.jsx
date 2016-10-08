@@ -28,7 +28,7 @@ class Counter extends React.Component {
 
   render() {
     return(
-      <div className="player-worth">
+      <div id={this.props.id} className={this.props.className}>
         {this.state.bank}
       </div>
     )
