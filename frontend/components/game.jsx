@@ -7,14 +7,14 @@ import Message from './message';
 import Interface from './interface/interface';
 import { deck } from '../util/deck';
 import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
-import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds} from './poker_hands';
+import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
 
-const roundTimes = 100;
-const aiTime = 100;
+const roundTimes = 1000;
+const aiTime = 1000;
 
 const defaultPlayer = {
-  bank: 100,
+  bank: 1000,
   hold: [{
     suit: null,
     rank: null
@@ -318,9 +318,38 @@ class Game extends React.Component {
     return val;
   }
 
-  aiMove(odds) {
+  aiFormulateMove() {
+    if (this.state.turn !== 1) return;
+
+    let randomNumber = Math.floor(Math.random() * (4 - 0 + 4)) + 0;
+    // implement a confidence factor based on how much human player bets... bluff only when safe...
+
+    if (randomNumber === 0) {
+      setTimeout(this.raise.bind(this), aiTime); // bluff
+    } else if (randomNumber === 1) {
+      setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
+    } else if (this.state.round === 4) {
+      getHandOdds(this.state.stage, this.state.players[1].hold, this.smartMove.bind(this));
+    } else {
+      getBothHandOdds(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
+    }
+  }
+
+  cheapMove(aiOdds, humanOdds) {
+    let move;    
+    let oddsDiff = aiOdds.win - humanOdds.win;
+    if (oddsDiff > 0) {
+      move = this.raise;
+    } else {
+      move = this.callOrCheck;
+    }
+
+    setTimeout(move.bind(this), aiTime);      
+  }
+
+  smartMove(aiOdds) {
     let move;
-    let wOdds = odds.win;
+    let wOdds = aiOdds.win;
     if ((wOdds < 0.33) && (this.state.players[1].stake < this.state.players[0].stake)) {
       move = this.fold;
     } else if (wOdds < 0.66) {
@@ -330,26 +359,6 @@ class Game extends React.Component {
     }    
 
     setTimeout(move.bind(this), aiTime);
-  }
-
-  aiFormulateMove() {
-    if (this.state.turn !== 1) return;
-
-    let randomNumber = Math.floor(Math.random() * 1);
-
-    // implement a confidence factor based on how much human player bets... bluff only when safe...
-
-    if (randomNumber === 0) {
-      setTimeout(this.raise.bind(this), aiTime); // bluff
-    } else if (randomNumber === 1) {
-      setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
-    } else {
-      // let odds = getHandOdds(this.state.stage, this.state.players[1].hold, this.aiMove.bind(this));
-    }
-  }
-
-  smartMove(odds) {
-    // return (this.state.players[1].pot * odds); 
   }  
 
   callOrCheck() {

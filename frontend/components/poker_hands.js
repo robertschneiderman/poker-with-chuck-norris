@@ -54,6 +54,38 @@ export const getHandOdds = (stage, hold, success) => {
   });
 };
 
+export const getBothHandOdds = (stage, aiHold, humanHold, success) => {
+  let community = apiFormat(stage);
+  let aiHand = apiFormat(aiHold);
+  let humanHand = apiFormat(humanHold);
+  $.ajax({
+    method: 'GET',
+    data: {},
+    dataType: 'json',
+    url: `https://poker-odds.p.mashape.com/hold-em/odds?community=${community}&hand=${aiHand}&players=2`,
+    beforeSend: (xhr) => { 
+      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
+      xhr.setRequestHeader('Accept', 'application/json');
+    },
+    success: function(aiResponse){
+      $.ajax({
+
+        method: 'GET',
+        data: {},
+        dataType: 'json',
+        url: `https://poker-odds.p.mashape.com/hold-em/odds?community=${community}&hand=${humanHand}&players=2`,
+        beforeSend: (xhr) => { 
+          xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
+          xhr.setRequestHeader('Accept', 'application/json');
+        },
+        success: function(humanResponse) {
+          success(aiResponse, humanResponse);
+        }
+      });
+    }
+  });
+};
+
 // curl --get --include 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2' \
 //   -H 'X-Mashape-Key: 3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP' \
 //   -H 'Accept: application/json'

@@ -23209,11 +23209,11 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var roundTimes = 100;
-	var aiTime = 100;
+	var roundTimes = 1000;
+	var aiTime = 1000;
 	
 	var defaultPlayer = {
-	  bank: 100,
+	  bank: 1000,
 	  hold: [{
 	    suit: null,
 	    rank: null
@@ -23547,10 +23547,41 @@
 	      return val;
 	    }
 	  }, {
-	    key: 'aiMove',
-	    value: function aiMove(odds) {
+	    key: 'aiFormulateMove',
+	    value: function aiFormulateMove() {
+	      if (this.state.turn !== 1) return;
+	
+	      var randomNumber = Math.floor(Math.random() * (4 - 0 + 4)) + 0;
+	      // implement a confidence factor based on how much human player bets... bluff only when safe...
+	
+	      if (randomNumber === 0) {
+	        setTimeout(this.raise.bind(this), aiTime); // bluff
+	      } else if (randomNumber === 1) {
+	        setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
+	      } else if (this.state.round === 4) {
+	        (0, _poker_hands.getHandOdds)(this.state.stage, this.state.players[1].hold, this.smartMove.bind(this));
+	      } else {
+	        (0, _poker_hands.getBothHandOdds)(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
+	      }
+	    }
+	  }, {
+	    key: 'cheapMove',
+	    value: function cheapMove(aiOdds, humanOdds) {
 	      var move = void 0;
-	      var wOdds = odds.win;
+	      var oddsDiff = aiOdds.win - humanOdds.win;
+	      if (oddsDiff > 0) {
+	        move = this.raise;
+	      } else {
+	        move = this.callOrCheck;
+	      }
+	
+	      setTimeout(move.bind(this), aiTime);
+	    }
+	  }, {
+	    key: 'smartMove',
+	    value: function smartMove(aiOdds) {
+	      var move = void 0;
+	      var wOdds = aiOdds.win;
 	      if (wOdds < 0.33 && this.state.players[1].stake < this.state.players[0].stake) {
 	        move = this.fold;
 	      } else if (wOdds < 0.66) {
@@ -23560,28 +23591,6 @@
 	      }
 	
 	      setTimeout(move.bind(this), aiTime);
-	    }
-	  }, {
-	    key: 'aiFormulateMove',
-	    value: function aiFormulateMove() {
-	      if (this.state.turn !== 1) return;
-	
-	      var randomNumber = Math.floor(Math.random() * 1);
-	
-	      // implement a confidence factor based on how much human player bets... bluff only when safe...
-	
-	      if (randomNumber === 0) {
-	        setTimeout(this.raise.bind(this), aiTime); // bluff
-	      } else if (randomNumber === 1) {
-	        setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
-	      } else {
-	          // let odds = getHandOdds(this.state.stage, this.state.players[1].hold, this.aiMove.bind(this));
-	        }
-	    }
-	  }, {
-	    key: 'smartMove',
-	    value: function smartMove(odds) {
-	      // return (this.state.players[1].pot * odds); 
 	    }
 	  }, {
 	    key: 'callOrCheck',
@@ -41304,7 +41313,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.PokerHand = exports.tiebreaker = exports.greatestHand = exports.greatestHold = exports.getHandOdds = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
+	exports.PokerHand = exports.tiebreaker = exports.greatestHand = exports.greatestHold = exports.getBothHandOdds = exports.getHandOdds = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -41364,6 +41373,38 @@
 	      xhr.setRequestHeader('Accept', 'application/json');
 	    },
 	    success: success
+	  });
+	};
+	
+	var getBothHandOdds = exports.getBothHandOdds = function getBothHandOdds(stage, aiHold, humanHold, _success) {
+	  var community = apiFormat(stage);
+	  var aiHand = apiFormat(aiHold);
+	  var humanHand = apiFormat(humanHold);
+	  $.ajax({
+	    method: 'GET',
+	    data: {},
+	    dataType: 'json',
+	    url: 'https://poker-odds.p.mashape.com/hold-em/odds?community=' + community + '&hand=' + aiHand + '&players=2',
+	    beforeSend: function beforeSend(xhr) {
+	      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
+	      xhr.setRequestHeader('Accept', 'application/json');
+	    },
+	    success: function success(aiResponse) {
+	      $.ajax({
+	
+	        method: 'GET',
+	        data: {},
+	        dataType: 'json',
+	        url: 'https://poker-odds.p.mashape.com/hold-em/odds?community=' + community + '&hand=' + humanHand + '&players=2',
+	        beforeSend: function beforeSend(xhr) {
+	          xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
+	          xhr.setRequestHeader('Accept', 'application/json');
+	        },
+	        success: function success(humanResponse) {
+	          _success(aiResponse, humanResponse);
+	        }
+	      });
+	    }
 	  });
 	};
 	
