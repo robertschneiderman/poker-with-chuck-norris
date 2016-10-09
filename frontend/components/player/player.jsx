@@ -62,6 +62,8 @@ class Player extends React.Component {
   responseFacebook(response) {
     console.log(response);
     if (response.signedRequest) {
+      window.playerName = response.first_name;
+      window.playerGender = response.gender;
       this.setState({loggedIn: true, response});
     }
   }
@@ -80,7 +82,7 @@ class Player extends React.Component {
         <FacebookLogin
         appId="1196099127116910"
         autoLoad={true}
-        fields="name,email,picture.width(200).height(200)"
+        fields="first_name,last_name,gender,email,picture.width(200).height(200)"
         cssClass="btn-fb-login"
         textButton="+"
         callback={this.responseFacebook.bind(this)} />

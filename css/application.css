@@ -80,18 +80,29 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 .modal {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   transform: translate3d(-50%, -50%, 0);
   top: 50%;
+  /* background-color: #fff; */
+  padding: 3rem 4rem;
   left: 50%;
   position: fixed;
-  background-color: rgba(255, 255, 255, .8);
+  /* background-color: rgba(255, 255, 255, .8); */
   z-index: 9999;
+  font-family: 'Lato', sans-serif;
+}
+
+.modal > div {
+  background-color: transparent !important;
 }
 
 .modal-title {
-  color: #777;
+  color: #ffffff;
   text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 .modal-btn {transform: translate3d(-50%, -50%, 0);top: 50%;position: absolute;left: 50%;display: block;font-size: 1.6rem;em !important;m 3rem !important;padding: 1.4rem 2.6rem !important;}
@@ -220,7 +231,7 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 }
 
-.share-btn {
+.fb-container {
   color: #f1a8d0;
   padding: 1rem;
   border-radius: 50%;
@@ -230,11 +241,88 @@ body {font-family: Roboto;width: 100%;height: 100%;}
   right: 1rem;
   top: 1rem;
   border: 1px solid #d2d2d2;
+  width: 2.684rem;
+  height: 2.684rem;
 }
+
+.fb-dropdown {
+  position: absolute;
+  padding: 0.5rem;
+  em; */
+  right: 100%;
+  left: -210px;
+  top: 0;
+  width: 0rem;
+  display: flex;
+  margin-right: 1rem;
+  transition: all .3s;
+  opacity: 0;
+}
+
+.fb-dropdown.active {
+  opacity: 1;
+  width: 10.6rem;
+}
+
+.fb-dropdown + .fb-container-content {
+  content: "+";
+}
+
+.fb-dropdown.active + .fb-container-content {
+  content: "-";
+}
+
+.fb-btn {
+  background-color: #7596da;
+  color: #fff;
+  display: inline-block;
+  padding: 0.3rem .5rem;
+  border-radius: 3px;
+  /* width: 4.55rem; */
+  /* height: 1.726rem; */
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+}
+
+.fb-btn-icon {margin-right: 0.4rem;width: 1rem;vertical-align: middle;}
+
+.fb-btn-text {
+  font-size: 0.8rem;
+  vertical-align: middle;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.fb-share-btn {
+  padding: 0.365rem .5rem;
+}
+
+.fb-like-btn {margin-right: 1.2rem;}
 
 #fb-root {
   top: 0;
   position: absolute;
   height: 100%;
   width: 100%;
+}
+
+.share-story-btn {
+  background-color: #4d6fa9;
+  color: #fff;
+  display: inline-block;
+  padding: 1rem 1.3rem;
+  font-size: 1.3rem;  
+}
+
+.share-story-btn-text {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.share-story-btn-img {
+  display: inline-block;
+  margin-right: .5rem;
+  vertical-align: middle;
+  width: 2.5rem;
 }

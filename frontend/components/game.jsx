@@ -2,7 +2,7 @@ import React from 'react';
 import Player from './player/player';
 import PlayerDisplay from './player/player_display';
 import Stage from './stage/stage';
-import Modal from './player/modal';
+import Modal from 'boron/WaveModal';
 import Message from './message';
 import Interface from './interface/interface';
 import Counter from './counter';
@@ -12,11 +12,11 @@ import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
 import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
 
-const roundTimes = 100;
-const aiTime = 100;
+const roundTimes = 1000;
+const aiTime = 1000;
 
 const defaultPlayer = {
-  bank: 100,
+  bank: 1000,
   hold: [{
     suit: null,
     rank: null
@@ -25,7 +25,8 @@ const defaultPlayer = {
     rank: null
   }],
   hand: '',
-  stake: 0
+  stake: 0,
+  name: ''
 };
 
 const defaultState = {
@@ -42,7 +43,7 @@ const defaultState = {
   gameOver: false,
   autoDeal: false,
   players: [ merge({}, defaultPlayer), merge({}, defaultPlayer) ],
-  winner: null
+  winner: defaultPlayer
 };
 
 class Game extends React.Component {
@@ -100,7 +101,7 @@ class Game extends React.Component {
     });
 
     if (gameOver)
-      this.setState({gameOver}, this.showModal);
+      this.setState({gameOver}, this.showModal.bind(this));
     else {
       this.setState({gameOver}, this.nextSet);
     }
@@ -176,8 +177,10 @@ class Game extends React.Component {
   }
 
   determineWinner(playerWhoDidntFold) {
+    let winningPlayer;
+
     if (playerWhoDidntFold) {
-      return playerWhoDidntFold;
+      winningPlayer = playerWhoDidntFold;
     } else {
       let holds = [this.state.players[0].hold, this.state.players[1].hold];
       let winningHold = greatestHold(this.state.stage, holds);
@@ -185,7 +188,6 @@ class Game extends React.Component {
       let players = merge([], this.state.players);
 
       if (winningHold) {
-        let winningPlayer;
         for (var i = 0; i < players.length; i++) {
           let player = players[i];
 
@@ -194,21 +196,19 @@ class Game extends React.Component {
             winningPlayer = player;
           }
         }
-
-        this.setState({setOver: true, winner: winningPlayer}, this.displayWinner);
-      } else {
-        // IMPLEMENT TIEING!
-        svgMessages.tie();        
-        this.setState({setOver: true, winner: null});        
-      }      
+      }
     }
+    if (winningPlayer) {
+      this.setState({setOver: true, winner: winningPlayer}, this.displayWinner);
+    } else { //TIE!
+      svgMessages.tie();        
+      this.setState({setOver: true, winner: null});        
+    }      
   }
 
   displayWinner() {
 
     let gameOver = false;
-
-    debugger;
 
     if (this.state.winner.name === 'You') {
       this.playSound('win-sound');
@@ -519,6 +519,44 @@ class Game extends React.Component {
     this.refs.modal.show();    
   }
 
+  storyShare() {
+    console.log("story share!");
+
+    let title;
+    let description;
+    let picture;
+    let pronounSubj;
+    let pronounObj;
+    let pronounPoss;
+
+    if (window.playerGender === 'male') {
+      pronounPoss = 'he';
+      pronounPoss = 'him';
+      pronounPoss = 'his';
+    } else {
+      pronounPoss = 'she';
+      pronounObj = 'her';
+    }
+
+    debugger;
+
+    if (this.state.winner.name === 'Chuck') {
+      title = `${window.playerName} got round house kicked to the face by Chuck Norris!`;
+      description = `${window.playerName} had the audacity to challenge Chuck Norris to a game of poker. While we respect ${pronounPoss} bravery, only a fool would challenge a god to a game of Texas Hold\'em`;
+    } else {
+      title = `${window.playerName} got all the chips, but Chuck Norris still won`;
+      description = `${window.playerName} played a great game of poker against Chuck Norris, but it is truly impossible to beat a god. While he collected all the chips, Chuck Norris was the true winner.`;      
+    }
+    FB.ui(
+     {
+      method: 'share',
+      href: 'pokerwithchucknorris.com',
+      title: `${title}`,
+      description: `${description}`,
+      picture: 'http://res.cloudinary.com/stellar-pixels/image/upload/v1475969955/chuck_norris_share_mxoagf.jpg'
+    }, function(response){});
+  }
+
   render() {
     window.state = this.state;
     let subMessageClass = this.state.subMessage === '' ? 'message-sub none' : 'message-sub';
@@ -533,9 +571,12 @@ class Game extends React.Component {
     // <Modal gameOver={this.state.gameOver} winner={this.state.winner} />
     return(
       <div className="game">
-        <Modal refs="modal" className="modal">
-          <h2>{this.state.winner} won!</h2>
-          <button onClick={this.hideModal}>Close</button>
+        <Modal ref="modal" className="modal">
+          <h2 className="modal-title">{this.state.winner.name} won!</h2>
+          <button id="fb-share-btn" className="share-story-btn" onClick={this.storyShare.bind(this)}>
+            <img className="" src="./images/facebook_logo_reversed.svg" />
+            <span className="">Share your experience</span>
+          </button>          
         </Modal>
 
         <div id="fb-root"></div>
@@ -593,7 +634,7 @@ class Game extends React.Component {
           <svg className="message tie"></svg>
         </div>
 
-        <p className={subMessageClass}>{this.state.subMessage}</p>
+        <p className={subMessageClass}>{this.state.subMessage}</p>        
 
       </div>
     );

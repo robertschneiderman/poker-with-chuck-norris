@@ -21,9 +21,9 @@ class Logo extends React.Component {
 
     this.playSound('walker-texas-ranger-theme');    
 
-    // setTimeout(() => {
+    setTimeout(() => {
       this.playSound('hi-this-is-chuck-norris');
-    // }, 1000);    
+    }, 2000);    
 
     setTimeout(() => {
       // $('.logo').addClass('recede');    

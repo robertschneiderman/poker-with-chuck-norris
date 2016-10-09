@@ -419,19 +419,19 @@ export class PokerHand {
 
 // ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 
-// let gh = greatestHand(
-//   [{rank: 9, suit: 'clubs'},
-//   {rank: 7, suit: 'clubs'},
-//   {rank: 2, suit: 'spades'},
-//   {rank: 2, suit: 'clubs'},
-//   {rank: 6, suit: 'hearts'}],
-//   [[{rank: 7, suit: 'spades' },
-//   {rank: 9, suit: 'hearts'}],
-//   [{rank: 12, suit: 'diamonds'},
-//   {rank: 13, suit: 'clubs'}]]
-// );
+let gh = greatestHand(
+  [{rank: 11, suit: 'clubs'},
+  {rank: 13, suit: 'clubs'},
+  {rank: 11, suit: 'spades'},
+  {rank: 12, suit: 'clubs'},
+  {rank: 6, suit: 'hearts'}],
+  [[{rank: 8, suit: 'spades' },
+  {rank: 3, suit: 'hearts'}],
+  [{rank: 5, suit: 'diamonds'},
+  {rank: 11, suit: 'clubs'}]]
+);
 
-// console.log("gh:", gh);
+console.log("gh:", gh);
 
 // console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
 
