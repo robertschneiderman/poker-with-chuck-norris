@@ -428,10 +428,19 @@ let gh = greatestHand(
   [[{rank: 8, suit: 'spades' },
   {rank: 3, suit: 'hearts'}],
   [{rank: 5, suit: 'diamonds'},
-  {rank: 11, suit: 'clubs'}]]
+  {rank: 3, suit: 'clubs'}]]
 );
 
 console.log("gh:", gh);
+
+let bh = new PokerHand([{rank: 11, suit: 'clubs'},
+  {rank: 13, suit: 'clubs'},
+  {rank: 11, suit: 'spades'},
+  {rank: 12, suit: 'clubs'},
+  {rank: 6, suit: 'hearts'}], [{rank: 8, suit: 'spades' },
+  {rank: 3, suit: 'hearts'}]).bestHand();
+
+console.log("bh:", bh);
 
 // console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
 

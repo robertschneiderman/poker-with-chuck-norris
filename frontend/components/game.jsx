@@ -579,9 +579,6 @@ class Game extends React.Component {
           </button>          
         </Modal>
 
-        <div id="fb-root"></div>
-        <ShareBtn />
-
         <main className="main">
           <div className="table">
             <ul className="players">

@@ -42,20 +42,21 @@ class ShareBtn extends React.Component {
   }
 
   render() {
+      // <div className="fb-container" onClick={this.toggleDropdown.bind(this)}>
+      //   <span className="fb-container-content">+</span>        
+      //   <div id="fb-dropdown" className="fb-dropdown">
+      //     <div id="fb-like-btn" className="fb-btn fb-like-btn">
+      //       <img className="fb-btn-icon" src="./images/fb_like.svg" alt=""/>
+      //       <span className="fb-btn-text">Like</span>
+      //     </div>
+      //     <div id="fb-share-btn" className="fb-btn fb-share-btn">
+      //       <img className="fb-btn-icon" src="./images/fb_share.svg" alt=""/>
+      //       <span className="fb-btn-text">Share</span>
+      //     </div>
+      //   </div>
+      // </div>
     return(
-      <div className="fb-container" onClick={this.toggleDropdown.bind(this)}>
-        <span className="fb-container-content">+</span>        
-        <div id="fb-dropdown" className="fb-dropdown">
-          <div id="fb-like-btn" className="fb-btn fb-like-btn">
-            <img className="fb-btn-icon" src="./images/fb_like.svg" alt=""/>
-            <span className="fb-btn-text">Like</span>
-          </div>
-          <div id="fb-share-btn" className="fb-btn fb-share-btn">
-            <img className="fb-btn-icon" src="./images/fb_share.svg" alt=""/>
-            <span className="fb-btn-text">Share</span>
-          </div>
-        </div>
-      </div>
+      <div></div>
     )
   }
 }

@@ -22,13 +22,46 @@
     <link rel="stylesheet" href="css/application.css">
 
     <title>Texas Holdem Poker</title>
-
+    <script src="./bundle.js"></script>
 </head>    
 
 <body>
 
   <div id="root" class="root">
   </div>
+
+  <iframe src="https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&width=130&layout=button&action=like&size=large&show_faces=false&share=true&height=80&appId=1196099127116910" width="130" height="80" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>  
+
+<!--   <div id="fb-container" class="fb-container">
+    <span class="fb-container-content">+</span>        
+    <div id="fb-dropdown" class="fb-dropdown">
+      <iframe src="https://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&width=450&layout=standard&action=like&size=small&show_faces=true&share=true&height=80&appId=1196099127116910" width="450" height="80" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+    </div>
+  </div> -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log("loaded");
+      let fbContainer = document.getElementById("fb-container");
+        console.log(fbContainer);
+      fbContainer.addEventListener('click', (e) => {
+        console.log("clicked");
+        let dropdown = document.getElementById('fb-dropdown');
+        let containerContent = document.querySelector('.fb-container-content');
+        if (!dropdown.classList.contains('active')) {
+          containerContent.innerHTML = '-';
+          dropdown.classList.add('active');
+        } else {
+          containerContent.innerHTML = '+';      
+          dropdown.classList.remove('active');
+        }
+      });
+    });
+
+  </script>
+
+
+  <!-- Your like button code -->
 
 
   <script>
@@ -56,6 +89,5 @@
     //    fjs.parentNode.insertBefore(js, fjs);
     //  }(document, 'script', 'facebook-jssdk'));
   </script>
-  <script src="./bundle.js"></script>
 </body>
 </html>
