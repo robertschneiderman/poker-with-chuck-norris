@@ -19,11 +19,16 @@ class Logo extends React.Component {
       this.addAnimation(this.elasticGrowAnimation);
     }, 300);
 
+    this.playSound('walker-texas-ranger-theme');    
+
+    // setTimeout(() => {
+      this.playSound('hi-this-is-chuck-norris');
+    // }, 1000);    
+
     setTimeout(() => {
       // $('.logo').addClass('recede');    
       this.addAnimation(this.recedeAnimation);
-    }, 1300);
-    // this.playSound('nice-meeting-you');    
+    }, 5000);
   }
 
   playSound(selector) {

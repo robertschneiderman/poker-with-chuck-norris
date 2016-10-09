@@ -6,16 +6,17 @@ import Modal from './player/modal';
 import Message from './message';
 import Interface from './interface/interface';
 import Counter from './counter';
+import ShareBtn from './share_btn';
 import { deck } from '../util/deck';
 import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
 import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
 
-const roundTimes = 1000;
-const aiTime = 1000;
+const roundTimes = 100;
+const aiTime = 100;
 
 const defaultPlayer = {
-  bank: 1000,
+  bank: 100,
   hold: [{
     suit: null,
     rank: null
@@ -93,14 +94,13 @@ class Game extends React.Component {
     this.state.winner ? this.collectWinnings() : this.splitPot();
 
     let gameOver = false;
-    debugger;
     this.state.players.forEach(player => {
       if ((player.bank === 0) && (this.state.winner.name !== player.name)) { gameOver = true;
       }
     });
 
     if (gameOver)
-      this.setState({gameOver});
+      this.setState({gameOver}, this.showModal);
     else {
       this.setState({gameOver}, this.nextSet);
     }
@@ -208,11 +208,15 @@ class Game extends React.Component {
 
     let gameOver = false;
 
+    debugger;
+
     if (this.state.winner.name === 'You') {
       this.playSound('win-sound');
+      this.chuckSound('won');
       svgMessages.youWon();
     } else {
       this.playSound('lose-sound');
+      this.chuckSound('lost');      
       svgMessages.chuckWon();
     }    
 
@@ -221,7 +225,25 @@ class Game extends React.Component {
     let subMessage = `${this.state.winner.hand} over ${losingPlayer.hand}`;
 
     this.setState({subMessage});
-  }     
+  }
+
+  chuckSound(state) {
+    let sounds;
+    switch (state) {
+      case 'won':
+        sounds = ['chuck-disagree', 'chuck-annoyed', 'chuck-dammit'];
+        break;
+      case 'lost':
+        sounds = ['chuck-laughter', 'chuck-silly-shout', 'chuck-whoa'];
+        break;
+      default:
+        break;
+    }
+
+    let randomNumber = Math.floor(Math.random() * (3 - 0) + 0);
+    
+    this.playSound(sounds[randomNumber]);
+  }   
 
   collectWinnings() {
 
@@ -493,6 +515,10 @@ class Game extends React.Component {
     return (this.state.turn === 0) ? 1 : 0;
   }
 
+  showModal() {
+    this.refs.modal.show();    
+  }
+
   render() {
     window.state = this.state;
     let subMessageClass = this.state.subMessage === '' ? 'message-sub none' : 'message-sub';
@@ -504,12 +530,19 @@ class Game extends React.Component {
       oldPot = document.getElementById('stage-pot').innerHTML;
     }
 
+    // <Modal gameOver={this.state.gameOver} winner={this.state.winner} />
     return(
       <div className="game">
+        <Modal refs="modal" className="modal">
+          <h2>{this.state.winner} won!</h2>
+          <button onClick={this.hideModal}>Close</button>
+        </Modal>
+
+        <div id="fb-root"></div>
+        <ShareBtn />
 
         <main className="main">
           <div className="table">
-            <Modal gameOver={this.state.gameOver} />
             <ul className="players">
               <Player
                 num={0}

@@ -27,7 +27,7 @@ class Root extends React.Component {
     // });    
     setTimeout(() => {
       this.setState({loading: false})
-    }, 2500);
+    }, 4000);
   }
 
   render() {
