@@ -90,63 +90,24 @@ export const getBothHandOdds = (stage, aiHold, humanHold, success) => {
 //   -H 'X-Mashape-Key: 3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP' \
 //   -H 'Accept: application/json'
 
-export const greatestHold = (stage, holds) => {
-  let greatistHand = greatestHand(stage, holds);
-
-  for (let i = 0; i < holds.length; i++) {
-    let hold = holds[i]
-    let hand = new PokerHand(stage, hold).bestHand();
-
-    if (isEqual(hand, greatistHand)) {
-      return hold;
-    }    
-  }
-
-  return null;
+export const getPokerHand = (stage, hold) => {
+  return new PokerHand(stage, hold).bestHand();
 }
 
-export const greatestHand = (stage, hands) => {
-  let pokerHands = hands.map( hand => new PokerHand(stage, hand).bestHand());
-  let handsSortedByValue = pokerHands.sort((hand, nextHand) => hand.value > nextHand.value);
-  let greatestValue = handsSortedByValue[pokerHands.length - 1].value;
-  
-  let greatestHands = []
-
-  handsSortedByValue.forEach(hand => {
-    if (hand.value === greatestValue) {
-      greatestHands.push(hand);
-    }
-  });
-
-  if (greatestHands.length === 1) {
-    return greatestHands[0];
-  } else {
-    return tiebreaker(greatestHands);
+export const greatestHold = (stage, hands) => {
+  if (hands[0].value > hands[1].value) {
+    return 0;
+  } else if (hands[1].value > hands[0].value) {
+    return 1;
   }
 
-}
-
-export const tiebreaker = (hands) => {
-
-  let greatestHands = hands;
-
-  for (var i = 0; i < greatestHands[0].tiebreakers.length; i++) {
-
-    greatestHands.sort((hand, nextHand) => hand.tiebreakers[i] < nextHand.tiebreakers[i]);
-
-    let largestTiebreaker = greatestHands[0].tiebreakers[i];
-
-    greatestHands = greatestHands.filter(hand => {
-      if (hand.tiebreakers[i] === largestTiebreaker) {
-        return hand;
-      }
-    });
-
-    if (greatestHands.length === 1) {
-      return greatestHands[0];
+  for (let i = 0; i < hands[0].tiebreakers.length; i++) {
+    if (hands[0].tiebreakers[i] > hands[1].tiebreakers[i]) {
+      return 0;
+    } else if (hands[1].tiebreakers[i] > hands[0].tiebreakers[i]) {
+      return 1;
     }
-  };
-
+  }
   return null;
 }
 
@@ -194,11 +155,11 @@ export class PokerHand {
     let tb;
 
     for (let key in RANKS) {
-      if (RANKS[key] === this.bestHand().value) rank = key
+      if (RANKS[key] === this.value) rank = key
     }
 
-    let tb1 = this.bestHand().tiebreakers[0];
-    let tb2 = this.bestHand().tiebreakers[1];
+    let tb1 = this.tiebreakers[0];
+    let tb2 = this.tiebreakers[1];
 
     tb1 = convertFaceCard(tb1);
     tb2 = convertFaceCard(tb2);
@@ -229,7 +190,12 @@ export class PokerHand {
       let value = RANKS[hand];
       let tiebreakers = hands[hand];
 
-      if (hands[hand]) return { value, tiebreakers }
+      if (hands[hand]) {
+        this.value = value;
+        this.tiebreakers = tiebreakers;
+        this.name = hand;
+        return { value, tiebreakers, name: this.bestHandName() }
+      }
     }
   }
 
@@ -429,28 +395,28 @@ export class PokerHand {
 
 // ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 
-let gh = greatestHand(
-  [{rank: 11, suit: 'clubs'},
-  {rank: 13, suit: 'clubs'},
-  {rank: 11, suit: 'spades'},
-  {rank: 12, suit: 'clubs'},
-  {rank: 6, suit: 'hearts'}],
-  [[{rank: 8, suit: 'spades' },
-  {rank: 3, suit: 'hearts'}],
-  [{rank: 5, suit: 'diamonds'},
-  {rank: 3, suit: 'clubs'}]]
-);
+// let gh = greatestHold(
+//   [{rank: 11, suit: 'clubs'},
+//   {rank: 13, suit: 'clubs'},
+//   {rank: 11, suit: 'spades'},
+//   {rank: 12, suit: 'clubs'},
+//   {rank: 6, suit: 'hearts'}],
+//   [[{rank: 8, suit: 'spades' },
+//   {rank: 3, suit: 'hearts'}],
+//   [{rank: 5, suit: 'diamonds'},
+//   {rank: 3, suit: 'clubs'}]]
+// );
 
-console.log("gh:", gh);
+// console.log("gh:", gh);
 
-let bh = new PokerHand([{rank: 11, suit: 'clubs'},
-  {rank: 13, suit: 'clubs'},
-  {rank: 11, suit: 'spades'},
-  {rank: 12, suit: 'clubs'},
-  {rank: 6, suit: 'hearts'}], [{rank: 8, suit: 'spades' },
-  {rank: 3, suit: 'hearts'}]).bestHand();
+// let bh = new PokerHand([{rank: 11, suit: 'clubs'},
+//   {rank: 13, suit: 'clubs'},
+//   {rank: 11, suit: 'spades'},
+//   {rank: 12, suit: 'clubs'},
+//   {rank: 6, suit: 'hearts'}], [{rank: 8, suit: 'spades' },
+//   {rank: 3, suit: 'hearts'}]).bestHand();
 
-console.log("bh:", bh);
+// console.log("bh:", bh);
 
 // console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
 

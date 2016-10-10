@@ -9,11 +9,11 @@ import Counter from './counter';
 import ShareBtn from './share_btn';
 import { deck } from '../util/deck';
 import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
-import { RANKS, count, sortNumber, greatestHand, greatestHold, tiebreaker, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
+import { RANKS, count, sortNumber, greatestHold, getPokerHand, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
 
-const roundTimes = 1000;
-const aiTime = 1000;
+const roundTimes = 100;
+const aiTime = 100;
 
 const defaultPlayer = {
   bank: 1000,
@@ -100,9 +100,10 @@ class Game extends React.Component {
       }
     });
 
-    if (gameOver)
+    if (gameOver) {
+      this.playFinalSound();
       this.setState({gameOver}, this.showModal.bind(this));
-    else {
+    } else {
       this.setState({gameOver}, this.nextSet);
     }
   } 
@@ -178,37 +179,41 @@ class Game extends React.Component {
 
   determineWinner(playerWhoDidntFold) {
     let winningPlayer;
+    let winningIdx;
+    let players;
 
-    if (playerWhoDidntFold) {
-      winningPlayer = playerWhoDidntFold;
-    } else {
-      let holds = [this.state.players[0].hold, this.state.players[1].hold];
-      let winningHold = greatestHold(this.state.stage, holds);
+    players = merge([], this.state.players);
 
-      let players = merge([], this.state.players);
-
-      if (winningHold) {
-        for (var i = 0; i < players.length; i++) {
-          let player = players[i];
-
-          if (isEqual(player.hold, winningHold)) {
-            player.hand = handName(this.state.stage, player.hold);
-            winningPlayer = player;
-          }
-        }
-      }
+    for (var i = 0; i < players.length; i++) {
+      players[i].hand = getPokerHand(this.state.stage, players[i].hold);
     }
-    if (winningPlayer) {
-      this.setState({setOver: true, winner: winningPlayer}, this.displayWinner);
-    } else { //TIE!
+    winningIdx = greatestHold(this.state.stage, [players[0].hand, players[1].hand]);
+
+    if ((winningIdx === 0) || (winningIdx === 1)) {
+      debugger;
+      this.setState({setOver: true, players, winner: players[winningIdx]}, this.displayWinner);
+    } else if (playerWhoDidntFold) {
+      debugger;
+      this.setState({setOver: true, players, winner: playerWhoDidntFold}, this.displayWinner.bind(this, ''));      
+    } else {
+      //TIE!
       svgMessages.tie();        
-      this.setState({setOver: true, winner: null});        
+      this.setState({setOver: true, winner: defaultPlayer});        
     }      
   }
 
-  displayWinner() {
+  displayWinner(foldSubmessage) {
+    let subMessage;
+    let losingPlayer = this.getLosingPlayer(this.state.winner);    
+    if (foldSubmessage === '') {
+      subMessage = ''
+    } else {
+      subMessage = `${this.state.winner.hand.name} over ${losingPlayer.hand.name}`;
+    }
 
     let gameOver = false;
+
+    debugger;
 
     if (this.state.winner.name === 'You') {
       this.playSound('win-sound');
@@ -220,9 +225,6 @@ class Game extends React.Component {
       svgMessages.chuckWon();
     }    
 
-    let losingPlayer = this.getLosingPlayer(this.state.winner);
-
-    let subMessage = `${this.state.winner.hand} over ${losingPlayer.hand}`;
 
     this.setState({subMessage});
   }
@@ -271,7 +273,7 @@ class Game extends React.Component {
 
   getLosingPlayer(winningPlayer) {
     let i = (winningPlayer.name === 'You') ? 1 : 0;
-    this.state.players[i].hand = handName(this.state.stage, this.state.players[i].hold);
+    // this.state.players[i].hand = handName(this.state.stage, this.state.players[i].hold);
     return this.state.players[i];
   }
 
@@ -349,7 +351,7 @@ class Game extends React.Component {
     let randomNumber = Math.floor(Math.random() * (4 - 0 + 4)) + 0;
     // implement a confidence factor based on how much human player bets... bluff only when safe...
 
-    if (randomNumber === 0) {
+    if (0 === 0) {
       setTimeout(this.raise.bind(this), aiTime); // bluff
     } else if (randomNumber === 1) {
       setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
@@ -519,6 +521,14 @@ class Game extends React.Component {
     this.refs.modal.show();    
   }
 
+  playFinalSound() {
+    if (this.state.winner.name === 'Chuck') {
+      this.playSound('infection-giggling');
+    } else {
+      this.playSound('chuck-crying');
+    }
+  }
+
   storyShare() {
     console.log("story share!");
 
@@ -537,8 +547,6 @@ class Game extends React.Component {
       pronounPoss = 'she';
       pronounObj = 'her';
     }
-
-    debugger;
 
     if (this.state.winner.name === 'Chuck') {
       title = `${window.playerName} got round house kicked to the face by Chuck Norris!`;

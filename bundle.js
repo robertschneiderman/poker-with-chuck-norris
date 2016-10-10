@@ -23217,8 +23217,8 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var roundTimes = 1000;
-	var aiTime = 1000;
+	var roundTimes = 100;
+	var aiTime = 100;
 	
 	var defaultPlayer = {
 	  bank: 1000,
@@ -23318,7 +23318,10 @@
 	        }
 	      });
 	
-	      if (gameOver) this.setState({ gameOver: gameOver }, this.showModal.bind(this));else {
+	      if (gameOver) {
+	        this.playFinalSound();
+	        this.setState({ gameOver: gameOver }, this.showModal.bind(this));
+	      } else {
 	        this.setState({ gameOver: gameOver }, this.nextSet);
 	      }
 	    }
@@ -23399,39 +23402,42 @@
 	    key: 'determineWinner',
 	    value: function determineWinner(playerWhoDidntFold) {
 	      var winningPlayer = void 0;
+	      var winningIdx = void 0;
+	      var players = void 0;
 	
-	      if (playerWhoDidntFold) {
-	        winningPlayer = playerWhoDidntFold;
-	      } else {
-	        var holds = [this.state.players[0].hold, this.state.players[1].hold];
-	        var winningHold = (0, _poker_hands.greatestHold)(this.state.stage, holds);
+	      players = (0, _lodash.merge)([], this.state.players);
 	
-	        var players = (0, _lodash.merge)([], this.state.players);
-	
-	        if (winningHold) {
-	          for (var i = 0; i < players.length; i++) {
-	            var player = players[i];
-	
-	            if ((0, _lodash.isEqual)(player.hold, winningHold)) {
-	              player.hand = (0, _poker_hands.handName)(this.state.stage, player.hold);
-	              winningPlayer = player;
-	            }
-	          }
-	        }
+	      for (var i = 0; i < players.length; i++) {
+	        players[i].hand = (0, _poker_hands.getPokerHand)(this.state.stage, players[i].hold);
 	      }
-	      if (winningPlayer) {
-	        this.setState({ setOver: true, winner: winningPlayer }, this.displayWinner);
+	      winningIdx = (0, _poker_hands.greatestHold)(this.state.stage, [players[0].hand, players[1].hand]);
+	
+	      if (winningIdx === 0 || winningIdx === 1) {
+	        debugger;
+	        this.setState({ setOver: true, players: players, winner: players[winningIdx] }, this.displayWinner);
+	      } else if (playerWhoDidntFold) {
+	        debugger;
+	        this.setState({ setOver: true, players: players, winner: playerWhoDidntFold }, this.displayWinner.bind(this, ''));
 	      } else {
 	        //TIE!
 	        svgMessages.tie();
-	        this.setState({ setOver: true, winner: null });
+	        this.setState({ setOver: true, winner: defaultPlayer });
 	      }
 	    }
 	  }, {
 	    key: 'displayWinner',
-	    value: function displayWinner() {
+	    value: function displayWinner(foldSubmessage) {
+	      var subMessage = void 0;
+	      var losingPlayer = this.getLosingPlayer(this.state.winner);
+	      if (foldSubmessage === '') {
+	        subMessage = '';
+	      } else {
+	        subMessage = this.state.winner.hand.name + ' over ' + losingPlayer.hand.name;
+	      }
 	
 	      var gameOver = false;
+	
+	      debugger;
 	
 	      if (this.state.winner.name === 'You') {
 	        this.playSound('win-sound');
@@ -23442,10 +23448,6 @@
 	        this.chuckSound('lost');
 	        svgMessages.chuckWon();
 	      }
-	
-	      var losingPlayer = this.getLosingPlayer(this.state.winner);
-	
-	      var subMessage = this.state.winner.hand + ' over ' + losingPlayer.hand;
 	
 	      this.setState({ subMessage: subMessage });
 	    }
@@ -23501,7 +23503,7 @@
 	    key: 'getLosingPlayer',
 	    value: function getLosingPlayer(winningPlayer) {
 	      var i = winningPlayer.name === 'You' ? 1 : 0;
-	      this.state.players[i].hand = (0, _poker_hands.handName)(this.state.stage, this.state.players[i].hold);
+	      // this.state.players[i].hand = handName(this.state.stage, this.state.players[i].hold);
 	      return this.state.players[i];
 	    }
 	  }, {
@@ -23590,7 +23592,7 @@
 	      var randomNumber = Math.floor(Math.random() * (4 - 0 + 4)) + 0;
 	      // implement a confidence factor based on how much human player bets... bluff only when safe...
 	
-	      if (randomNumber === 0) {
+	      if (true) {
 	        setTimeout(this.raise.bind(this), aiTime); // bluff
 	      } else if (randomNumber === 1) {
 	        setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
@@ -23779,6 +23781,15 @@
 	      this.refs.modal.show();
 	    }
 	  }, {
+	    key: 'playFinalSound',
+	    value: function playFinalSound() {
+	      if (this.state.winner.name === 'Chuck') {
+	        this.playSound('infection-giggling');
+	      } else {
+	        this.playSound('chuck-crying');
+	      }
+	    }
+	  }, {
 	    key: 'storyShare',
 	    value: function storyShare() {
 	      console.log("story share!");
@@ -23798,8 +23809,6 @@
 	        pronounPoss = 'she';
 	        pronounObj = 'her';
 	      }
-	
-	      debugger;
 	
 	      if (this.state.winner.name === 'Chuck') {
 	        title = window.playerName + ' got round house kicked to the face by Chuck Norris!';
@@ -42163,11 +42172,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.PokerHand = exports.tiebreaker = exports.greatestHand = exports.greatestHold = exports.getBothHandOdds = exports.getHandOdds = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
+	exports.PokerHand = exports.greatestHold = exports.getPokerHand = exports.getBothHandOdds = exports.getHandOdds = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 	
 	var _lodash = __webpack_require__(220);
 	
@@ -42262,76 +42269,24 @@
 	//   -H 'X-Mashape-Key: 3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP' \
 	//   -H 'Accept: application/json'
 	
-	var greatestHold = exports.greatestHold = function greatestHold(stage, holds) {
-	  var greatistHand = greatestHand(stage, holds);
-	
-	  for (var i = 0; i < holds.length; i++) {
-	    var hold = holds[i];
-	    var hand = new PokerHand(stage, hold).bestHand();
-	
-	    if ((0, _lodash.isEqual)(hand, greatistHand)) {
-	      return hold;
-	    }
-	  }
-	
-	  return null;
+	var getPokerHand = exports.getPokerHand = function getPokerHand(stage, hold) {
+	  return new PokerHand(stage, hold).bestHand();
 	};
 	
-	var greatestHand = exports.greatestHand = function greatestHand(stage, hands) {
-	  var pokerHands = hands.map(function (hand) {
-	    return new PokerHand(stage, hand).bestHand();
-	  });
-	  var handsSortedByValue = pokerHands.sort(function (hand, nextHand) {
-	    return hand.value > nextHand.value;
-	  });
-	  var greatestValue = handsSortedByValue[pokerHands.length - 1].value;
-	
-	  var greatestHands = [];
-	
-	  handsSortedByValue.forEach(function (hand) {
-	    if (hand.value === greatestValue) {
-	      greatestHands.push(hand);
-	    }
-	  });
-	
-	  if (greatestHands.length === 1) {
-	    return greatestHands[0];
-	  } else {
-	    return tiebreaker(greatestHands);
+	var greatestHold = exports.greatestHold = function greatestHold(stage, hands) {
+	  if (hands[0].value > hands[1].value) {
+	    return 0;
+	  } else if (hands[1].value > hands[0].value) {
+	    return 1;
 	  }
-	};
 	
-	var tiebreaker = exports.tiebreaker = function tiebreaker(hands) {
-	
-	  var greatestHands = hands;
-	
-	  var _loop = function _loop() {
-	
-	    greatestHands.sort(function (hand, nextHand) {
-	      return hand.tiebreakers[i] < nextHand.tiebreakers[i];
-	    });
-	
-	    var largestTiebreaker = greatestHands[0].tiebreakers[i];
-	
-	    greatestHands = greatestHands.filter(function (hand) {
-	      if (hand.tiebreakers[i] === largestTiebreaker) {
-	        return hand;
-	      }
-	    });
-	
-	    if (greatestHands.length === 1) {
-	      return {
-	        v: greatestHands[0]
-	      };
+	  for (var i = 0; i < hands[0].tiebreakers.length; i++) {
+	    if (hands[0].tiebreakers[i] > hands[1].tiebreakers[i]) {
+	      return 0;
+	    } else if (hands[1].tiebreakers[i] > hands[0].tiebreakers[i]) {
+	      return 1;
 	    }
-	  };
-	
-	  for (var i = 0; i < greatestHands[0].tiebreakers.length; i++) {
-	    var _ret = _loop();
-	
-	    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	  };
-	
+	  }
 	  return null;
 	};
 	
@@ -42380,11 +42335,11 @@
 	      var tb = void 0;
 	
 	      for (var key in RANKS) {
-	        if (RANKS[key] === this.bestHand().value) rank = key;
+	        if (RANKS[key] === this.value) rank = key;
 	      }
 	
-	      var tb1 = this.bestHand().tiebreakers[0];
-	      var tb2 = this.bestHand().tiebreakers[1];
+	      var tb1 = this.tiebreakers[0];
+	      var tb2 = this.tiebreakers[1];
 	
 	      tb1 = convertFaceCard(tb1);
 	      tb2 = convertFaceCard(tb2);
@@ -42416,7 +42371,12 @@
 	        var value = RANKS[hand];
 	        var tiebreakers = hands[hand];
 	
-	        if (hands[hand]) return { value: value, tiebreakers: tiebreakers };
+	        if (hands[hand]) {
+	          this.value = value;
+	          this.tiebreakers = tiebreakers;
+	          this.name = hand;
+	          return { value: value, tiebreakers: tiebreakers, name: this.bestHandName() };
+	        }
 	      }
 	    }
 	
@@ -42642,13 +42602,28 @@
 	
 	// ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 	
-	var gh = greatestHand([{ rank: 11, suit: 'clubs' }, { rank: 13, suit: 'clubs' }, { rank: 11, suit: 'spades' }, { rank: 12, suit: 'clubs' }, { rank: 6, suit: 'hearts' }], [[{ rank: 8, suit: 'spades' }, { rank: 3, suit: 'hearts' }], [{ rank: 5, suit: 'diamonds' }, { rank: 3, suit: 'clubs' }]]);
+	// let gh = greatestHold(
+	//   [{rank: 11, suit: 'clubs'},
+	//   {rank: 13, suit: 'clubs'},
+	//   {rank: 11, suit: 'spades'},
+	//   {rank: 12, suit: 'clubs'},
+	//   {rank: 6, suit: 'hearts'}],
+	//   [[{rank: 8, suit: 'spades' },
+	//   {rank: 3, suit: 'hearts'}],
+	//   [{rank: 5, suit: 'diamonds'},
+	//   {rank: 3, suit: 'clubs'}]]
+	// );
 	
-	console.log("gh:", gh);
+	// console.log("gh:", gh);
 	
-	var bh = new PokerHand([{ rank: 11, suit: 'clubs' }, { rank: 13, suit: 'clubs' }, { rank: 11, suit: 'spades' }, { rank: 12, suit: 'clubs' }, { rank: 6, suit: 'hearts' }], [{ rank: 8, suit: 'spades' }, { rank: 3, suit: 'hearts' }]).bestHand();
+	// let bh = new PokerHand([{rank: 11, suit: 'clubs'},
+	//   {rank: 13, suit: 'clubs'},
+	//   {rank: 11, suit: 'spades'},
+	//   {rank: 12, suit: 'clubs'},
+	//   {rank: 6, suit: 'hearts'}], [{rank: 8, suit: 'spades' },
+	//   {rank: 3, suit: 'hearts'}]).bestHand();
 	
-	console.log("bh:", bh);
+	// console.log("bh:", bh);
 	
 	// console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
 	
