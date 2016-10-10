@@ -229,16 +229,7 @@ export class PokerHand {
       let value = RANKS[hand];
       let tiebreakers = hands[hand];
 
-      if (tiebreakers && (value > 4)) {
-        
-        return { value, tiebreakers }
-
-      } else if(tiebreakers && (value <= 4)) {
-        let sortedSingles = hands['High card'].sort(sortNumber)
-        tiebreakers = tiebreakers.concat(sortedSingles);
-
-        return { value, tiebreakers }
-      }
+      if (hands[hand]) return { value, tiebreakers }
     }
   }
 
@@ -346,19 +337,32 @@ export class PokerHand {
 
 
   triples() {
-    return this.findByCount(3);
+    let triple = this.findByCount(3);
+    if (triple) {
+      let valuesNotInPair = this.valuesNotInPair(triple);
+      return triple.concat(valuesNotInPair.slice(0, 2));
+    } else {
+      return false
+    }
   }
 
   pairs() {
-    let doubles = this.doubles();
+    let doubles = this.findByCount(2);
     if (doubles.length >= 2) {
-      return doubles;
+      let valuesNotInPair = this.valuesNotInPair(doubles);
+      return doubles.concat(valuesNotInPair.slice(0, 1));
     }
     return false;
   }
 
   doubles() {
-    return this.findByCount(2);
+    let pair = this.findByCount(2);
+    if (pair) {
+      let valuesNotInPair = this.valuesNotInPair(pair);
+      return pair.concat(valuesNotInPair.slice(0, 3));
+    } else {
+      return false
+    }
   }
 
   singles() {
@@ -382,7 +386,13 @@ export class PokerHand {
     else {
       return false;
     }
-  }  
+  }
+
+  valuesNotInPair(pairs) {
+    return this.ranks.filter(rank => {
+      if (!pairs.includes(rank)) return rank;
+    });
+  }
 
   arrangeBySuit(pile) {
     let arranged = {"spades": [], "hearts": [], "clubs": [], "diamonds": []};

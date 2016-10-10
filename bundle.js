@@ -42416,15 +42416,7 @@
 	        var value = RANKS[hand];
 	        var tiebreakers = hands[hand];
 	
-	        if (tiebreakers && value > 4) {
-	
-	          return { value: value, tiebreakers: tiebreakers };
-	        } else if (tiebreakers && value <= 4) {
-	          var sortedSingles = hands['High card'].sort(sortNumber);
-	          tiebreakers = tiebreakers.concat(sortedSingles);
-	
-	          return { value: value, tiebreakers: tiebreakers };
-	        }
+	        if (hands[hand]) return { value: value, tiebreakers: tiebreakers };
 	      }
 	    }
 	
@@ -42543,21 +42535,34 @@
 	  }, {
 	    key: 'triples',
 	    value: function triples() {
-	      return this.findByCount(3);
+	      var triple = this.findByCount(3);
+	      if (triple) {
+	        var valuesNotInPair = this.valuesNotInPair(triple);
+	        return triple.concat(valuesNotInPair.slice(0, 2));
+	      } else {
+	        return false;
+	      }
 	    }
 	  }, {
 	    key: 'pairs',
 	    value: function pairs() {
-	      var doubles = this.doubles();
+	      var doubles = this.findByCount(2);
 	      if (doubles.length >= 2) {
-	        return doubles;
+	        var valuesNotInPair = this.valuesNotInPair(doubles);
+	        return doubles.concat(valuesNotInPair.slice(0, 1));
 	      }
 	      return false;
 	    }
 	  }, {
 	    key: 'doubles',
 	    value: function doubles() {
-	      return this.findByCount(2);
+	      var pair = this.findByCount(2);
+	      if (pair) {
+	        var valuesNotInPair = this.valuesNotInPair(pair);
+	        return pair.concat(valuesNotInPair.slice(0, 3));
+	      } else {
+	        return false;
+	      }
 	    }
 	  }, {
 	    key: 'singles',
@@ -42583,6 +42588,13 @@
 	      } else if (uniqueVals.length > 0) return uniqueVals.sort(sortNumber);else {
 	        return false;
 	      }
+	    }
+	  }, {
+	    key: 'valuesNotInPair',
+	    value: function valuesNotInPair(pairs) {
+	      return this.ranks.filter(function (rank) {
+	        if (!pairs.includes(rank)) return rank;
+	      });
 	    }
 	  }, {
 	    key: 'arrangeBySuit',
