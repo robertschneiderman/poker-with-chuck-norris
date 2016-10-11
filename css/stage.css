@@ -61,6 +61,11 @@
   width: 160px;
 }
 
+.all-in {
+  height: 105px;
+  width: 350px;
+}
+
 .message-sub {
   color: #999;
   /* background-color: rgba(0,0,0,0.6); */

@@ -17,6 +17,7 @@ class Message extends React.Component {
         <svg className="message checked"></svg>
         <svg className="message folded"></svg>
         <svg className="message chuck-won"></svg>
+        <svg className="message all-in"></svg>
         <svg className="message you-won"></svg>
       </div>
     )

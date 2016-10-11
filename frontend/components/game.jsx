@@ -16,7 +16,7 @@ const roundTimes = 100;
 const aiTime = 100;
 
 const defaultPlayer = {
-  bank: 1000,
+  bank: 100,
   hold: [{
     suit: null,
     rank: null
@@ -324,6 +324,7 @@ class Game extends React.Component {
   }
   
   autoDeal() {
+    if (!this.state.autoDeal) svgMessages.allIn();
     this.setState({autoDeal: true}, this.nextRound.bind(this, true));
   }
 
@@ -552,9 +553,11 @@ class Game extends React.Component {
     if (this.state.winner.name === 'Chuck') {
       title = `${window.playerName} got round house kicked to the face by Chuck Norris!`;
       description = `${window.playerName} had the audacity to challenge Chuck Norris to a game of poker. While we respect ${pronounPoss} bravery, only a fool would challenge a god to a game of Texas Hold\'em`;
+      picture = "http://res.cloudinary.com/stellar-pixels/image/upload/v1476219397/chuck_win_svmv8f.jpg"
     } else {
       title = `${window.playerName} got all the chips, but Chuck Norris still won`;
-      description = `${window.playerName} played a great game of poker against Chuck Norris, but it is truly impossible to beat a god. While he collected all the chips, Chuck Norris was the true winner.`;      
+      description = `${window.playerName} played a great game of poker against Chuck Norris, but it is truly impossible to beat a god. While he collected all the chips, Chuck Norris was the true winner.`;
+      picture = 'http://res.cloudinary.com/stellar-pixels/image/upload/v1476218978/chuck_loser_dmf48m.jpg';
     }
     FB.ui(
      {
@@ -562,7 +565,7 @@ class Game extends React.Component {
       href: 'pokerwithchucknorris.com',
       title: `${title}`,
       description: `${description}`,
-      picture: 'http://res.cloudinary.com/stellar-pixels/image/upload/v1475969955/chuck_norris_share_mxoagf.jpg'
+      picture: picture
     }, function(response){});
   }
 
@@ -638,6 +641,7 @@ class Game extends React.Component {
           <svg className="message called"></svg>
           <svg className="message checked"></svg>
           <svg className="message folded"></svg>
+          <svg className="message all-in"></svg>
           <svg className="message chuck-won"></svg>
           <svg className="message you-won"></svg>
           <svg className="message tie"></svg>

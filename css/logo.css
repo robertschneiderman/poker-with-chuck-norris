@@ -49,4 +49,5 @@
   transform: translate3d(-50%, -50%, 0);
   position: absolute;
   z-index: 7000;
+  pointer-events: none;
 }
