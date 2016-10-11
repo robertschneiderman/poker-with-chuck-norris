@@ -23309,7 +23309,7 @@
 	    value: function checkGameState() {
 	      var _this3 = this;
 	
-	      this.state.winner ? this.collectWinnings() : this.splitPot();
+	      this.state.winner.name !== '' ? this.collectWinnings() : this.splitPot();
 	
 	      var gameOver = false;
 	      this.state.players.forEach(function (player) {

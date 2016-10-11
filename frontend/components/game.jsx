@@ -92,7 +92,7 @@ class Game extends React.Component {
   }
 
   checkGameState() {
-    this.state.winner ? this.collectWinnings() : this.splitPot();
+    (this.state.winner.name !== '') ? this.collectWinnings() : this.splitPot();
 
     let gameOver = false;
     this.state.players.forEach(player => {

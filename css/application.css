@@ -255,15 +255,32 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 .fb-dropdown {
   position: absolute;
   padding: 0.5rem;
-  em; */
   right: 100%;
   left: -210px;
   top: 0;
-  width: 0rem;
+  width: 10rem;
   display: flex;
   margin-right: 1rem;
   transition: all .3s;
+  align-items: center;
+  height: 3rem;
+}
+
+.nested-iframe {
+  position: absolute;
   opacity: 0;
+  transition: all .3s;
+  top: 0;
+  z-index: 9999;
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+  right: 40px;
+}
+
+.nested-iframe.active {
+  opacity: 1;
+  right: 60px;
 }
 
 iframe {
@@ -296,6 +313,11 @@ iframe {
   vertical-align: middle;
   display: flex;
   align-items: center;
+}
+
+.fb-icon-pink {
+  width: 0.5rem;
+  top: -0.2rem;
 }
 
 .fb-btn-icon {margin-right: 0.4rem;width: 1rem;vertical-align: middle;}
