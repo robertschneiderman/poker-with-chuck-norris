@@ -23889,7 +23889,16 @@
 	              cards: this.state.stage })
 	          )
 	        ),
-	        _react2.default.createElement(_counter2.default, { id: 'stage-pot', className: 'stage-pot-big', begin: oldPot, end: this.state.pot }),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'stage-pot-big' },
+	          _react2.default.createElement(
+	            'p',
+	            { className: 'stage-pot-label' },
+	            'Pot'
+	          ),
+	          _react2.default.createElement(_counter2.default, { id: 'stage-pot', begin: oldPot, end: this.state.pot })
+	        ),
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[0] }),
 	        _react2.default.createElement(_player_display2.default, { player: this.state.players[1] }),
 	        _react2.default.createElement(_interface2.default, {
@@ -42527,7 +42536,7 @@
 	  }, {
 	    key: 'singles',
 	    value: function singles() {
-	      return this.findByCount(1);
+	      return this.ranks.sort(sortNumber).slice(0, 5);
 	    }
 	  }, {
 	    key: 'findByCount',
@@ -42602,19 +42611,16 @@
 	
 	// ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
 	
-	// let gh = greatestHold(
-	//   [{rank: 11, suit: 'clubs'},
-	//   {rank: 13, suit: 'clubs'},
-	//   {rank: 11, suit: 'spades'},
-	//   {rank: 12, suit: 'clubs'},
-	//   {rank: 6, suit: 'hearts'}],
-	//   [[{rank: 8, suit: 'spades' },
-	//   {rank: 3, suit: 'hearts'}],
-	//   [{rank: 5, suit: 'diamonds'},
-	//   {rank: 3, suit: 'clubs'}]]
-	// );
+	var stage = [{ rank: 11, suit: 'clubs' }, { rank: 13, suit: 'clubs' }, { rank: 8, suit: 'spades' }, { rank: 12, suit: 'clubs' }, { rank: 6, suit: 'hearts' }];
 	
-	// console.log("gh:", gh);
+	var h1 = getPokerHand(stage, [{ rank: 4, suit: 'spades' }, { rank: 5, suit: 'hearts' }]);
+	var h2 = getPokerHand(stage, [{ rank: 4, suit: 'spades' }, { rank: 3, suit: 'hearts' }]);
+	
+	console.log("h1:", h1);
+	console.log("h2:", h2);
+	
+	var gh = greatestHold(stage, [h1, h2]);
+	console.log("gh:", gh);
 	
 	// let bh = new PokerHand([{rank: 11, suit: 'clubs'},
 	//   {rank: 13, suit: 'clubs'},

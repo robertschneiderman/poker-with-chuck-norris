@@ -611,7 +611,10 @@ class Game extends React.Component {
           </div>
         </main>
 
-        <Counter id="stage-pot" className="stage-pot-big" begin={oldPot} end={this.state.pot} />
+        <div className="stage-pot-big">
+          <p className="stage-pot-label">Pot</p>
+          <Counter id="stage-pot" begin={oldPot} end={this.state.pot} />
+        </div>
 
         <PlayerDisplay player={this.state.players[0]} />
         <PlayerDisplay player={this.state.players[1]} />

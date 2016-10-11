@@ -113,6 +113,12 @@ body {font-family: Roboto;width: 100%;height: 100%;}
 
 .stage-pot-big {/* background-color: rgba(0,0,0, 0.45); */color: #9bd69b;font-size: 2.1rem;/* padding: 0.7rem 0.7rem; */display: block;width: 6rem;margin: 0 auto 0.7rem;display: none;position: absolute;left: 10rem;}
 
+.stage-pot-label {
+  color: #ccc;
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
 @media (min-width: 1200px) {
   .stage-pot-small {
     display: none;
