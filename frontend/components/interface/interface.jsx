@@ -1,4 +1,5 @@
 import React from 'react';
+import {debounce} from 'lodash';
 // import Container from './/_container';
 
 class Interface extends React.Component {
@@ -39,7 +40,8 @@ class Interface extends React.Component {
     });
     switch(str) {
       case 'raise':
-        this.props.raise();
+        debugger;
+        debounce(this.props.raise, 250);
         break;
       case 'fold': 
         this.props.fold();

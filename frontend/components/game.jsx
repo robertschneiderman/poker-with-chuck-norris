@@ -46,6 +46,12 @@ const defaultState = {
   winner: defaultPlayer
 };
 
+const randomNumber = (frm, to) => {
+  return (Math.floor(Math.random() * (to - frm) + frm));
+}
+
+window.randomNumber = randomNumber;
+
 class Game extends React.Component {
 
   constructor(props) {
@@ -190,10 +196,8 @@ class Game extends React.Component {
     winningIdx = greatestHold(this.state.stage, [players[0].hand, players[1].hand]);
 
     if ((winningIdx === 0) || (winningIdx === 1)) {
-      debugger;
       this.setState({setOver: true, players, winner: players[winningIdx]}, this.displayWinner);
     } else if (playerWhoDidntFold) {
-      debugger;
       this.setState({setOver: true, players, winner: playerWhoDidntFold}, this.displayWinner.bind(this, ''));      
     } else {
       //TIE!
@@ -242,9 +246,9 @@ class Game extends React.Component {
         break;
     }
 
-    let randomNumber = Math.floor(Math.random() * (3 - 0) + 0);
+    let rn = randomNumber(0, 3);
     
-    this.playSound(sounds[randomNumber]);
+    this.playSound(sounds[rn]);
   }   
 
   collectWinnings() {
@@ -348,17 +352,23 @@ class Game extends React.Component {
   aiFormulateMove() {
     if (this.state.turn !== 1) return;
 
-    let randomNumber = Math.floor(Math.random() * (4 - 0 + 4)) + 0;
+    let rn = randomNumber(0, 4);
     // implement a confidence factor based on how much human player bets... bluff only when safe...
 
-    if (0 === 0) {
-      setTimeout(this.raise.bind(this), aiTime); // bluff
-    } else if (randomNumber === 1) {
-      setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
-    } else if (this.state.round === 4) {
+    // if (rn === 0) {
+    //   setTimeout(this.raise.bind(this), aiTime); // bluff
+    // } else if (rn === 1) {
+    //   setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
+    // } else 
+    if (this.state.round === 4) {
       getHandOdds(this.state.stage, this.state.players[1].hold, this.smartMove.bind(this));
     } else {
-      getBothHandOdds(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
+      rn = randomNumber(0, 3);
+      if (rn < 2) {
+        getBothHandOdds(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
+      } else {
+        getBothHandOdds(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMoveWithFold.bind(this));        
+      }
     }
   }
 
@@ -370,9 +380,21 @@ class Game extends React.Component {
     } else {
       move = this.callOrCheck;
     }
-
     setTimeout(move.bind(this), aiTime);      
   }
+
+  cheapMoveWithFold(aiOdds, humanOdds) {
+    let move;    
+    let oddsDiff = aiOdds.win - humanOdds.win;
+    if (oddsDiff > 0) {
+      move = this.raise;
+    } else if (oddsDiff < -20) {
+      move = this.fold;
+    } else {
+      move = this.callOrCheck;
+    }
+    setTimeout(move.bind(this), aiTime);      
+  }  
 
   smartMove(aiOdds) {
     let move;
@@ -415,6 +437,7 @@ class Game extends React.Component {
   }
 
   raise() {
+    debugger;
     let amountToWager = this.amountToWager();
 
     this.currentPlayer().stake += amountToWager;
@@ -448,10 +471,15 @@ class Game extends React.Component {
   }
 
   amountToWager() {
-    let amountToWager = this.differenceInStake() + 50;
+    let amountToWager 
+    
+    if (this.otherPlayer().bank !== 0) {
+      amountToWager = this.differenceInStake() + 50;
+    } else {
+      amountToWager = this.differenceInStake();
+    }
 
-    return (amountToWager > this.currentPlayer().bank) ? this.currentPlayer().bank : amountToWager;
-    // amountToWager = (amountToWager > (this.otherPlayer().bank + this.differenceInStake())) ? (this.otherPlayer().bank + this.differenceInStake()) : amountToWager;    
+    return (amountToWager > this.currentPlayer().bank) ? this.currentPlayer().bank : amountToWager; 
   }
 
   differenceInStake() {

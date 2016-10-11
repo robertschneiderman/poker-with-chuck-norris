@@ -23251,6 +23251,12 @@
 	  winner: defaultPlayer
 	};
 	
+	var randomNumber = function randomNumber(frm, to) {
+	  return Math.floor(Math.random() * (to - frm) + frm);
+	};
+	
+	window.randomNumber = randomNumber;
+	
 	var Game = function (_React$Component) {
 	  _inherits(Game, _React$Component);
 	
@@ -23413,10 +23419,8 @@
 	      winningIdx = (0, _poker_hands.greatestHold)(this.state.stage, [players[0].hand, players[1].hand]);
 	
 	      if (winningIdx === 0 || winningIdx === 1) {
-	        debugger;
 	        this.setState({ setOver: true, players: players, winner: players[winningIdx] }, this.displayWinner);
 	      } else if (playerWhoDidntFold) {
-	        debugger;
 	        this.setState({ setOver: true, players: players, winner: playerWhoDidntFold }, this.displayWinner.bind(this, ''));
 	      } else {
 	        //TIE!
@@ -23466,9 +23470,9 @@
 	          break;
 	      }
 	
-	      var randomNumber = Math.floor(Math.random() * (3 - 0) + 0);
+	      var rn = randomNumber(0, 3);
 	
-	      this.playSound(sounds[randomNumber]);
+	      this.playSound(sounds[rn]);
 	    }
 	  }, {
 	    key: 'collectWinnings',
@@ -23589,17 +23593,23 @@
 	    value: function aiFormulateMove() {
 	      if (this.state.turn !== 1) return;
 	
-	      var randomNumber = Math.floor(Math.random() * (4 - 0 + 4)) + 0;
+	      var rn = randomNumber(0, 4);
 	      // implement a confidence factor based on how much human player bets... bluff only when safe...
 	
-	      if (true) {
-	        setTimeout(this.raise.bind(this), aiTime); // bluff
-	      } else if (randomNumber === 1) {
-	        setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
-	      } else if (this.state.round === 4) {
+	      // if (rn === 0) {
+	      //   setTimeout(this.raise.bind(this), aiTime); // bluff
+	      // } else if (rn === 1) {
+	      //   setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
+	      // } else 
+	      if (this.state.round === 4) {
 	        (0, _poker_hands.getHandOdds)(this.state.stage, this.state.players[1].hold, this.smartMove.bind(this));
 	      } else {
-	        (0, _poker_hands.getBothHandOdds)(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
+	        rn = randomNumber(0, 3);
+	        if (rn < 2) {
+	          (0, _poker_hands.getBothHandOdds)(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
+	        } else {
+	          (0, _poker_hands.getBothHandOdds)(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMoveWithFold.bind(this));
+	        }
 	      }
 	    }
 	  }, {
@@ -23612,7 +23622,20 @@
 	      } else {
 	        move = this.callOrCheck;
 	      }
-	
+	      setTimeout(move.bind(this), aiTime);
+	    }
+	  }, {
+	    key: 'cheapMoveWithFold',
+	    value: function cheapMoveWithFold(aiOdds, humanOdds) {
+	      var move = void 0;
+	      var oddsDiff = aiOdds.win - humanOdds.win;
+	      if (oddsDiff > 0) {
+	        move = this.raise;
+	      } else if (oddsDiff < -20) {
+	        move = this.fold;
+	      } else {
+	        move = this.callOrCheck;
+	      }
 	      setTimeout(move.bind(this), aiTime);
 	    }
 	  }, {
@@ -23660,6 +23683,7 @@
 	  }, {
 	    key: 'raise',
 	    value: function raise() {
+	      debugger;
 	      var amountToWager = this.amountToWager();
 	
 	      this.currentPlayer().stake += amountToWager;
@@ -23696,10 +23720,15 @@
 	  }, {
 	    key: 'amountToWager',
 	    value: function amountToWager() {
-	      var amountToWager = this.differenceInStake() + 50;
+	      var amountToWager = void 0;
+	
+	      if (this.otherPlayer().bank !== 0) {
+	        amountToWager = this.differenceInStake() + 50;
+	      } else {
+	        amountToWager = this.differenceInStake();
+	      }
 	
 	      return amountToWager > this.currentPlayer().bank ? this.currentPlayer().bank : amountToWager;
-	      // amountToWager = (amountToWager > (this.otherPlayer().bank + this.differenceInStake())) ? (this.otherPlayer().bank + this.differenceInStake()) : amountToWager;    
 	    }
 	  }, {
 	    key: 'differenceInStake',
@@ -25188,6 +25217,8 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _lodash = __webpack_require__(217);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -25243,7 +25274,8 @@
 	      });
 	      switch (str) {
 	        case 'raise':
-	          this.props.raise();
+	          debugger;
+	          (0, _lodash.debounce)(this.props.raise, 250);
 	          break;
 	        case 'fold':
 	          this.props.fold();
