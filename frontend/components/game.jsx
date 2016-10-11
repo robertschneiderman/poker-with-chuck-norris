@@ -9,7 +9,7 @@ import Counter from './counter';
 import ShareBtn from './share_btn';
 import { deck } from '../util/deck';
 import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
-import { RANKS, count, sortNumber, greatestHold, getPokerHand, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
+import { RANKS, count, sortNumber, greatestHold, bestHandName, getPokerHand, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
 
 const roundTimes = 100;
@@ -190,10 +190,7 @@ class Game extends React.Component {
 
     players = merge([], this.state.players);
 
-    for (var i = 0; i < players.length; i++) {
-      players[i].hand = getPokerHand(this.state.stage, players[i].hold);
-    }
-    winningIdx = greatestHold(this.state.stage, [players[0].hand, players[1].hand]);
+    winningIdx = this.greatestHold(players);
 
     if ((winningIdx === 0) || (winningIdx === 1)) {
       this.setState({setOver: true, players, winner: players[winningIdx]}, this.displayWinner);
@@ -212,12 +209,10 @@ class Game extends React.Component {
     if (foldSubmessage === '') {
       subMessage = ''
     } else {
-      subMessage = `${this.state.winner.hand.name} over ${losingPlayer.hand.name}`;
+      subMessage = `${bestHandName(this.state.stage, this.state.winner.hold)} over ${bestHandName(this.state.stage, losingPlayer.hold)}`;
     }
 
     let gameOver = false;
-
-    debugger;
 
     if (this.state.winner.name === 'You') {
       this.playSound('win-sound');
@@ -351,63 +346,38 @@ class Game extends React.Component {
 
   aiFormulateMove() {
     if (this.state.turn !== 1) return;
-
-    let rn = randomNumber(0, 4);
-    // implement a confidence factor based on how much human player bets... bluff only when safe...
-
-    // if (rn === 0) {
-    //   setTimeout(this.raise.bind(this), aiTime); // bluff
-    // } else if (rn === 1) {
-    //   setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
-    // } else 
-    if (this.state.round === 4) {
-      getHandOdds(this.state.stage, this.state.players[1].hold, this.smartMove.bind(this));
+    let rn = randomNumber(0, 3);
+    if (rn < 2) {
+      this.cheapMove();
     } else {
-      rn = randomNumber(0, 3);
-      if (rn < 2) {
-        getBothHandOdds(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
-      } else {
-        getBothHandOdds(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMoveWithFold.bind(this));        
-      }
+      this.cheapMoveWithFold();        
     }
   }
 
-  cheapMove(aiOdds, humanOdds) {
-    let move;    
-    let oddsDiff = aiOdds.win - humanOdds.win;
-    if (oddsDiff > 0) {
-      move = this.raise;
-    } else {
-      move = this.callOrCheck;
-    }
-    setTimeout(move.bind(this), aiTime);      
-  }
-
-  cheapMoveWithFold(aiOdds, humanOdds) {
-    let move;    
-    let oddsDiff = aiOdds.win - humanOdds.win;
-    if (oddsDiff > 0) {
-      move = this.raise;
-    } else if (oddsDiff < -20) {
-      move = this.fold;
-    } else {
-      move = this.callOrCheck;
-    }
-    setTimeout(move.bind(this), aiTime);      
-  }  
-
-  smartMove(aiOdds) {
+  cheapMove() {
     let move;
-    let wOdds = aiOdds.win;
-    if ((wOdds < 0.33) && (this.state.players[1].stake < this.state.players[0].stake)) {
-      move = this.fold;
-    } else if (wOdds < 0.66) {
-      move = this.callOrCheck;
-    } else {
+    let winningIdx = this.greatestHold(this.state.players);
+    if (winningIdx === 1) {
       move = this.raise;
-    }    
+    } else {
+      move = this.callOrCheck;
+    }
+    setTimeout(move.bind(this), aiTime);      
+  }
 
-    setTimeout(move.bind(this), aiTime);
+  cheapMoveWithFold() {
+    let move;
+    let winningIdx = this.greatestHold(this.state.players);    
+    let pokerHand = getPokerHand(this.state.stage, this.state.players[0].hold);
+
+    if (winningIdx === 1) {
+      move = this.raise;
+    } else if ((pokerHand.rank < 2) && (pokerHand.tiebreakers[0] < 11) && (this.state.round > 1)) {
+      move = this.fold;
+    } else {
+      move = this.callOrCheck;
+    }
+    setTimeout(move.bind(this), aiTime);      
   }  
 
   callOrCheck() {
@@ -437,7 +407,6 @@ class Game extends React.Component {
   }
 
   raise() {
-    debugger;
     let amountToWager = this.amountToWager();
 
     this.currentPlayer().stake += amountToWager;
@@ -527,6 +496,10 @@ class Game extends React.Component {
       if (player.stake > highestStake) highestStake = player.stake;
     });
     return highestStake;
+  }
+
+  greatestHold(players) {
+    return greatestHold.call(this, this.state.stage, [players[0].hold, players[1].hold]);
   }
 
   currentPlayer() {

@@ -23413,10 +23413,7 @@
 	
 	      players = (0, _lodash.merge)([], this.state.players);
 	
-	      for (var i = 0; i < players.length; i++) {
-	        players[i].hand = (0, _poker_hands.getPokerHand)(this.state.stage, players[i].hold);
-	      }
-	      winningIdx = (0, _poker_hands.greatestHold)(this.state.stage, [players[0].hand, players[1].hand]);
+	      winningIdx = this.greatestHold(players);
 	
 	      if (winningIdx === 0 || winningIdx === 1) {
 	        this.setState({ setOver: true, players: players, winner: players[winningIdx] }, this.displayWinner);
@@ -23436,12 +23433,10 @@
 	      if (foldSubmessage === '') {
 	        subMessage = '';
 	      } else {
-	        subMessage = this.state.winner.hand.name + ' over ' + losingPlayer.hand.name;
+	        subMessage = (0, _poker_hands.bestHandName)(this.state.stage, this.state.winner.hold) + ' over ' + (0, _poker_hands.bestHandName)(this.state.stage, losingPlayer.hold);
 	      }
 	
 	      var gameOver = false;
-	
-	      debugger;
 	
 	      if (this.state.winner.name === 'You') {
 	        this.playSound('win-sound');
@@ -23592,32 +23587,19 @@
 	    key: 'aiFormulateMove',
 	    value: function aiFormulateMove() {
 	      if (this.state.turn !== 1) return;
-	
-	      var rn = randomNumber(0, 4);
-	      // implement a confidence factor based on how much human player bets... bluff only when safe...
-	
-	      // if (rn === 0) {
-	      //   setTimeout(this.raise.bind(this), aiTime); // bluff
-	      // } else if (rn === 1) {
-	      //   setTimeout(this.callOrCheck.bind(this), aiTime); // slow play
-	      // } else 
-	      if (this.state.round === 4) {
-	        (0, _poker_hands.getHandOdds)(this.state.stage, this.state.players[1].hold, this.smartMove.bind(this));
+	      var rn = randomNumber(0, 3);
+	      if (rn < 2) {
+	        this.cheapMove();
 	      } else {
-	        rn = randomNumber(0, 3);
-	        if (rn < 2) {
-	          (0, _poker_hands.getBothHandOdds)(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMove.bind(this));
-	        } else {
-	          (0, _poker_hands.getBothHandOdds)(this.state.stage, this.state.players[1].hold, this.state.players[0].hold, this.cheapMoveWithFold.bind(this));
-	        }
+	        this.cheapMoveWithFold();
 	      }
 	    }
 	  }, {
 	    key: 'cheapMove',
-	    value: function cheapMove(aiOdds, humanOdds) {
+	    value: function cheapMove() {
 	      var move = void 0;
-	      var oddsDiff = aiOdds.win - humanOdds.win;
-	      if (oddsDiff > 0) {
+	      var winningIdx = this.greatestHold(this.state.players);
+	      if (winningIdx === 1) {
 	        move = this.raise;
 	      } else {
 	        move = this.callOrCheck;
@@ -23626,31 +23608,18 @@
 	    }
 	  }, {
 	    key: 'cheapMoveWithFold',
-	    value: function cheapMoveWithFold(aiOdds, humanOdds) {
+	    value: function cheapMoveWithFold() {
 	      var move = void 0;
-	      var oddsDiff = aiOdds.win - humanOdds.win;
-	      if (oddsDiff > 0) {
-	        move = this.raise;
-	      } else if (oddsDiff < -20) {
-	        move = this.fold;
-	      } else {
-	        move = this.callOrCheck;
-	      }
-	      setTimeout(move.bind(this), aiTime);
-	    }
-	  }, {
-	    key: 'smartMove',
-	    value: function smartMove(aiOdds) {
-	      var move = void 0;
-	      var wOdds = aiOdds.win;
-	      if (wOdds < 0.33 && this.state.players[1].stake < this.state.players[0].stake) {
-	        move = this.fold;
-	      } else if (wOdds < 0.66) {
-	        move = this.callOrCheck;
-	      } else {
-	        move = this.raise;
-	      }
+	      var winningIdx = this.greatestHold(this.state.players);
+	      var pokerHand = (0, _poker_hands.getPokerHand)(this.state.stage, this.state.players[0].hold);
 	
+	      if (winningIdx === 1) {
+	        move = this.raise;
+	      } else if (pokerHand.rank < 2 && pokerHand.tiebreakers[0] < 11 && this.state.round > 1) {
+	        move = this.fold;
+	      } else {
+	        move = this.callOrCheck;
+	      }
 	      setTimeout(move.bind(this), aiTime);
 	    }
 	  }, {
@@ -23683,7 +23652,6 @@
 	  }, {
 	    key: 'raise',
 	    value: function raise() {
-	      debugger;
 	      var amountToWager = this.amountToWager();
 	
 	      this.currentPlayer().stake += amountToWager;
@@ -23783,6 +23751,11 @@
 	        if (player.stake > highestStake) highestStake = player.stake;
 	      });
 	      return highestStake;
+	    }
+	  }, {
+	    key: 'greatestHold',
+	    value: function greatestHold(players) {
+	      return _poker_hands.greatestHold.call(this, this.state.stage, [players[0].hold, players[1].hold]);
 	    }
 	  }, {
 	    key: 'currentPlayer',
@@ -42213,7 +42186,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.PokerHand = exports.greatestHold = exports.getPokerHand = exports.getBothHandOdds = exports.getHandOdds = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
+	exports.PokerHand = exports.bestHandName = exports.greatestHold = exports.getPokerHand = exports.handName = exports.sortNumber = exports.count = exports.RANKS = undefined;
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -42258,101 +42231,66 @@
 	// 'https://poker-odds.p.mashape.com/hold-em/odds?community=5d%2C7c%2CAh&hand=As%2CKd&players=3'
 	// 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2'
 	
-	var getHandOdds = exports.getHandOdds = function getHandOdds(stage, hold, success) {
-	  var community = apiFormat(stage);
-	  var hand = apiFormat(hold);
-	  $.ajax({
-	    method: 'GET',
-	    data: {},
-	    dataType: 'json',
-	    url: 'https://poker-odds.p.mashape.com/hold-em/odds?community=' + community + '&hand=' + hand + '&players=2',
-	    beforeSend: function beforeSend(xhr) {
-	      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
-	      xhr.setRequestHeader('Accept', 'application/json');
-	    },
-	    success: success
-	  });
-	};
-	
-	var getBothHandOdds = exports.getBothHandOdds = function getBothHandOdds(stage, aiHold, humanHold, _success) {
-	  var community = apiFormat(stage);
-	  var aiHand = apiFormat(aiHold);
-	  var humanHand = apiFormat(humanHold);
-	  $.ajax({
-	    method: 'GET',
-	    data: {},
-	    dataType: 'json',
-	    url: 'https://poker-odds.p.mashape.com/hold-em/odds?community=' + community + '&hand=' + aiHand + '&players=2',
-	    beforeSend: function beforeSend(xhr) {
-	      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
-	      xhr.setRequestHeader('Accept', 'application/json');
-	    },
-	    success: function success(aiResponse) {
-	      $.ajax({
-	
-	        method: 'GET',
-	        data: {},
-	        dataType: 'json',
-	        url: 'https://poker-odds.p.mashape.com/hold-em/odds?community=' + community + '&hand=' + humanHand + '&players=2',
-	        beforeSend: function beforeSend(xhr) {
-	          xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
-	          xhr.setRequestHeader('Accept', 'application/json');
-	        },
-	        success: function success(humanResponse) {
-	          _success(aiResponse, humanResponse);
-	        }
-	      });
-	    }
-	  });
-	};
-	
-	// curl --get --include 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2' \
-	//   -H 'X-Mashape-Key: 3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP' \
-	//   -H 'Accept: application/json'
 	
 	var getPokerHand = exports.getPokerHand = function getPokerHand(stage, hold) {
 	  return new PokerHand(stage, hold).bestHand();
 	};
 	
-	var greatestHold = exports.greatestHold = function greatestHold(stage, hands) {
-	  if (hands[0].value > hands[1].value) {
+	var greatestHold = exports.greatestHold = function greatestHold(stage, holds) {
+	  var hand1 = getPokerHand(stage, holds[0]);
+	  var hand2 = getPokerHand(stage, holds[1]);
+	
+	  if (hand1.rank > hand2.rank) {
 	    return 0;
-	  } else if (hands[1].value > hands[0].value) {
+	  } else if (hand2.rank > hand1.rank) {
 	    return 1;
 	  }
 	
-	  for (var i = 0; i < hands[0].tiebreakers.length; i++) {
-	    if (hands[0].tiebreakers[i] > hands[1].tiebreakers[i]) {
+	  for (var i = 0; i < hand1.tiebreakers.length; i++) {
+	    if (hand1.tiebreakers[i] > hand2.tiebreakers[i]) {
 	      return 0;
-	    } else if (hands[1].tiebreakers[i] > hands[0].tiebreakers[i]) {
+	    } else if (hand2.tiebreakers[i] > hand1.tiebreakers[i]) {
 	      return 1;
 	    }
 	  }
 	  return null;
 	};
 	
-	var apiFormat = function apiFormat(cards) {
-	  // debugger;
-	  var cardsFormatted = cards.map(function (card) {
-	    return cardFormat(card);
-	  });
+	var bestHandName = exports.bestHandName = function bestHandName(stage, hold) {
+	  var hand = getPokerHand(stage, hold);
+	  var name = void 0;
+	  var rank = hand.rank;
+	  var tbs = hand.tiebreakers;
 	
-	  return cardsFormatted.join('%2C');
-	};
-	
-	var cardFormat = function cardFormat(card) {
-	  var rank = void 0;
-	  if (card.rank === 10) rank = convertFaceCard(card.rank.toString());else {
-	    rank = convertFaceCard(card.rank.toString())[0];
+	  for (var key in RANKS) {
+	    if (RANKS[key] === rank) name = key;
 	  }
 	
-	  return rank + card.suit[0];
-	};
+	  var tb1 = tbs[0];
+	  var tb2 = tbs[1];
 	
-	var separateWithPercent = function separateWithPercent(values) {
-	  return values.map(function (value, i) {
-	    if (i !== values.length - 1) return value + '%';
-	  }).join('');
+	  tb1 = convertFaceCard(tb1);
+	  tb2 = convertFaceCard(tb2);
+	
+	  var tbMessage = void 0;
+	  switch (name) {
+	    case 'Full House':
+	      tbMessage = '(' + tb1 + 's full of ' + tb2 + 's\')';
+	      break;
+	    case 'Three of a Kind':
+	      tbMessage = '(' + tb1 + 's)';
+	      break;
+	    case 'Two Pair':
+	      tbMessage = '(' + tb1 + 's and ' + tb2 + 's )';
+	      break;
+	    case 'Pair':
+	      tbMessage = 'of ' + tb1 + 's';
+	      break;
+	    default:
+	      tbMessage = '(' + tb1 + ' high)';
+	  }
+	
+	  return name + ' ' + tbMessage;
 	};
 	
 	var convertFaceCard = function convertFaceCard(rank) {
@@ -42370,72 +42308,14 @@
 	  }
 	
 	  _createClass(PokerHand, [{
-	    key: 'bestHandName',
-	    value: function bestHandName() {
-	      var rank = void 0;
-	      var tb = void 0;
-	
-	      for (var key in RANKS) {
-	        if (RANKS[key] === this.value) rank = key;
-	      }
-	
-	      var tb1 = this.tiebreakers[0];
-	      var tb2 = this.tiebreakers[1];
-	
-	      tb1 = convertFaceCard(tb1);
-	      tb2 = convertFaceCard(tb2);
-	
-	      switch (rank) {
-	        case 'Full House':
-	          tb = '(' + tb1 + 's full of ' + tb2 + 's\')';
-	          break;
-	        case 'Three of a Kind':
-	          tb = '(' + tb1 + 's)';
-	          break;
-	        case 'Two Pair':
-	          tb = '(' + tb1 + 's and ' + tb2 + 's )';
-	          break;
-	        case 'Pair':
-	          tb = 'of ' + tb1 + 's';
-	          break;
-	        default:
-	          tb = '(' + tb1 + ' high)';
-	      }
-	
-	      return rank + ' ' + tb;
-	    }
-	  }, {
 	    key: 'bestHand',
 	    value: function bestHand() {
-	      var hands = this.hands();
-	      for (var hand in hands) {
-	        var value = RANKS[hand];
-	        var tiebreakers = hands[hand];
+	      var handTypes = [this.fourOfAKind.bind(this), this.fullHouse.bind(this), this.flush.bind(this), this.straight.bind(this), this.triples.bind(this), this.pairs.bind(this), this.doubles.bind(this), this.singles.bind(this)];
 	
-	        if (hands[hand]) {
-	          this.value = value;
-	          this.tiebreakers = tiebreakers;
-	          this.name = hand;
-	          return { value: value, tiebreakers: tiebreakers, name: this.bestHandName() };
-	        }
+	      for (var i = 0; i < handTypes.length; i++) {
+	        var hand = handTypes[i]();
+	        if (hand) return hand;
 	      }
-	    }
-	
-	    // 'straightFlush': this.straightFlush(),
-	
-	  }, {
-	    key: 'hands',
-	    value: function hands() {
-	      return {
-	        'Four of a Kind': this.fourOfAKind(),
-	        'Full House': this.fullHouse(),
-	        'Flush': this.flush(),
-	        'Straight': this.straight(),
-	        'Three of a Kind': this.triples(),
-	        'Two Pair': this.pairs(),
-	        'Pair': this.doubles(),
-	        'High card': this.singles()
-	      };
 	    }
 	
 	    // straightFlush() {
@@ -42453,7 +42333,6 @@
 	      var _this = this;
 	
 	      var fours = [];
-	
 	      this.ranks.forEach(function (card) {
 	        if (count(_this.ranks, card) === 4) {
 	          fours.push(card);
@@ -42469,7 +42348,7 @@
 	      var doublez = this.doubles();
 	
 	      if (triplez.length > 0 && doublez.length > 0) {
-	        return [triplez[0], doublez[0]];
+	        return { rank: 7, tiebreakers: [triplez[0], doublez[0]] };
 	      }
 	
 	      return false;
@@ -42478,11 +42357,13 @@
 	    key: 'flush',
 	    value: function flush() {
 	      var arrangedBySuit = this.arrangeBySuit(this.pile);
+	      var flushCards = void 0;
 	
 	      for (var suit in arrangedBySuit) {
-	        var flushCards = arrangedBySuit[suit];
+	        flushCards = arrangedBySuit[suit];
 	        if (flushCards.length >= 5) {
-	          return (0, _lodash.take)(flushCards.sort(sortNumber), 5);
+	          flushCards = (0, _lodash.take)(flushCards.sort(sortNumber), 5);
+	          return { rank: 6, tiebreakers: flushCards };
 	        }
 	      }
 	
@@ -42492,6 +42373,7 @@
 	    key: 'straight',
 	    value: function straight() {
 	      var sortedRanks = (0, _lodash.uniq)(this.ranks.sort(sortNumber));
+	      var straightCards = void 0;
 	
 	      for (var i = 0; i < sortedRanks.length; i++) {
 	        for (var j = i; j <= i + 3; j++) {
@@ -42500,7 +42382,8 @@
 	          if (cur - next !== 1) {
 	            break;
 	          } else if (j === i + 3) {
-	            return sortedRanks.slice(i, i + 5);
+	            straightCards = sortedRanks.slice(i, i + 5);
+	            return { rank: 5, tiebreakers: straightCards };
 	          }
 	        };
 	      };
@@ -42528,7 +42411,7 @@
 	      }
 	
 	      if (needle_finds === 5) {
-	        return [5, 4, 3, 2];
+	        return { rank: 5, tiebreakers: [5, 4, 3, 2] };
 	      } else {
 	        return null;
 	      }
@@ -42539,7 +42422,8 @@
 	      var triple = this.findByCount(3);
 	      if (triple) {
 	        var valuesNotInPair = this.valuesNotInPair(triple);
-	        return triple.concat(valuesNotInPair.slice(0, 2));
+	        triple = triple.concat(valuesNotInPair.slice(0, 2));
+	        return { rank: 4, tiebreakers: triple };
 	      } else {
 	        return false;
 	      }
@@ -42550,7 +42434,8 @@
 	      var doubles = this.findByCount(2);
 	      if (doubles.length >= 2) {
 	        var valuesNotInPair = this.valuesNotInPair(doubles);
-	        return doubles.concat(valuesNotInPair.slice(0, 1));
+	        doubles = doubles.concat(valuesNotInPair.slice(0, 1));
+	        return { rank: 3, tiebreakers: doubles };
 	      }
 	      return false;
 	    }
@@ -42560,7 +42445,8 @@
 	      var pair = this.findByCount(2);
 	      if (pair) {
 	        var valuesNotInPair = this.valuesNotInPair(pair);
-	        return pair.concat(valuesNotInPair.slice(0, 3));
+	        pair = pair.concat(valuesNotInPair.slice(0, 3));
+	        return { rank: 2, tiebreakers: pair };
 	      } else {
 	        return false;
 	      }
@@ -42568,7 +42454,8 @@
 	  }, {
 	    key: 'singles',
 	    value: function singles() {
-	      return this.ranks.sort(sortNumber).slice(0, 5);
+	      var singles = this.ranks.sort(sortNumber).slice(0, 5);
+	      return { rank: 1, tiebreakers: singles };
 	    }
 	  }, {
 	    key: 'findByCount',
@@ -42629,47 +42516,22 @@
 	  return PokerHand;
 	}();
 	
-	// let ph = new PokerHand(
-	//   [{rank: 6, suit: 'hearts'},
-	//   {rank: 2, suit: 'clubs'},
-	//   {rank: 12, suit: 'spades'},
-	//   {rank: 2, suit: 'hearts'},
-	//   {rank: 2, suit: 'spades'}],
-	//   [{rank: 12, suit: 'clubs' },
-	//   {rank: 7, suit: 'clubs'}]   
-	// );
+	// let stage = [{rank: 11, suit: 'clubs'},
+	//   {rank: 10, suit: 'clubs'},
+	//   {rank: 9, suit: 'spades'},
+	//   {rank: 8, suit: 'clubs'},
+	//   {rank: 3, suit: 'hearts'}];
 	
-	// console.log("ph.bestHand():", ph.bestHand());
 	
-	// ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
+	// let h1 = getPokerHand(stage, [{rank: 7, suit: 'spades' }, {rank: 4, suit: 'hearts'}])
+	// let h2 = getPokerHand(stage, [{rank: 4, suit: 'clubs' }, {rank: 3, suit: 'clubs'}])
 	
-	var stage = [{ rank: 11, suit: 'clubs' }, { rank: 13, suit: 'clubs' }, { rank: 8, suit: 'spades' }, { rank: 12, suit: 'clubs' }, { rank: 6, suit: 'hearts' }];
+	// console.log("h1:", h1);
+	// console.log("h2:", h2);
 	
-	var h1 = getPokerHand(stage, [{ rank: 4, suit: 'spades' }, { rank: 5, suit: 'hearts' }]);
-	var h2 = getPokerHand(stage, [{ rank: 4, suit: 'spades' }, { rank: 3, suit: 'hearts' }]);
 	
-	console.log("h1:", h1);
-	console.log("h2:", h2);
-	
-	var gh = greatestHold(stage, [h1, h2]);
-	console.log("gh:", gh);
-	
-	// let bh = new PokerHand([{rank: 11, suit: 'clubs'},
-	//   {rank: 13, suit: 'clubs'},
-	//   {rank: 11, suit: 'spades'},
-	//   {rank: 12, suit: 'clubs'},
-	//   {rank: 6, suit: 'hearts'}], [{rank: 8, suit: 'spades' },
-	//   {rank: 3, suit: 'hearts'}]).bestHand();
-	
-	// console.log("bh:", bh);
-	
-	// console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
-	
-	// let successCB = (res) => {
-	//   console.log("res.win:", res.win);
-	// }
-	
-	// console.log(getHandOdds([{rank: 7, suit: 'clubs'}, {rank: 2, suit: 'spades'}, {rank: 2, suit: 'clubs'}], [{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}], successCB));
+	// let gh = greatestHold(stage, [h1, h2]);
+	// console.log("gh:", gh);
 
 /***/ },
 /* 220 */

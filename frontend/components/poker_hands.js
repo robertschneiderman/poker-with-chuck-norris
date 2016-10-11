@@ -38,103 +38,67 @@ export const handName = (stage, hold) => {
 // 'https://poker-odds.p.mashape.com/hold-em/odds?community=5d%2C7c%2CAh&hand=As%2CKd&players=3'
 // 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2'
 
-export const getHandOdds = (stage, hold, success) => {
-  let community = apiFormat(stage);
-  let hand = apiFormat(hold);
-  $.ajax({
-    method: 'GET',
-    data: {},
-    dataType: 'json',
-    url: `https://poker-odds.p.mashape.com/hold-em/odds?community=${community}&hand=${hand}&players=2`,
-    beforeSend: (xhr) => { 
-      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
-      xhr.setRequestHeader('Accept', 'application/json');
-    },
-    success
-  });
-};
-
-export const getBothHandOdds = (stage, aiHold, humanHold, success) => {
-  let community = apiFormat(stage);
-  let aiHand = apiFormat(aiHold);
-  let humanHand = apiFormat(humanHold);
-  $.ajax({
-    method: 'GET',
-    data: {},
-    dataType: 'json',
-    url: `https://poker-odds.p.mashape.com/hold-em/odds?community=${community}&hand=${aiHand}&players=2`,
-    beforeSend: (xhr) => { 
-      xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
-      xhr.setRequestHeader('Accept', 'application/json');
-    },
-    success: function(aiResponse){
-      $.ajax({
-
-        method: 'GET',
-        data: {},
-        dataType: 'json',
-        url: `https://poker-odds.p.mashape.com/hold-em/odds?community=${community}&hand=${humanHand}&players=2`,
-        beforeSend: (xhr) => { 
-          xhr.setRequestHeader('X-Mashape-Key', '3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP');
-          xhr.setRequestHeader('Accept', 'application/json');
-        },
-        success: function(humanResponse) {
-          success(aiResponse, humanResponse);
-        }
-      });
-    }
-  });
-};
-
-// curl --get --include 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2' \
-//   -H 'X-Mashape-Key: 3NBkE5BjtAmshkI378bHS3DNTgr1p1zR7G6jsnP6vJDIvjyptP' \
-//   -H 'Accept: application/json'
 
 export const getPokerHand = (stage, hold) => {
   return new PokerHand(stage, hold).bestHand();
 }
 
-export const greatestHold = (stage, hands) => {
-  if (hands[0].value > hands[1].value) {
+export const greatestHold = (stage, holds) => {
+  let hand1 = getPokerHand(stage, holds[0]);
+  let hand2 = getPokerHand(stage, holds[1]);
+
+  if (hand1.rank > hand2.rank) {
     return 0;
-  } else if (hands[1].value > hands[0].value) {
+  } else if (hand2.rank > hand1.rank) {
     return 1;
   }
 
-  for (let i = 0; i < hands[0].tiebreakers.length; i++) {
-    if (hands[0].tiebreakers[i] > hands[1].tiebreakers[i]) {
+  for (let i = 0; i < hand1.tiebreakers.length; i++) {
+    if (hand1.tiebreakers[i] > hand2.tiebreakers[i]) {
       return 0;
-    } else if (hands[1].tiebreakers[i] > hands[0].tiebreakers[i]) {
+    } else if (hand2.tiebreakers[i] > hand1.tiebreakers[i]) {
       return 1;
     }
   }
   return null;
 }
 
-const apiFormat = (cards) => {
-  // debugger;
-  let cardsFormatted = cards.map(card => {
-    return cardFormat(card)
-  });
+export const bestHandName = (stage, hold) => {
+  let hand = getPokerHand(stage, hold);
+  let name;
+  let rank = hand.rank;
+  let tbs = hand.tiebreakers;
 
-  return cardsFormatted.join('%2C');
-}
-
-const cardFormat = (card) => {
-  let rank;
-  if (card.rank === 10)
-    rank = convertFaceCard(card.rank.toString());
-  else {
-    rank = convertFaceCard(card.rank.toString())[0];
+  for (let key in RANKS) {
+    if (RANKS[key] === rank) name = key
   }
 
-  return (rank + card.suit[0])
-}
+  let tb1 = tbs[0];
+  let tb2 = tbs[1];
 
-const separateWithPercent = (values) => {
-  return values.map((value, i) => { if (i !== (values.length - 1)) return `${value}%` }).join('');
-}
+  tb1 = convertFaceCard(tb1);
+  tb2 = convertFaceCard(tb2);
 
+  let tbMessage;
+  switch (name) {
+    case 'Full House':
+      tbMessage = `(${tb1}s full of ${tb2}s')`;
+      break
+    case 'Three of a Kind':
+      tbMessage = `(${tb1}s)`;
+      break
+    case 'Two Pair':
+      tbMessage = `(${tb1}s and ${tb2}s )`;
+      break
+    case 'Pair':
+      tbMessage = `of ${tb1}s`;
+      break
+    default:
+      tbMessage = `(${tb1} high)`;      
+  }
+
+  return `${name} ${tbMessage}`;
+}
 
 const convertFaceCard = (rank) => {
   if (rank > 10) rank = LETTER_CARDS[rank - 11] 
@@ -150,66 +114,12 @@ export class PokerHand {
     // this.pile = this.bestHand(pile);
   }
 
-  bestHandName() {
-    let rank;
-    let tb;
-
-    for (let key in RANKS) {
-      if (RANKS[key] === this.value) rank = key
-    }
-
-    let tb1 = this.tiebreakers[0];
-    let tb2 = this.tiebreakers[1];
-
-    tb1 = convertFaceCard(tb1);
-    tb2 = convertFaceCard(tb2);
-
-    switch (rank) {
-      case 'Full House':
-        tb = `(${tb1}s full of ${tb2}s')`;
-        break
-      case 'Three of a Kind':
-        tb = `(${tb1}s)`;
-        break
-      case 'Two Pair':
-        tb = `(${tb1}s and ${tb2}s )`;
-        break
-      case 'Pair':
-        tb = `of ${tb1}s`;
-        break
-      default:
-        tb = `(${tb1} high)`;      
-    }
-
-    return `${rank} ${tb}`;
-  }
-
   bestHand() {
-    let hands = this.hands();
-    for (let hand in hands) {
-      let value = RANKS[hand];
-      let tiebreakers = hands[hand];
+    let handTypes = [this.fourOfAKind.bind(this), this.fullHouse.bind(this), this.flush.bind(this), this.straight.bind(this), this.triples.bind(this), this.pairs.bind(this), this.doubles.bind(this), this.singles.bind(this)];
 
-      if (hands[hand]) {
-        this.value = value;
-        this.tiebreakers = tiebreakers;
-        this.name = hand;
-        return { value, tiebreakers, name: this.bestHandName() }
-      }
-    }
-  }
-
-      // 'straightFlush': this.straightFlush(),
-  hands() {
-    return {
-      'Four of a Kind': this.fourOfAKind(),
-      'Full House': this.fullHouse(),
-      'Flush': this.flush(),
-      'Straight': this.straight(),      
-      'Three of a Kind': this.triples(),
-      'Two Pair': this.pairs(),
-      'Pair': this.doubles(),
-      'High card': this.singles()
+    for (let i = 0; i < handTypes.length; i++) {
+      let hand = handTypes[i]();
+      if (hand) return hand;
     }
   }
 
@@ -224,7 +134,6 @@ export class PokerHand {
 
   fourOfAKind() {
     let fours = []
-    
     this.ranks.forEach(card => {
       if (count(this.ranks, card) === 4) {
         fours.push(card);
@@ -239,7 +148,7 @@ export class PokerHand {
     let doublez = this.doubles();
 
     if ((triplez.length > 0) && (doublez.length > 0)) {
-      return [triplez[0], doublez[0]]
+      return {rank: 7, tiebreakers: [triplez[0], doublez[0]]}
     }
 
     return false;
@@ -247,11 +156,13 @@ export class PokerHand {
 
   flush() {
     let arrangedBySuit = this.arrangeBySuit(this.pile)
+    let flushCards;
 
     for (let suit in arrangedBySuit) {
-      let flushCards = arrangedBySuit[suit];
+      flushCards = arrangedBySuit[suit];
       if (flushCards.length >= 5) {
-        return take(flushCards.sort(sortNumber), 5);
+        flushCards = take(flushCards.sort(sortNumber), 5);
+        return {rank: 6, tiebreakers: flushCards}
       }
     }
 
@@ -260,6 +171,7 @@ export class PokerHand {
 
   straight() {
     let sortedRanks = uniq(this.ranks.sort(sortNumber));
+    let straightCards;
 
     for (let i = 0; i < sortedRanks.length; i++) {
       for (let j = i; j <= (i + 3); j++) {
@@ -268,7 +180,8 @@ export class PokerHand {
         if ( (cur - next) !== 1 ) {
           break
         } else if(j === i + 3) {
-          return sortedRanks.slice(i, i + 5); 
+          straightCards = sortedRanks.slice(i, i + 5);
+          return {rank: 5, tiebreakers: straightCards}
         }
       };      
     };
@@ -295,7 +208,7 @@ export class PokerHand {
     }
 
     if (needle_finds === 5) {
-      return [5, 4, 3, 2];
+      return {rank: 5, tiebreakers: [5, 4, 3, 2]};
     } else {
       return null;
     }
@@ -306,7 +219,8 @@ export class PokerHand {
     let triple = this.findByCount(3);
     if (triple) {
       let valuesNotInPair = this.valuesNotInPair(triple);
-      return triple.concat(valuesNotInPair.slice(0, 2));
+      triple = triple.concat(valuesNotInPair.slice(0, 2));
+      return {rank: 4, tiebreakers: triple};
     } else {
       return false
     }
@@ -316,7 +230,8 @@ export class PokerHand {
     let doubles = this.findByCount(2);
     if (doubles.length >= 2) {
       let valuesNotInPair = this.valuesNotInPair(doubles);
-      return doubles.concat(valuesNotInPair.slice(0, 1));
+      doubles = doubles.concat(valuesNotInPair.slice(0, 1));
+      return {rank: 3, tiebreakers: doubles};
     }
     return false;
   }
@@ -325,14 +240,16 @@ export class PokerHand {
     let pair = this.findByCount(2);
     if (pair) {
       let valuesNotInPair = this.valuesNotInPair(pair);
-      return pair.concat(valuesNotInPair.slice(0, 3));
+      pair = pair.concat(valuesNotInPair.slice(0, 3));
+      return {rank: 2, tiebreakers: pair};
     } else {
       return false
     }
   }
 
   singles() {
-    return this.ranks.sort(sortNumber).slice(0, 5);
+    let singles = this.ranks.sort(sortNumber).slice(0, 5);
+    return {rank: 1, tiebreakers: singles};    
   }  
 
   findByCount(num) {
@@ -381,51 +298,20 @@ export class PokerHand {
   }
 }
 
-// let ph = new PokerHand(
-//   [{rank: 6, suit: 'hearts'},
-//   {rank: 2, suit: 'clubs'},
-//   {rank: 12, suit: 'spades'},
-//   {rank: 2, suit: 'hearts'},
-//   {rank: 2, suit: 'spades'}],
-//   [{rank: 12, suit: 'clubs' },
-//   {rank: 7, suit: 'clubs'}]   
-// );
-
-// console.log("ph.bestHand():", ph.bestHand());
-
-// ph.bestHand(): Object {value: 7, tiebreakers: Array[2]}
-
-let stage = [{rank: 11, suit: 'clubs'},
-  {rank: 13, suit: 'clubs'},
-  {rank: 8, suit: 'spades'},
-  {rank: 12, suit: 'clubs'},
-  {rank: 6, suit: 'hearts'}];
+// let stage = [{rank: 11, suit: 'clubs'},
+//   {rank: 10, suit: 'clubs'},
+//   {rank: 9, suit: 'spades'},
+//   {rank: 8, suit: 'clubs'},
+//   {rank: 3, suit: 'hearts'}];
 
 
 
-let h1 = getPokerHand(stage, [{rank: 4, suit: 'spades' }, {rank: 5, suit: 'hearts'}])
-let h2 = getPokerHand(stage, [{rank: 4, suit: 'spades' }, {rank: 3, suit: 'hearts'}])
+// let h1 = getPokerHand(stage, [{rank: 7, suit: 'spades' }, {rank: 4, suit: 'hearts'}])
+// let h2 = getPokerHand(stage, [{rank: 4, suit: 'clubs' }, {rank: 3, suit: 'clubs'}])
 
-console.log("h1:", h1);
-console.log("h2:", h2);
+// console.log("h1:", h1);
+// console.log("h2:", h2);
 
 
-let gh = greatestHold(stage, [h1, h2]);
-console.log("gh:", gh);
-
-// let bh = new PokerHand([{rank: 11, suit: 'clubs'},
-//   {rank: 13, suit: 'clubs'},
-//   {rank: 11, suit: 'spades'},
-//   {rank: 12, suit: 'clubs'},
-//   {rank: 6, suit: 'hearts'}], [{rank: 8, suit: 'spades' },
-//   {rank: 3, suit: 'hearts'}]).bestHand();
-
-// console.log("bh:", bh);
-
-// console.log("apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]):", apiFormat([{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}]));
-
-// let successCB = (res) => {
-//   console.log("res.win:", res.win);
-// }
-
-// console.log(getHandOdds([{rank: 7, suit: 'clubs'}, {rank: 2, suit: 'spades'}, {rank: 2, suit: 'clubs'}], [{rank:6,suit:'clubs'},{rank:10,suit:'diamonds'}], successCB));
+// let gh = greatestHold(stage, [h1, h2]);
+// console.log("gh:", gh);
