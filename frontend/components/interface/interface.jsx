@@ -34,16 +34,24 @@ class Interface extends React.Component {
     }
   }
 
+  componentDidMount() {
+    document.querySelectorAll(".interface-betting > button").forEach(button => {
+      button.addEventListener("click", debounce(e => {
+        e.preventDefault();
+        this.clickHandle(e.srcElement.id);
+      }, 250));
+    });    
+  }
+
   clickHandle(str) {
     document.querySelectorAll(".interface-betting > button").forEach(button => {
       button.disabled = true;
     });
     switch(str) {
-      case 'raise':
-        debugger;
-        debounce(this.props.raise, 250);
+      case 'btn-raise':
+        this.props.raise();
         break;
-      case 'fold': 
+      case 'btn-fold': 
         this.props.fold();
         break;
       default:
@@ -64,21 +72,18 @@ class Interface extends React.Component {
 
           <button 
             id="btn-raise"
-            className="btn btn-raise"
-            onClick={this.clickHandle.bind(this, 'raise')}>
+            className="btn btn-raise">
             Raise 50 (R)
           </button>
 
           <button 
             id="btn-call-check" 
-            className="btn btn-call-check"
-            onClick={this.clickHandle.bind(this, 'callOrCheck')}>
+            className="btn btn-call-check">
               Call/Check (C)
           </button>
 
           <button id="btn-fold" 
-            className="btn btn-fold"
-            onClick={this.clickHandle.bind(this, 'fold')}>
+            className="btn btn-fold">
             Fold (F)
           </button>
 

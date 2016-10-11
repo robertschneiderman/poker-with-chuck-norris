@@ -232,7 +232,7 @@ class Game extends React.Component {
     let sounds;
     switch (state) {
       case 'won':
-        sounds = ['chuck-disagree', 'chuck-annoyed', 'chuck-dammit'];
+        sounds = ['chuck-angry', 'chuck-whirr', 'chuck-muttering'];
         break;
       case 'lost':
         sounds = ['chuck-laughter', 'chuck-silly-shout', 'chuck-whoa'];

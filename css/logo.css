@@ -42,3 +42,11 @@
     width: 13rem;
   }
 }
+
+.img-explosion {
+  top: 50%;
+  left:50%;
+  transform: translate3d(-50%, -50%, 0);
+  position: absolute;
+  z-index: 7000;
+}

@@ -21512,7 +21512,7 @@
 	      // });    
 	      setTimeout(function () {
 	        _this2.setState({ loading: false });
-	      }, 4000);
+	      }, 5500);
 	    }
 	  }, {
 	    key: 'render',
@@ -21525,6 +21525,7 @@
 	        { className: 'app' },
 	        _react2.default.createElement(_audio2.default, null),
 	        _react2.default.createElement(_logo2.default, null),
+	        _react2.default.createElement('img', { id: 'img-explosion', className: 'img-explosion', alt: '' }),
 	        _react2.default.createElement(
 	          _loading2.default,
 	          { loading: this.state.loading },
@@ -23456,7 +23457,7 @@
 	      var sounds = void 0;
 	      switch (state) {
 	        case 'won':
-	          sounds = ['chuck-disagree', 'chuck-annoyed', 'chuck-dammit'];
+	          sounds = ['chuck-angry', 'chuck-whirr', 'chuck-muttering'];
 	          break;
 	        case 'lost':
 	          sounds = ['chuck-laughter', 'chuck-silly-shout', 'chuck-whoa'];
@@ -25240,17 +25241,28 @@
 	      }
 	    }
 	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this2 = this;
+	
+	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
+	        button.addEventListener("click", (0, _lodash.debounce)(function (e) {
+	          e.preventDefault();
+	          _this2.clickHandle(e.srcElement.id);
+	        }, 250));
+	      });
+	    }
+	  }, {
 	    key: 'clickHandle',
 	    value: function clickHandle(str) {
 	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
 	        button.disabled = true;
 	      });
 	      switch (str) {
-	        case 'raise':
-	          debugger;
-	          (0, _lodash.debounce)(this.props.raise, 250);
+	        case 'btn-raise':
+	          this.props.raise();
 	          break;
-	        case 'fold':
+	        case 'btn-fold':
 	          this.props.fold();
 	          break;
 	        default:
@@ -25274,23 +25286,20 @@
 	            'button',
 	            {
 	              id: 'btn-raise',
-	              className: 'btn btn-raise',
-	              onClick: this.clickHandle.bind(this, 'raise') },
+	              className: 'btn btn-raise' },
 	            'Raise 50 (R)'
 	          ),
 	          _react2.default.createElement(
 	            'button',
 	            {
 	              id: 'btn-call-check',
-	              className: 'btn btn-call-check',
-	              onClick: this.clickHandle.bind(this, 'callOrCheck') },
+	              className: 'btn btn-call-check' },
 	            'Call/Check (C)'
 	          ),
 	          _react2.default.createElement(
 	            'button',
 	            { id: 'btn-fold',
-	              className: 'btn btn-fold',
-	              onClick: this.clickHandle.bind(this, 'fold') },
+	              className: 'btn btn-fold' },
 	            'Fold (F)'
 	          )
 	        ),
@@ -42228,10 +42237,6 @@
 	  return ph.bestHandName();
 	};
 	
-	// 'https://poker-odds.p.mashape.com/hold-em/odds?community=5d%2C7c%2CAh&hand=As%2CKd&players=3'
-	// 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2'
-	
-	
 	var getPokerHand = exports.getPokerHand = function getPokerHand(stage, hold) {
 	  return new PokerHand(stage, hold).bestHand();
 	};
@@ -52014,6 +52019,8 @@
 	        _this2.addAnimation(_this2.elasticGrowAnimation);
 	      }, 300);
 	
+	      setTimeout(this.explosion.bind(this), 1000);
+	
 	      this.playSound('walker-texas-ranger-theme');
 	
 	      setTimeout(function () {
@@ -52049,6 +52056,12 @@
 	
 	      var logo = target;
 	      return TweenMax.to(logo, 1, { scale: 4, ease: Elastic.easeOut.config(3, 0.3) });
+	    }
+	  }, {
+	    key: 'explosion',
+	    value: function explosion() {
+	      this.playSound('explosion');
+	      $('#img-explosion').attr('src', './images/explosion_1.gif');
 	    }
 	  }, {
 	    key: 'recedeAnimation',
@@ -52823,27 +52836,33 @@
 	        ),
 	        _react2.default.createElement(
 	          "audio",
+	          { id: "explosion" },
+	          _react2.default.createElement("source", { src: "./audio/explosion.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/explosion.wav" })
+	        ),
+	        _react2.default.createElement(
+	          "audio",
 	          { id: "hi-this-is-chuck-norris" },
 	          _react2.default.createElement("source", { src: "./audio/chuck_norris/hi_this_is_chuck_norris.mp3" }),
 	          _react2.default.createElement("source", { src: "./audio/chuck_norris/hi_this_is_chuck_norris.wav" })
 	        ),
 	        _react2.default.createElement(
 	          "audio",
-	          { id: "chuck-disagree" },
-	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_disagree.mp3" }),
-	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_disagree.wav" })
+	          { id: "chuck-angry" },
+	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_angry.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_angry.wav" })
 	        ),
 	        _react2.default.createElement(
 	          "audio",
-	          { id: "chuck-annoyed" },
-	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_annoyed.mp3" }),
-	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_annoyed.wav" })
+	          { id: "chuck-whirr" },
+	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_whirr.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_whirr.wav" })
 	        ),
 	        _react2.default.createElement(
 	          "audio",
-	          { id: "chuck-dammit" },
-	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_dammit.mp3" }),
-	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_dammit.wav" })
+	          { id: "chuck-muttering" },
+	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_muttering.mp3" }),
+	          _react2.default.createElement("source", { src: "./audio/chuck_norris/chuck_muttering.wav" })
 	        ),
 	        _react2.default.createElement(
 	          "audio",

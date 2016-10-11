@@ -19,6 +19,8 @@ class Logo extends React.Component {
       this.addAnimation(this.elasticGrowAnimation);
     }, 300);
 
+    setTimeout(this.explosion.bind(this), 1000);    
+
     this.playSound('walker-texas-ranger-theme');    
 
     setTimeout(() => {
@@ -48,6 +50,11 @@ class Logo extends React.Component {
   elasticGrowAnimation({target}) {
     let logo = target;
     return TweenMax.to(logo, 1, {scale: 4, ease: Elastic.easeOut.config(3, 0.3)});
+  }
+
+  explosion() {
+    this.playSound('explosion');
+    $('#img-explosion').attr('src','./images/explosion_1.gif');
   }
 
   recedeAnimation({target}) {

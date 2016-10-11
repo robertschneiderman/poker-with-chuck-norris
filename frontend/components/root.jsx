@@ -27,7 +27,7 @@ class Root extends React.Component {
     // });    
     setTimeout(() => {
       this.setState({loading: false})
-    }, 4000);
+    }, 5500);
   }
 
   render() {
@@ -38,6 +38,7 @@ class Root extends React.Component {
       <div className="app">
         <Audio />
         <Logo />
+        <img id="img-explosion" className="img-explosion" alt=""/>
         <Loading loading={this.state.loading}>
           <Game />
         </Loading>

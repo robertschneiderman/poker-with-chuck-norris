@@ -19,24 +19,29 @@ class Audio extends React.Component {
           <source src="./audio/chuck_norris/walker_texas_ranger_theme.wav" />
         </audio>
 
+        <audio id="explosion">
+          <source src="./audio/explosion.mp3" />
+          <source src="./audio/explosion.wav" />
+        </audio>        
+
         <audio id="hi-this-is-chuck-norris">
           <source src="./audio/chuck_norris/hi_this_is_chuck_norris.mp3" />
           <source src="./audio/chuck_norris/hi_this_is_chuck_norris.wav" />
         </audio>
 
-        <audio id="chuck-disagree">
-          <source src="./audio/chuck_norris/chuck_disagree.mp3" />
-          <source src="./audio/chuck_norris/chuck_disagree.wav" />
+        <audio id="chuck-angry">
+          <source src="./audio/chuck_norris/chuck_angry.mp3" />
+          <source src="./audio/chuck_norris/chuck_angry.wav" />
         </audio>
 
-        <audio id="chuck-annoyed">
-          <source src="./audio/chuck_norris/chuck_annoyed.mp3" />
-          <source src="./audio/chuck_norris/chuck_annoyed.wav" />
+        <audio id="chuck-whirr">
+          <source src="./audio/chuck_norris/chuck_whirr.mp3" />
+          <source src="./audio/chuck_norris/chuck_whirr.wav" />
         </audio>
 
-        <audio id="chuck-dammit">
-          <source src="./audio/chuck_norris/chuck_dammit.mp3" />
-          <source src="./audio/chuck_norris/chuck_dammit.wav" />
+        <audio id="chuck-muttering">
+          <source src="./audio/chuck_norris/chuck_muttering.mp3" />
+          <source src="./audio/chuck_norris/chuck_muttering.wav" />
         </audio>  
 
         <audio id="chuck-laughter">

@@ -35,10 +35,6 @@ export const handName = (stage, hold) => {
   return ph.bestHandName();
 }
 
-// 'https://poker-odds.p.mashape.com/hold-em/odds?community=5d%2C7c%2CAh&hand=As%2CKd&players=3'
-// 'https://poker-odds.p.mashape.com/hold-em/odds?community=6c%2C10d&hand=7c%2C2s%2C2c&players=2'
-
-
 export const getPokerHand = (stage, hold) => {
   return new PokerHand(stage, hold).bestHand();
 }
