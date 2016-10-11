@@ -39,7 +39,7 @@ class Interface extends React.Component {
       button.addEventListener("click", debounce(e => {
         e.preventDefault();
         this.clickHandle(e.srcElement.id);
-      }, 250));
+      }, 210));
     });    
   }
 
@@ -59,9 +59,7 @@ class Interface extends React.Component {
         break;
     }
   }
-
-
-
+  
   render() {
     this.interfaceClasses();
     this.btnEnabledness();

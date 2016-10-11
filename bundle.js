@@ -24301,6 +24301,10 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _counter = __webpack_require__(200);
+	
+	var _counter2 = _interopRequireDefault(_counter);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24325,6 +24329,8 @@
 	    value: function render() {
 	      var className = this.props.player.name === 'You' ? "player-info outer you" : "player-info outer chuck";
 	
+	      var oldBank = oldBank ? document.getElementById('player-worth').innerHTML : 1000;
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: className },
@@ -24333,11 +24339,7 @@
 	          { className: 'player-name' },
 	          this.props.player.name
 	        ),
-	        _react2.default.createElement(
-	          'p',
-	          { className: 'player-worth' },
-	          this.props.player.bank
-	        )
+	        _react2.default.createElement(_counter2.default, { id: 'player-worth', className: 'player-worth', begin: oldBank, end: this.props.player.bank })
 	      );
 	    }
 	  }]);
@@ -25249,7 +25251,7 @@
 	        button.addEventListener("click", (0, _lodash.debounce)(function (e) {
 	          e.preventDefault();
 	          _this2.clickHandle(e.srcElement.id);
-	        }, 250));
+	        }, 210));
 	      });
 	    }
 	  }, {

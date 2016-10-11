@@ -38,7 +38,7 @@
 
 <!--     <iframe id="nested-iframe" class="nested-iframe" src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Flocalhost%3A8888%2Fpoker_with_chuck_norris%2Findex.html&width=130&layout=button&action=like&size=large&show_faces=true&share=true&height=28&appId=1196099127116910" width="130" height="28" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>  -->
 
-    <iframe id="nested-iframe" class="nested-iframe" src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fpokerwithchucknorris.com&width=140&layout=button_count&action=like&size=large&show_faces=true&share=true&height=28&appId=1196099127116910" width="140" height="28" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>       
+    <iframe id="nested-iframe" class="nested-iframe active" src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fpokerwithchucknorris.com&width=140&layout=button_count&action=like&size=large&show_faces=true&share=true&height=28&appId=1196099127116910" width="140" height="28" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>       
   </div>
 
   <script>
@@ -48,16 +48,16 @@
         console.log(fbContainer);
       fbContainer.addEventListener('click', (e) => {
         console.log("clicked");
-        let dropdown = document.getElementById('nested-iframe');
+        let iframe = document.getElementById('nested-iframe');
         let containerContent = document.querySelector('.fb-container-content');
-        if (!dropdown.classList.contains('active')) {
+        if (!iframe.classList.contains('active')) {
           // containerContent.innerHTML = '-';
           fbContainer.style.border = '1px solid #bda7f1';
-          dropdown.classList.add('active');
+          iframe.classList.add('active');
         } else {
           // containerContent.innerHTML = '+'; 
           fbContainer.style.border = '1px solid #d2d2d2';
-          dropdown.classList.remove('active');
+          iframe.classList.remove('active');
         }
       });
     });

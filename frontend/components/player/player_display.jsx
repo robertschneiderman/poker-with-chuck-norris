@@ -1,4 +1,5 @@
 import React from 'react';
+import Counter from '../counter';
 // import Container from './/_container';
 
 class PlayerDisplay extends React.Component {
@@ -10,10 +11,12 @@ class PlayerDisplay extends React.Component {
   render() {
     let className = (this.props.player.name === 'You') ? "player-info outer you" : "player-info outer chuck";
 
+    let oldBank = oldBank ? document.getElementById('player-worth').innerHTML : 1000;
+
     return(
       <div className={className}>
         <p className="player-name">{this.props.player.name}</p>
-        <p className="player-worth">{this.props.player.bank}</p>
+        <Counter id="player-worth" className="player-worth" begin={oldBank} end={this.props.player.bank} />
       </div>
     )
   }
