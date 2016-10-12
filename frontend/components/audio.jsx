@@ -96,6 +96,7 @@ class Audio extends React.Component {
         </audio>        
         
         <audio id="next-card-sound">
+          <source src="./audio/next-card.mp3" />
           <source src="./audio/next-card.wav" />
         </audio>
 

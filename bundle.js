@@ -23258,6 +23258,8 @@
 	
 	window.randomNumber = randomNumber;
 	
+	var locked = false;
+	
 	var Game = function (_React$Component) {
 	  _inherits(Game, _React$Component);
 	
@@ -23279,28 +23281,20 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 	
-	      document.addEventListener('keydown', (0, _lodash.debounce)(function (e) {
+	      document.addEventListener('keydown', function (e) {
 	        _this2.handleKeypress(e);
-	      }, 250));
+	      });
 	    }
 	  }, {
 	    key: 'handleKeypress',
 	    value: function handleKeypress(e) {
-	      if (this.state.turn === 0 && this.state.round !== 0 && !this.state.autoDeal) {
-	        switch (e.key) {
-	          case 'r':
-	            this.raise();
-	            break;
-	          case 'f':
-	            this.fold();
-	            break;
-	          case 'c':
-	            this.callOrCheck();
-	            break;
-	          default:
-	            break;
-	        }
+	
+	      if (this.state.turn === 0 && this.state.round !== 0 && !this.state.autoDeal && !this.state.setOver) {
+	        var callback = e.key === 'r' ? this.raise.bind(this) : e.key === 'f' ? this.fold.bind(this) : e.key === 'c' ? this.callOrCheck.bind(this) : null;
+	
+	        this.lock(callback);
 	      }
+	
 	      if (this.state.round === 0 || this.state.setOver) {
 	        switch (e.key) {
 	          case 'd':
@@ -23309,6 +23303,19 @@
 	          default:
 	            break;
 	        }
+	      }
+	    }
+	  }, {
+	    key: 'lock',
+	    value: function lock(callback) {
+	      if (!locked) {
+	        locked = true;
+	        if (!!callback) {
+	          callback();
+	        }
+	        setTimeout(function () {
+	          locked = false;
+	        }, 1050);
 	      }
 	    }
 	  }, {
@@ -25224,6 +25231,8 @@
 	
 	// import Container from './/_container';
 	
+	var locked = false;
+	
 	var Interface = function (_React$Component) {
 	  _inherits(Interface, _React$Component);
 	
@@ -25267,10 +25276,10 @@
 	      var _this2 = this;
 	
 	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
-	        button.addEventListener("click", (0, _lodash.debounce)(function (e) {
+	        button.addEventListener("click", function (e) {
 	          e.preventDefault();
 	          _this2.clickHandle(e.srcElement.id);
-	        }, 250));
+	        });
 	      });
 	    }
 	  }, {
@@ -25279,16 +25288,22 @@
 	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
 	        button.disabled = true;
 	      });
-	      switch (str) {
-	        case 'btn-raise':
-	          this.props.raise();
-	          break;
-	        case 'btn-fold':
-	          this.props.fold();
-	          break;
-	        default:
-	          this.props.callOrCheck();
-	          break;
+	
+	      var callback = str === 'btn-raise' ? this.props.raise.bind(this) : str === 'btn-fold' ? this.props.fold.bind(this) : this.props.callOrCheck.bind(this);
+	
+	      this.lock(callback);
+	    }
+	  }, {
+	    key: 'lock',
+	    value: function lock(callback) {
+	      if (!locked) {
+	        locked = true;
+	        if (!!callback) {
+	          callback();
+	        }
+	        setTimeout(function () {
+	          locked = false;
+	        }, 1050);
 	      }
 	    }
 	  }, {
@@ -52964,6 +52979,7 @@
 	        _react2.default.createElement(
 	          "audio",
 	          { id: "next-card-sound" },
+	          _react2.default.createElement("source", { src: "./audio/next-card.mp3" }),
 	          _react2.default.createElement("source", { src: "./audio/next-card.wav" })
 	        ),
 	        _react2.default.createElement(

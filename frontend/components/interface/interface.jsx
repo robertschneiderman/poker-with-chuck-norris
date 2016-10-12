@@ -2,6 +2,8 @@ import React from 'react';
 import {debounce} from 'lodash';
 // import Container from './/_container';
 
+let locked = false;
+
 class Interface extends React.Component {
 
   constructor(props) {
@@ -36,10 +38,10 @@ class Interface extends React.Component {
 
   componentDidMount() {
     document.querySelectorAll(".interface-betting > button").forEach(button => {
-      button.addEventListener("click", debounce(e => {
+      button.addEventListener("click", e => {
         e.preventDefault();
         this.clickHandle(e.srcElement.id);
-      }, 250));
+      });
     });    
   }
 
@@ -47,18 +49,21 @@ class Interface extends React.Component {
     document.querySelectorAll(".interface-betting > button").forEach(button => {
       button.disabled = true;
     });
-    switch(str) {
-      case 'btn-raise':
-        this.props.raise();
-        break;
-      case 'btn-fold': 
-        this.props.fold();
-        break;
-      default:
-        this.props.callOrCheck();
-        break;
-    }
+
+    let callback = str === 'btn-raise' ? this.props.raise.bind(this)
+      : str === 'btn-fold' ? this.props.fold.bind(this)
+      : this.props.callOrCheck.bind(this);
+
+    this.lock(callback);
   }
+
+  lock(callback) {
+    if (!locked) {
+      locked = true;
+      if (!!callback) { callback(); }
+      setTimeout(() => { locked = false }, 1050);
+    }
+  }  
   
   render() {
     this.interfaceClasses();

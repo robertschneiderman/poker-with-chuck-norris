@@ -52,6 +52,8 @@ const randomNumber = (frm, to) => {
 
 window.randomNumber = randomNumber;
 
+let locked = false;
+
 class Game extends React.Component {
 
   constructor(props) {
@@ -65,27 +67,23 @@ class Game extends React.Component {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', debounce(e => {
+    document.addEventListener('keydown', e => {
       this.handleKeypress(e);
-    }, 250));
+    });
   }
 
   handleKeypress(e) {
-    if ((this.state.turn === 0) && (this.state.round !== 0) && (!this.state.autoDeal)) {
-      switch(e.key) {
-        case 'r':
-          this.raise();
-          break;
-        case 'f': 
-          this.fold();
-          break;
-        case 'c':
-          this.callOrCheck();
-          break;
-        default:
-          break;
-      }
+
+    if ((this.state.turn === 0) && (this.state.round !== 0) && (!this.state.autoDeal) && (!this.state.setOver)) {
+      let callback = e.key === 'r' ? this.raise.bind(this)
+        : e.key === 'f' ? this.fold.bind(this)
+        : e.key === 'c' ? this.callOrCheck.bind(this)
+        : null;
+
+      this.lock(callback);
     }
+
+
     if ((this.state.round === 0) || (this.state.setOver)) {
       switch(e.key) {
         case 'd':
@@ -94,6 +92,14 @@ class Game extends React.Component {
         default:
           break;
       }
+    }
+  }
+
+  lock(callback) {
+    if (!locked) {
+      locked = true;
+      if (!!callback) { callback(); }
+      setTimeout(() => { locked = false }, 1050);
     }
   }
 
