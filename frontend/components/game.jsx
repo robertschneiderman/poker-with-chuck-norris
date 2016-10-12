@@ -8,15 +8,15 @@ import Interface from './interface/interface';
 import Counter from './counter';
 import ShareBtn from './share_btn';
 import { deck } from '../util/deck';
-import {shuffle, merge, uniq, drop, take, debounce, isEqual} from 'lodash';
+import {shuffle, merge, uniq, drop, take, debounce, throttle, isEqual} from 'lodash';
 import { RANKS, count, sortNumber, greatestHold, bestHandName, getPokerHand, PokerHand, handName, getHandOdds, getBothHandOdds} from './poker_hands';
 import * as svgMessages from './svg_messages';
 
-const roundTimes = 100;
-const aiTime = 100;
+const roundTimes = 1000;
+const aiTime = 1000;
 
 const defaultPlayer = {
-  bank: 100,
+  bank: 1000,
   hold: [{
     suit: null,
     rank: null
@@ -194,8 +194,6 @@ class Game extends React.Component {
 
     if ((winningIdx === 0) || (winningIdx === 1)) {
       this.setState({setOver: true, players, winner: players[winningIdx]}, this.displayWinner);
-    } else if (playerWhoDidntFold) {
-      this.setState({setOver: true, players, winner: playerWhoDidntFold}, this.displayWinner.bind(this, ''));      
     } else {
       //TIE!
       svgMessages.tie();        
@@ -203,7 +201,7 @@ class Game extends React.Component {
     }      
   }
 
-  displayWinner(foldSubmessage) {
+  displayWinner(foldSubmessage, delay = 0) {
     let subMessage;
     let losingPlayer = this.getLosingPlayer(this.state.winner);    
     if (foldSubmessage === '') {
@@ -214,37 +212,20 @@ class Game extends React.Component {
 
     let gameOver = false;
 
-    if (this.state.winner.name === 'You') {
-      this.playSound('win-sound');
-      this.chuckSound('won');
-      svgMessages.youWon();
-    } else {
-      this.playSound('lose-sound');
-      this.chuckSound('lost');      
-      svgMessages.chuckWon();
-    }    
-
+    setTimeout(() => {      
+      if (this.state.winner.name === 'You') {
+        this.playSound('win-sound');
+        this.chuckSound('won');
+        svgMessages.youWon();
+      } else {
+        this.playSound('lose-sound');
+        this.chuckSound('lost');      
+        svgMessages.chuckWon();
+      }
+    }, delay)
 
     this.setState({subMessage});
   }
-
-  chuckSound(state) {
-    let sounds;
-    switch (state) {
-      case 'won':
-        sounds = ['chuck-angry', 'chuck-whirr', 'chuck-muttering'];
-        break;
-      case 'lost':
-        sounds = ['chuck-laughter', 'chuck-silly-shout', 'chuck-whoa'];
-        break;
-      default:
-        break;
-    }
-
-    let rn = randomNumber(0, 3);
-    
-    this.playSound(sounds[rn]);
-  }   
 
   collectWinnings() {
 
@@ -305,10 +286,7 @@ class Game extends React.Component {
   }
 
   nextTurn() {
-    if (this.state.setOver) {
-      let message = `${this.otherPlayer().name} won!`;
-      this.determineWinner(this.otherPlayer()); // Player folded
-    } else if (this.onePlayerAllIn() && this.allStakesEven()) {
+    if (this.onePlayerAllIn() && this.allStakesEven()) {
       setTimeout(this.autoDeal.bind(this), 1000); // Player All In
     } else if ( (this.allStakesEven()) && (this.state.looped)) {
       this.nextRound(true);
@@ -359,7 +337,7 @@ class Game extends React.Component {
     let move;
     let winningIdx = this.greatestHold(this.state.players);
     if (winningIdx === 1) {
-      move = this.raise;
+      move = this.moveWhileWinning();
     } else {
       move = this.callOrCheck;
     }
@@ -368,18 +346,28 @@ class Game extends React.Component {
 
   cheapMoveWithFold() {
     let move;
-    let winningIdx = this.greatestHold(this.state.players);    
-    let pokerHand = getPokerHand(this.state.stage, this.state.players[0].hold);
+    let winningIdx = this.greatestHold(this.state.players); 
+    let pokerHand = getPokerHand(this.state.stage, this.state.players[0].hold);       
 
     if (winningIdx === 1) {
-      move = this.raise;
+      move = this.moveWhileWinning();
     } else if ((pokerHand.rank < 2) && (pokerHand.tiebreakers[0] < 11) && (this.state.round > 1)) {
-      move = this.fold;
+      move = this.fold; //losing by a lot
     } else {
-      move = this.callOrCheck;
+      move = this.callOrCheck; //losing by a little
     }
     setTimeout(move.bind(this), aiTime);      
-  }  
+  } 
+
+  moveWhileWinning() {
+    let pokerHand = getPokerHand(this.state.stage, this.state.players[0].hold);
+    let rn = randomNumber(0, 2);
+    if ( ((pokerHand.rank > 1) || (rn === 0)) && pokerHand.tiebreakers[0] !== 14 && pokerHand.tiebreakers[0] !== 13) {
+      return this.raise;
+    } else {
+      return this.callOrCheck;
+    }
+  } 
 
   callOrCheck() {
     let newState = merge({}, this.state);
@@ -464,22 +452,9 @@ class Game extends React.Component {
     let pot = (this.state.pot + this.state.players[0].stake + this.state.players[1].stake);
 
     svgMessages.folded();
+    this.playSound('fold-sound');
 
-    setTimeout(() => {
-
-      if (this.currentPlayer().name === 'You') {
-        svgMessages.chuckWon();
-        this.playSound('lose-sound');
-      } else {
-        svgMessages.youWon();
-        this.playSound('win-sound');
-      }
-    }, 700);   
-
-    this.setState({
-      pot: pot,
-      setOver: true
-    }, this.displayMessage);
+    this.setState({setOver: true, pot, winner: this.otherPlayer()}, this.displayWinner.bind(this, '', 700));
   }
 
   playSound(selector) {
@@ -523,6 +498,24 @@ class Game extends React.Component {
     this.refs.modal.show();    
   }
 
+  chuckSound(state) {
+    let sounds;
+    switch (state) {
+      case 'won':
+        sounds = ['chuck-angry', 'chuck-whirr', 'chuck-muttering'];
+        break;
+      case 'lost':
+        sounds = ['chuck-laughter', 'chuck-silly-shout', 'chuck-whoa'];
+        break;
+      default:
+        break;
+    }
+
+    let rn = randomNumber(0, 3);
+    
+    this.playSound(sounds[rn]);
+  }     
+
   playFinalSound() {
     if (this.state.winner.name === 'Chuck') {
       this.playSound('infection-giggling');
@@ -553,20 +546,34 @@ class Game extends React.Component {
     if (this.state.winner.name === 'Chuck') {
       title = `${window.playerName} got round house kicked to the face by Chuck Norris!`;
       description = `${window.playerName} had the audacity to challenge Chuck Norris to a game of poker. While we respect ${pronounPoss} bravery, only a fool would challenge a god to a game of Texas Hold\'em`;
-      picture = "http://res.cloudinary.com/stellar-pixels/image/upload/v1476219397/chuck_win_svmv8f.jpg"
+      picture = 'http://res.cloudinary.com/stellar-pixels/image/upload/v1476218978/chuck_loser_dmf48m.jpg';
     } else {
       title = `${window.playerName} got all the chips, but Chuck Norris still won`;
       description = `${window.playerName} played a great game of poker against Chuck Norris, but it is truly impossible to beat a god. While he collected all the chips, Chuck Norris was the true winner.`;
-      picture = 'http://res.cloudinary.com/stellar-pixels/image/upload/v1476218978/chuck_loser_dmf48m.jpg';
+      picture = "http://res.cloudinary.com/stellar-pixels/image/upload/v1476219397/chuck_win_svmv8f.jpg"
     }
+    FB.init({
+      appId      : '1196099127116910',
+      xfbml      : true,
+      version    : 'v2.8'
+    });  
     FB.ui(
      {
       method: 'share',
-      href: 'pokerwithchucknorris.com',
+      href: 'http://pokerwithchucknorris.com',
       title: `${title}`,
+      display: 'popup',
       description: `${description}`,
       picture: picture
     }, function(response){});
+
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));    
   }
 
   render() {

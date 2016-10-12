@@ -23218,11 +23218,11 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var roundTimes = 100;
-	var aiTime = 100;
+	var roundTimes = 1000;
+	var aiTime = 1000;
 	
 	var defaultPlayer = {
-	  bank: 100,
+	  bank: 1000,
 	  hold: [{
 	    suit: null,
 	    rank: null
@@ -23418,8 +23418,6 @@
 	
 	      if (winningIdx === 0 || winningIdx === 1) {
 	        this.setState({ setOver: true, players: players, winner: players[winningIdx] }, this.displayWinner);
-	      } else if (playerWhoDidntFold) {
-	        this.setState({ setOver: true, players: players, winner: playerWhoDidntFold }, this.displayWinner.bind(this, ''));
 	      } else {
 	        //TIE!
 	        svgMessages.tie();
@@ -23429,6 +23427,10 @@
 	  }, {
 	    key: 'displayWinner',
 	    value: function displayWinner(foldSubmessage) {
+	      var _this4 = this;
+	
+	      var delay = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	
 	      var subMessage = void 0;
 	      var losingPlayer = this.getLosingPlayer(this.state.winner);
 	      if (foldSubmessage === '') {
@@ -23439,48 +23441,31 @@
 	
 	      var gameOver = false;
 	
-	      if (this.state.winner.name === 'You') {
-	        this.playSound('win-sound');
-	        this.chuckSound('won');
-	        svgMessages.youWon();
-	      } else {
-	        this.playSound('lose-sound');
-	        this.chuckSound('lost');
-	        svgMessages.chuckWon();
-	      }
+	      setTimeout(function () {
+	        if (_this4.state.winner.name === 'You') {
+	          _this4.playSound('win-sound');
+	          _this4.chuckSound('won');
+	          svgMessages.youWon();
+	        } else {
+	          _this4.playSound('lose-sound');
+	          _this4.chuckSound('lost');
+	          svgMessages.chuckWon();
+	        }
+	      }, delay);
 	
 	      this.setState({ subMessage: subMessage });
 	    }
 	  }, {
-	    key: 'chuckSound',
-	    value: function chuckSound(state) {
-	      var sounds = void 0;
-	      switch (state) {
-	        case 'won':
-	          sounds = ['chuck-angry', 'chuck-whirr', 'chuck-muttering'];
-	          break;
-	        case 'lost':
-	          sounds = ['chuck-laughter', 'chuck-silly-shout', 'chuck-whoa'];
-	          break;
-	        default:
-	          break;
-	      }
-	
-	      var rn = randomNumber(0, 3);
-	
-	      this.playSound(sounds[rn]);
-	    }
-	  }, {
 	    key: 'collectWinnings',
 	    value: function collectWinnings() {
-	      var _this4 = this;
+	      var _this5 = this;
 	
 	      var players = (0, _lodash.merge)([], this.state.players);
 	      var that = this;
 	
 	      players.map(function (player) {
 	        if (player.name === that.state.winner.name) {
-	          player.bank += _this4.state.pot;
+	          player.bank += _this5.state.pot;
 	        }
 	      });
 	
@@ -23489,12 +23474,12 @@
 	  }, {
 	    key: 'splitPot',
 	    value: function splitPot() {
-	      var _this5 = this;
+	      var _this6 = this;
 	
 	      var players = (0, _lodash.merge)([], this.state.players);
 	
 	      players.map(function (player) {
-	        player.bank += _this5.state.pot / 2;
+	        player.bank += _this6.state.pot / 2;
 	      });
 	
 	      this.setState({ players: players });
@@ -23539,10 +23524,7 @@
 	  }, {
 	    key: 'nextTurn',
 	    value: function nextTurn() {
-	      if (this.state.setOver) {
-	        var message = this.otherPlayer().name + ' won!';
-	        this.determineWinner(this.otherPlayer()); // Player folded
-	      } else if (this.onePlayerAllIn() && this.allStakesEven()) {
+	      if (this.onePlayerAllIn() && this.allStakesEven()) {
 	        setTimeout(this.autoDeal.bind(this), 1000); // Player All In
 	      } else if (this.allStakesEven() && this.state.looped) {
 	        this.nextRound(true);
@@ -23602,7 +23584,7 @@
 	      var move = void 0;
 	      var winningIdx = this.greatestHold(this.state.players);
 	      if (winningIdx === 1) {
-	        move = this.raise;
+	        move = this.moveWhileWinning();
 	      } else {
 	        move = this.callOrCheck;
 	      }
@@ -23616,13 +23598,24 @@
 	      var pokerHand = (0, _poker_hands.getPokerHand)(this.state.stage, this.state.players[0].hold);
 	
 	      if (winningIdx === 1) {
-	        move = this.raise;
+	        move = this.moveWhileWinning();
 	      } else if (pokerHand.rank < 2 && pokerHand.tiebreakers[0] < 11 && this.state.round > 1) {
-	        move = this.fold;
+	        move = this.fold; //losing by a lot
 	      } else {
-	        move = this.callOrCheck;
+	        move = this.callOrCheck; //losing by a little
 	      }
 	      setTimeout(move.bind(this), aiTime);
+	    }
+	  }, {
+	    key: 'moveWhileWinning',
+	    value: function moveWhileWinning() {
+	      var pokerHand = (0, _poker_hands.getPokerHand)(this.state.stage, this.state.players[0].hold);
+	      var rn = randomNumber(0, 2);
+	      if ((pokerHand.rank > 1 || rn === 0) && pokerHand.tiebreakers[0] !== 14 && pokerHand.tiebreakers[0] !== 13) {
+	        return this.raise;
+	      } else {
+	        return this.callOrCheck;
+	      }
 	    }
 	  }, {
 	    key: 'callOrCheck',
@@ -23711,28 +23704,13 @@
 	  }, {
 	    key: 'fold',
 	    value: function fold() {
-	      var _this6 = this;
-	
 	      // duplicated in 'nextRound'
 	      var pot = this.state.pot + this.state.players[0].stake + this.state.players[1].stake;
 	
 	      svgMessages.folded();
+	      this.playSound('fold-sound');
 	
-	      setTimeout(function () {
-	
-	        if (_this6.currentPlayer().name === 'You') {
-	          svgMessages.chuckWon();
-	          _this6.playSound('lose-sound');
-	        } else {
-	          svgMessages.youWon();
-	          _this6.playSound('win-sound');
-	        }
-	      }, 700);
-	
-	      this.setState({
-	        pot: pot,
-	        setOver: true
-	      }, this.displayMessage);
+	      this.setState({ setOver: true, pot: pot, winner: this.otherPlayer() }, this.displayWinner.bind(this, '', 700));
 	    }
 	  }, {
 	    key: 'playSound',
@@ -23785,6 +23763,25 @@
 	      this.refs.modal.show();
 	    }
 	  }, {
+	    key: 'chuckSound',
+	    value: function chuckSound(state) {
+	      var sounds = void 0;
+	      switch (state) {
+	        case 'won':
+	          sounds = ['chuck-angry', 'chuck-whirr', 'chuck-muttering'];
+	          break;
+	        case 'lost':
+	          sounds = ['chuck-laughter', 'chuck-silly-shout', 'chuck-whoa'];
+	          break;
+	        default:
+	          break;
+	      }
+	
+	      var rn = randomNumber(0, 3);
+	
+	      this.playSound(sounds[rn]);
+	    }
+	  }, {
 	    key: 'playFinalSound',
 	    value: function playFinalSound() {
 	      if (this.state.winner.name === 'Chuck') {
@@ -23817,19 +23814,36 @@
 	      if (this.state.winner.name === 'Chuck') {
 	        title = window.playerName + ' got round house kicked to the face by Chuck Norris!';
 	        description = window.playerName + ' had the audacity to challenge Chuck Norris to a game of poker. While we respect ' + pronounPoss + ' bravery, only a fool would challenge a god to a game of Texas Hold\'em';
-	        picture = "http://res.cloudinary.com/stellar-pixels/image/upload/v1476219397/chuck_win_svmv8f.jpg";
+	        picture = 'http://res.cloudinary.com/stellar-pixels/image/upload/v1476218978/chuck_loser_dmf48m.jpg';
 	      } else {
 	        title = window.playerName + ' got all the chips, but Chuck Norris still won';
 	        description = window.playerName + ' played a great game of poker against Chuck Norris, but it is truly impossible to beat a god. While he collected all the chips, Chuck Norris was the true winner.';
-	        picture = 'http://res.cloudinary.com/stellar-pixels/image/upload/v1476218978/chuck_loser_dmf48m.jpg';
+	        picture = "http://res.cloudinary.com/stellar-pixels/image/upload/v1476219397/chuck_win_svmv8f.jpg";
 	      }
+	      FB.init({
+	        appId: '1196099127116910',
+	        xfbml: true,
+	        version: 'v2.8'
+	      });
 	      FB.ui({
 	        method: 'share',
-	        href: 'pokerwithchucknorris.com',
+	        href: 'http://pokerwithchucknorris.com',
 	        title: '' + title,
+	        display: 'popup',
 	        description: '' + description,
 	        picture: picture
 	      }, function (response) {});
+	
+	      (function (d, s, id) {
+	        var js,
+	            fjs = d.getElementsByTagName(s)[0];
+	        if (d.getElementById(id)) {
+	          return;
+	        }
+	        js = d.createElement(s);js.id = id;
+	        js.src = "//connect.facebook.net/en_US/sdk.js";
+	        fjs.parentNode.insertBefore(js, fjs);
+	      })(document, 'script', 'facebook-jssdk');
 	    }
 	  }, {
 	    key: 'render',
@@ -25256,7 +25270,7 @@
 	        button.addEventListener("click", (0, _lodash.debounce)(function (e) {
 	          e.preventDefault();
 	          _this2.clickHandle(e.srcElement.id);
-	        }, 210));
+	        }, 250));
 	      });
 	    }
 	  }, {
