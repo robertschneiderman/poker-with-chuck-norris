@@ -23580,36 +23580,37 @@
 	      if (this.state.turn !== 1) return;
 	      var rn = randomNumber(0, 3);
 	      if (rn < 2) {
-	        this.cheapMove();
+	        this.cheapMoveWithFold();
 	      } else {
 	        this.cheapMoveWithFold();
 	      }
 	    }
-	  }, {
-	    key: 'cheapMove',
-	    value: function cheapMove() {
-	      var move = void 0;
-	      var winningIdx = this.greatestHold(this.state.players);
-	      if (winningIdx === 1) {
-	        move = this.moveWhileWinning();
-	      } else {
-	        move = this.callOrCheck;
-	      }
-	      setTimeout(move.bind(this), aiTime);
-	    }
+	
+	    // cheapMove() {
+	    //   let move;
+	    //   let winningIdx = this.greatestHold(this.state.players);
+	    //   if (winningIdx === 1) {
+	    //     move = this.moveWhileWinning();
+	    //   } else {
+	    //     move = this.callOrCheck;
+	    //   }
+	    //   setTimeout(move.bind(this), aiTime);      
+	    // }
+	
 	  }, {
 	    key: 'cheapMoveWithFold',
 	    value: function cheapMoveWithFold() {
 	      var move = void 0;
 	      var winningIdx = this.greatestHold(this.state.players);
-	      var pokerHand = (0, _poker_hands.getPokerHand)(this.state.stage, this.state.players[0].hold);
+	      var pokerHand = (0, _poker_hands.getPokerHand)(this.state.stage, this.state.players[1].hold);
 	
 	      if (winningIdx === 1) {
 	        move = this.moveWhileWinning();
-	      } else if (pokerHand.rank < 2 && pokerHand.tiebreakers[0] < 11 && this.state.round > 1) {
-	        move = this.fold; //losing by a lot
+	      } else if (pokerHand.rank < 2 && pokerHand.tiebreakers[0] < 12 && this.state.round > 1 && this.currentPlayer().stake < this.otherPlayer().stake) {
+	        //will fold after flop if only high card and less than queen and human player has a greater stake
+	        move = this.fold;
 	      } else {
-	        move = this.callOrCheck; //losing by a little
+	        move = this.callOrCheck;
 	      }
 	      setTimeout(move.bind(this), aiTime);
 	    }
@@ -23617,7 +23618,7 @@
 	    key: 'moveWhileWinning',
 	    value: function moveWhileWinning() {
 	      var pokerHand = (0, _poker_hands.getPokerHand)(this.state.stage, this.state.players[0].hold);
-	      var rn = randomNumber(0, 2);
+	      var rn = randomNumber(0, 3);
 	      if ((pokerHand.rank > 1 || rn === 0) && pokerHand.tiebreakers[0] !== 14 && pokerHand.tiebreakers[0] !== 13) {
 	        return this.raise;
 	      } else {
@@ -52099,7 +52100,7 @@
 	      var target = _ref.target;
 	
 	      var logo = target;
-	      return TweenMax.fromTo(target, .3, { scale: .1 }, { scale: 1.7, ease: Power3.easeIn });
+	      return TweenMax.fromTo(target, .3, { scale: .025 }, { scale: .425, ease: Power3.easeIn });
 	    }
 	  }, {
 	    key: 'elasticGrowAnimation',
@@ -52107,7 +52108,7 @@
 	      var target = _ref2.target;
 	
 	      var logo = target;
-	      return TweenMax.to(logo, 1, { scale: 4, ease: Elastic.easeOut.config(3, 0.3) });
+	      return TweenMax.to(logo, 1, { scale: 1, ease: Elastic.easeOut.config(3, 0.3) });
 	    }
 	  }, {
 	    key: 'explosion',
@@ -52123,7 +52124,7 @@
 	      var logo = target;
 	      //   debugger;
 	
-	      return TweenMax.to(logo, 1, { css: { scale: 1.2, left: 160, top: 60 } });
+	      return TweenMax.to(logo, 1, { css: { scale: .3, left: 160, top: 60 } });
 	    }
 	  }, {
 	    key: 'render',

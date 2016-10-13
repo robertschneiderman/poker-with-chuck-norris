@@ -6,13 +6,15 @@
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
   z-index: 8000;
-  width: 11.5rem;
+  width: 46rem;
 }
 
 .logo #chucks-head {
   animation: spin 1s ease 1.5s 1 normal forwards;
   transform-origin: 50% 50% 0;
+  -moz-transform-origin: 50% 50% 0;
   transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092);
+  -moz-transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092);
 }
 
 @keyframes spin {
@@ -24,6 +26,32 @@
   }
 }
 
+@-moz-keyframes spin {
+  0% {
+    -moz-transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(0deg);
+  } 
+  100% {
+    -moz-transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(360deg);    
+  }
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(0deg);
+  } 
+  100% {
+    -webkit-transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(360deg);    
+  }
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(0deg);
+  } 
+  100% {
+    -webkit-transform: matrix(1.0002, 0, 0, 1.0002, 228.0928, 32.7092) rotate(360deg);    
+  }
+}
 .recede {
   /*transform: translate3d(0%, 0%, 0);*/
   animation: recede .8s ease 1s 1 normal forwards;
@@ -39,6 +67,48 @@
     left: 3%;
     top: 3%;
     transform: translate3d(0%, 0%, 0) scale(1);
+    width: 13rem;
+  }
+}
+
+@-webkit-keyframes recede {
+  0% {
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate3d(-50%, -50%, 0) scale(3);
+  } 
+  100% {
+    left: 3%;
+    top: 3%;
+    -webkit-transform: translate3d(0%, 0%, 0) scale(1);
+    width: 13rem;
+  }
+}
+
+@-moz-keyframes recede {
+  0% {
+    left: 50%;
+    top: 50%;
+    -moz-transform: translate3d(-50%, -50%, 0) scale(3);
+  } 
+  100% {
+    left: 3%;
+    top: 3%;
+    -moz-transform: translate3d(0%, 0%, 0) scale(1);
+    width: 13rem;
+  }
+}
+
+@-o-keyframes recede {
+  0% {
+    left: 50%;
+    top: 50%;
+    -o-transform: translate3d(-50%, -50%, 0) scale(3);
+  } 
+  100% {
+    left: 3%;
+    top: 3%;
+    -o-transform: translate3d(0%, 0%, 0) scale(1);
     width: 13rem;
   }
 }

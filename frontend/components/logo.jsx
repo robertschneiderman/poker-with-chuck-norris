@@ -44,12 +44,12 @@ class Logo extends React.Component {
 
   initialAnimation({target}) {
     let logo = target;    
-    return TweenMax.fromTo(target, .3, {scale: .1}, {scale: 1.7, ease: Power3.easeIn});
+    return TweenMax.fromTo(target, .3, {scale: .025}, {scale: .425, ease: Power3.easeIn});
   }
 
   elasticGrowAnimation({target}) {
     let logo = target;
-    return TweenMax.to(logo, 1, {scale: 4, ease: Elastic.easeOut.config(3, 0.3)});
+    return TweenMax.to(logo, 1, {scale: 1, ease: Elastic.easeOut.config(3, 0.3)});
   }
 
   explosion() {
@@ -61,7 +61,7 @@ class Logo extends React.Component {
     let logo = target;
   //   debugger;
 
-    return TweenMax.to(logo, 1, {css: {scale: 1.2, left:160, top:60} });
+    return TweenMax.to(logo, 1, {css: {scale: .3, left:160, top:60} });
   }   
 
   render() {
