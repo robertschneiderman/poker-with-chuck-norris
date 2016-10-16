@@ -23606,8 +23606,8 @@
 	
 	      if (winningIdx === 1) {
 	        move = this.moveWhileWinning();
-	      } else if (pokerHand.rank < 2 && pokerHand.tiebreakers[0] < 12 && this.state.round > 1 && this.currentPlayer().stake < this.otherPlayer().stake) {
-	        //will fold after flop if only high card and less than queen and human player has a greater stake
+	      } else if (pokerHand.rank < 2 && this.state.round > 2 && this.currentPlayer().stake < this.otherPlayer().stake) {
+	        //will fold after flop if only high card and human player has a greater stake
 	        move = this.fold;
 	      } else {
 	        move = this.callOrCheck;
