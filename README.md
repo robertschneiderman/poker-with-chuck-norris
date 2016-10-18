@@ -4,7 +4,7 @@
 
 Poker with Chuck Norris is a heads up game of Texas Holdem poker. This means that it is just you against Chuck Norris. Each Player is dealt two cards and given another communal 5 cards. The goal is to create the best 5 card hand from the 7 cards.
 
-![Picture of the poker game](./images/screen.jpg)
+![Picture of the poker game](./images/screen2.jpg)
 
 ## The Code
 
