@@ -21,14 +21,17 @@ class Interface extends React.Component {
   }
 
   btnEnabledness() {
+    let btns = document.querySelectorAll(".interface-betting > button");
     if ((this.props.turn !== 0) || (this.props.message !== '') || (this.props.autoDeal)) {
-      document.querySelectorAll(".interface-betting > button").forEach(button => {
-        button.disabled = true;
-      });
+
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].disabled = true;
+      }
+
     } else {
-      document.querySelectorAll(".interface-betting > button").forEach(button => {
-        button.disabled = false;
-      });
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].disabled = false;
+      }
     }
 
     if (this.props.players['0'].stake === this.props.players['1'].stake) {
@@ -37,18 +40,22 @@ class Interface extends React.Component {
   }
 
   componentDidMount() {
-    document.querySelectorAll(".interface-betting > button").forEach(button => {
-      button.addEventListener("click", e => {
+    let btns = document.querySelectorAll(".interface-betting > button");
+
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener("click", e => {
         e.preventDefault();
         this.clickHandle(e.srcElement.id);
       });
-    });    
+    }
   }
 
   clickHandle(str) {
-    document.querySelectorAll(".interface-betting > button").forEach(button => {
-      button.disabled = true;
-    });
+    let btns = document.querySelectorAll(".interface-betting > button")
+
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].disabled = true;
+    }
 
     let callback = str === 'btn-raise' ? this.props.raise.bind(this)
       : str === 'btn-fold' ? this.props.fold.bind(this)

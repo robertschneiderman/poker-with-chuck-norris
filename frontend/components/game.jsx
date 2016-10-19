@@ -48,7 +48,7 @@ const defaultState = {
 
 const randomNumber = (frm, to) => {
   return (Math.floor(Math.random() * (to - frm) + frm));
-}
+};
 
 window.randomNumber = randomNumber;
 
