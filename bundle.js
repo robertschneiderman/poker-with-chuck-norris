@@ -23194,13 +23194,13 @@
 	
 	var _counter2 = _interopRequireDefault(_counter);
 	
-	var _share_btn = __webpack_require__(215);
+	var _share_btn = __webpack_require__(217);
 	
 	var _share_btn2 = _interopRequireDefault(_share_btn);
 	
-	var _deck = __webpack_require__(216);
+	var _deck = __webpack_require__(218);
 	
-	var _lodash = __webpack_require__(217);
+	var _lodash = __webpack_require__(215);
 	
 	var _poker_hands = __webpack_require__(219);
 	
@@ -25220,7 +25220,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _lodash = __webpack_require__(217);
+	var _lodash = __webpack_require__(215);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -25257,14 +25257,16 @@
 	  }, {
 	    key: 'btnEnabledness',
 	    value: function btnEnabledness() {
+	      var btns = document.querySelectorAll(".interface-betting > button");
 	      if (this.props.turn !== 0 || this.props.message !== '' || this.props.autoDeal) {
-	        document.querySelectorAll(".interface-betting > button").forEach(function (button) {
-	          button.disabled = true;
-	        });
+	
+	        for (var i = 0; i < btns.length; i++) {
+	          btns[i].disabled = true;
+	        }
 	      } else {
-	        document.querySelectorAll(".interface-betting > button").forEach(function (button) {
-	          button.disabled = false;
-	        });
+	        for (var i = 0; i < btns.length; i++) {
+	          btns[i].disabled = false;
+	        }
 	      }
 	
 	      if (this.props.players['0'].stake === this.props.players['1'].stake) {
@@ -25276,19 +25278,23 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 	
-	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
-	        button.addEventListener("click", function (e) {
+	      var btns = document.querySelectorAll(".interface-betting > button");
+	
+	      for (var i = 0; i < btns.length; i++) {
+	        btns[i].addEventListener("click", function (e) {
 	          e.preventDefault();
 	          _this2.clickHandle(e.srcElement.id);
 	        });
-	      });
+	      }
 	    }
 	  }, {
 	    key: 'clickHandle',
 	    value: function clickHandle(str) {
-	      document.querySelectorAll(".interface-betting > button").forEach(function (button) {
-	        button.disabled = true;
-	      });
+	      var btns = document.querySelectorAll(".interface-betting > button");
+	
+	      for (var i = 0; i < btns.length; i++) {
+	        btns[i].disabled = true;
+	      }
 	
 	      var callback = str === 'btn-raise' ? this.props.raise.bind(this) : str === 'btn-fold' ? this.props.fold.bind(this) : this.props.callOrCheck.bind(this);
 	
@@ -25360,115 +25366,6 @@
 
 /***/ },
 /* 215 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	// import Container from './/_container';
-	
-	var ShareBtn = function (_React$Component) {
-	  _inherits(ShareBtn, _React$Component);
-	
-	  function ShareBtn(props) {
-	    _classCallCheck(this, ShareBtn);
-	
-	    return _possibleConstructorReturn(this, (ShareBtn.__proto__ || Object.getPrototypeOf(ShareBtn)).call(this, props));
-	  }
-	
-	  _createClass(ShareBtn, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      document.getElementById('fb-share-btn').addEventListener('click', function (e) {
-	        e.stopPropagation();
-	        FB.ui({
-	          method: 'share',
-	          href: 'pokerwithchucknorris.com',
-	          title: 'Have the guts to play Chuck Norris?',
-	          picture: 'http://res.cloudinary.com/stellar-pixels/image/upload/v1475969955/chuck_norris_share_mxoagf.jpg',
-	          description: 'See if you can beat Chuck Norris in a game of Texas Hold\'em Poker'
-	        }, function (response) {});
-	      });
-	
-	      (function (d, s, id) {
-	        var js,
-	            fjs = d.getElementsByTagName(s)[0];
-	        if (d.getElementById(id)) {
-	          return;
-	        }
-	        js = d.createElement(s);js.id = id;
-	        js.src = "//connect.facebook.net/en_US/sdk.js";
-	        fjs.parentNode.insertBefore(js, fjs);
-	      })(document, 'script', 'facebook-jssdk');
-	    }
-	  }, {
-	    key: 'toggleDropdown',
-	    value: function toggleDropdown() {
-	      var dropdown = document.getElementById('fb-dropdown');
-	      var containerContent = document.querySelector('.fb-container-content');
-	      if (!dropdown.classList.contains('active')) {
-	        containerContent.innerHTML = '-';
-	        dropdown.classList.add('active');
-	      } else {
-	        containerContent.innerHTML = '+';
-	        dropdown.classList.remove('active');
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      // <div className="fb-container" onClick={this.toggleDropdown.bind(this)}>
-	      //   <span className="fb-container-content">+</span>        
-	      //   <div id="fb-dropdown" className="fb-dropdown">
-	      //     <div id="fb-like-btn" className="fb-btn fb-like-btn">
-	      //       <img className="fb-btn-icon" src="./images/fb_like.svg" alt=""/>
-	      //       <span className="fb-btn-text">Like</span>
-	      //     </div>
-	      //     <div id="fb-share-btn" className="fb-btn fb-share-btn">
-	      //       <img className="fb-btn-icon" src="./images/fb_share.svg" alt=""/>
-	      //       <span className="fb-btn-text">Share</span>
-	      //     </div>
-	      //   </div>
-	      // </div>
-	      return _react2.default.createElement('div', null);
-	    }
-	  }]);
-	
-	  return ShareBtn;
-	}(_react2.default.Component);
-	
-	exports.default = ShareBtn;
-
-/***/ },
-/* 216 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var deck = exports.deck = [{ rank: 2, suit: "hearts" }, { rank: 3, suit: "hearts" }, { rank: 4, suit: "hearts" }, { rank: 5, suit: "hearts" }, { rank: 6, suit: "hearts" }, { rank: 7, suit: "hearts" }, { rank: 8, suit: "hearts" }, { rank: 9, suit: "hearts" }, { rank: 10, suit: "hearts" }, { rank: 11, suit: "hearts" }, { rank: 12, suit: "hearts" }, { rank: 13, suit: "hearts" }, { rank: 14, suit: "hearts" }, { rank: 2, suit: "diamonds" }, { rank: 3, suit: "diamonds" }, { rank: 4, suit: "diamonds" }, { rank: 5, suit: "diamonds" }, { rank: 6, suit: "diamonds" }, { rank: 7, suit: "diamonds" }, { rank: 8, suit: "diamonds" }, { rank: 9, suit: "diamonds" }, { rank: 10, suit: "diamonds" }, { rank: 11, suit: "diamonds" }, { rank: 12, suit: "diamonds" }, { rank: 13, suit: "diamonds" }, { rank: 14, suit: "diamonds" }, { rank: 2, suit: "clubs" }, { rank: 3, suit: "clubs" }, { rank: 4, suit: "clubs" }, { rank: 5, suit: "clubs" }, { rank: 6, suit: "clubs" }, { rank: 7, suit: "clubs" }, { rank: 8, suit: "clubs" }, { rank: 9, suit: "clubs" }, { rank: 10, suit: "clubs" }, { rank: 11, suit: "clubs" }, { rank: 12, suit: "clubs" }, { rank: 13, suit: "clubs" }, { rank: 14, suit: "clubs" }, { rank: 2, suit: "spades" }, { rank: 3, suit: "spades" }, { rank: 4, suit: "spades" }, { rank: 5, suit: "spades" }, { rank: 6, suit: "spades" }, { rank: 7, suit: "spades" }, { rank: 8, suit: "spades" }, { rank: 9, suit: "spades" }, { rank: 10, suit: "spades" }, { rank: 11, suit: "spades" }, { rank: 12, suit: "spades" }, { rank: 13, suit: "spades" }, { rank: 14, suit: "spades" }];
-
-/***/ },
-/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -42205,10 +42102,10 @@
 	  }
 	}.call(this));
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(218)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(216)(module)))
 
 /***/ },
-/* 218 */
+/* 216 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -42222,6 +42119,115 @@
 		return module;
 	}
 
+
+/***/ },
+/* 217 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	// import Container from './/_container';
+	
+	var ShareBtn = function (_React$Component) {
+	  _inherits(ShareBtn, _React$Component);
+	
+	  function ShareBtn(props) {
+	    _classCallCheck(this, ShareBtn);
+	
+	    return _possibleConstructorReturn(this, (ShareBtn.__proto__ || Object.getPrototypeOf(ShareBtn)).call(this, props));
+	  }
+	
+	  _createClass(ShareBtn, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      document.getElementById('fb-share-btn').addEventListener('click', function (e) {
+	        e.stopPropagation();
+	        FB.ui({
+	          method: 'share',
+	          href: 'pokerwithchucknorris.com',
+	          title: 'Have the guts to play Chuck Norris?',
+	          picture: 'http://res.cloudinary.com/stellar-pixels/image/upload/v1475969955/chuck_norris_share_mxoagf.jpg',
+	          description: 'See if you can beat Chuck Norris in a game of Texas Hold\'em Poker'
+	        }, function (response) {});
+	      });
+	
+	      (function (d, s, id) {
+	        var js,
+	            fjs = d.getElementsByTagName(s)[0];
+	        if (d.getElementById(id)) {
+	          return;
+	        }
+	        js = d.createElement(s);js.id = id;
+	        js.src = "//connect.facebook.net/en_US/sdk.js";
+	        fjs.parentNode.insertBefore(js, fjs);
+	      })(document, 'script', 'facebook-jssdk');
+	    }
+	  }, {
+	    key: 'toggleDropdown',
+	    value: function toggleDropdown() {
+	      var dropdown = document.getElementById('fb-dropdown');
+	      var containerContent = document.querySelector('.fb-container-content');
+	      if (!dropdown.classList.contains('active')) {
+	        containerContent.innerHTML = '-';
+	        dropdown.classList.add('active');
+	      } else {
+	        containerContent.innerHTML = '+';
+	        dropdown.classList.remove('active');
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      // <div className="fb-container" onClick={this.toggleDropdown.bind(this)}>
+	      //   <span className="fb-container-content">+</span>        
+	      //   <div id="fb-dropdown" className="fb-dropdown">
+	      //     <div id="fb-like-btn" className="fb-btn fb-like-btn">
+	      //       <img className="fb-btn-icon" src="./images/fb_like.svg" alt=""/>
+	      //       <span className="fb-btn-text">Like</span>
+	      //     </div>
+	      //     <div id="fb-share-btn" className="fb-btn fb-share-btn">
+	      //       <img className="fb-btn-icon" src="./images/fb_share.svg" alt=""/>
+	      //       <span className="fb-btn-text">Share</span>
+	      //     </div>
+	      //   </div>
+	      // </div>
+	      return _react2.default.createElement('div', null);
+	    }
+	  }]);
+	
+	  return ShareBtn;
+	}(_react2.default.Component);
+	
+	exports.default = ShareBtn;
+
+/***/ },
+/* 218 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var deck = exports.deck = [{ rank: 2, suit: "hearts" }, { rank: 3, suit: "hearts" }, { rank: 4, suit: "hearts" }, { rank: 5, suit: "hearts" }, { rank: 6, suit: "hearts" }, { rank: 7, suit: "hearts" }, { rank: 8, suit: "hearts" }, { rank: 9, suit: "hearts" }, { rank: 10, suit: "hearts" }, { rank: 11, suit: "hearts" }, { rank: 12, suit: "hearts" }, { rank: 13, suit: "hearts" }, { rank: 14, suit: "hearts" }, { rank: 2, suit: "diamonds" }, { rank: 3, suit: "diamonds" }, { rank: 4, suit: "diamonds" }, { rank: 5, suit: "diamonds" }, { rank: 6, suit: "diamonds" }, { rank: 7, suit: "diamonds" }, { rank: 8, suit: "diamonds" }, { rank: 9, suit: "diamonds" }, { rank: 10, suit: "diamonds" }, { rank: 11, suit: "diamonds" }, { rank: 12, suit: "diamonds" }, { rank: 13, suit: "diamonds" }, { rank: 14, suit: "diamonds" }, { rank: 2, suit: "clubs" }, { rank: 3, suit: "clubs" }, { rank: 4, suit: "clubs" }, { rank: 5, suit: "clubs" }, { rank: 6, suit: "clubs" }, { rank: 7, suit: "clubs" }, { rank: 8, suit: "clubs" }, { rank: 9, suit: "clubs" }, { rank: 10, suit: "clubs" }, { rank: 11, suit: "clubs" }, { rank: 12, suit: "clubs" }, { rank: 13, suit: "clubs" }, { rank: 14, suit: "clubs" }, { rank: 2, suit: "spades" }, { rank: 3, suit: "spades" }, { rank: 4, suit: "spades" }, { rank: 5, suit: "spades" }, { rank: 6, suit: "spades" }, { rank: 7, suit: "spades" }, { rank: 8, suit: "spades" }, { rank: 9, suit: "spades" }, { rank: 10, suit: "spades" }, { rank: 11, suit: "spades" }, { rank: 12, suit: "spades" }, { rank: 13, suit: "spades" }, { rank: 14, suit: "spades" }];
 
 /***/ },
 /* 219 */
@@ -42389,8 +42395,8 @@
 	      var triplez = this.triples();
 	      var doublez = this.doubles();
 	
-	      if (triplez.length > 0 && doublez.length > 0) {
-	        return { rank: 7, tiebreakers: [triplez[0], doublez[0]] };
+	      if (triplez && doublez) {
+	        return { rank: 7, tiebreakers: [triplez.tiebreakers[0], doublez.tiebreakers[0]] };
 	      }
 	
 	      return false;
@@ -42558,19 +42564,13 @@
 	  return PokerHand;
 	}();
 	
-	// let stage = [{rank: 11, suit: 'clubs'},
-	//   {rank: 10, suit: 'clubs'},
-	//   {rank: 9, suit: 'spades'},
-	//   {rank: 8, suit: 'clubs'},
-	//   {rank: 3, suit: 'hearts'}];
+	var stage = [{ rank: 5, suit: 'clubs' }, { rank: 4, suit: 'clubs' }, { rank: 5, suit: 'spades' }, { rank: 2, suit: 'clubs' }, { rank: 2, suit: 'hearts' }];
 	
+	var h1 = getPokerHand(stage, [{ rank: 13, suit: 'spades' }, { rank: 7, suit: 'hearts' }]);
+	var h2 = getPokerHand(stage, [{ rank: 4, suit: 'diamonds' }, { rank: 5, suit: 'clubs' }]);
 	
-	// let h1 = getPokerHand(stage, [{rank: 7, suit: 'spades' }, {rank: 4, suit: 'hearts'}])
-	// let h2 = getPokerHand(stage, [{rank: 4, suit: 'clubs' }, {rank: 3, suit: 'clubs'}])
-	
-	// console.log("h1:", h1);
-	// console.log("h2:", h2);
-	
+	console.log("h1:", h1);
+	console.log("h2:", h2);
 	
 	// let gh = greatestHold(stage, [h1, h2]);
 	// console.log("gh:", gh);
@@ -51900,7 +51900,7 @@
 	(freeModule.exports=_)._=_;// Export for CommonJS support.
 	freeExports._=_;}else{// Export to the global object.
 	root._=_;}}).call(undefined);
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(218)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(216)(module)))
 
 /***/ },
 /* 221 */

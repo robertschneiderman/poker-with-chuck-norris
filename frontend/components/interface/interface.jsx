@@ -51,7 +51,7 @@ class Interface extends React.Component {
   }
 
   clickHandle(str) {
-    let btns = document.querySelectorAll(".interface-betting > button")
+    let btns = document.querySelectorAll(".interface-betting > button");
 
     for (var i = 0; i < btns.length; i++) {
       btns[i].disabled = true;

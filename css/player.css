@@ -10,6 +10,7 @@
   left: 2.5rem;
   display: flex;
   align-items: center;
+  -webkit-align-items: center; /* Safari 7.0+ */    
   justify-content: center;
   transform: translateX(-50%);
 }

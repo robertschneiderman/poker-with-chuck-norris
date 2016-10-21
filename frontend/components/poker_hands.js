@@ -143,8 +143,8 @@ export class PokerHand {
     let triplez = this.triples();
     let doublez = this.doubles();
 
-    if ((triplez.length > 0) && (doublez.length > 0)) {
-      return {rank: 7, tiebreakers: [triplez[0], doublez[0]]}
+    if ((triplez) && (doublez)) {
+      return {rank: 7, tiebreakers: [triplez.tiebreakers[0], doublez.tiebreakers[0]]}
     }
 
     return false;
@@ -294,19 +294,19 @@ export class PokerHand {
   }
 }
 
-// let stage = [{rank: 11, suit: 'clubs'},
-//   {rank: 10, suit: 'clubs'},
-//   {rank: 9, suit: 'spades'},
-//   {rank: 8, suit: 'clubs'},
-//   {rank: 3, suit: 'hearts'}];
+let stage = [{rank: 5, suit: 'clubs'},
+  {rank: 4, suit: 'clubs'},
+  {rank: 5, suit: 'spades'},
+  {rank: 2, suit: 'clubs'},
+  {rank: 2, suit: 'hearts'}];
 
 
 
-// let h1 = getPokerHand(stage, [{rank: 7, suit: 'spades' }, {rank: 4, suit: 'hearts'}])
-// let h2 = getPokerHand(stage, [{rank: 4, suit: 'clubs' }, {rank: 3, suit: 'clubs'}])
+let h1 = getPokerHand(stage, [{rank: 13, suit: 'spades' }, {rank: 7, suit: 'hearts'}])
+let h2 = getPokerHand(stage, [{rank: 4, suit: 'diamonds' }, {rank: 5, suit: 'clubs'}])
 
-// console.log("h1:", h1);
-// console.log("h2:", h2);
+console.log("h1:", h1);
+console.log("h2:", h2);
 
 
 // let gh = greatestHold(stage, [h1, h2]);
