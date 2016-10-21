@@ -131,43 +131,16 @@ class Game extends React.Component {
     newState.players[1].bank = player2Bank;
 
     this.setState(newState, this.deal.bind(this));
-  }
-
-  chosenStage() {
-    let stage = [
-      {rank: 4, suit:"clubs"},
-      {rank: 14, suit:"diamonds"},
-      {rank: 4, suit:"hearts"},
-      {rank: 11, suit:"spades"},
-      {rank: 4, suit:"clubs"}
-    ];
-
-    let hand1 = [
-      {rank: 12, suit:"clubs"},
-      {rank: 3, suit:"diamonds"}
-    ];
-
-    let hand2 = [
-      {rank: 7, suit:"clubs"},
-      {rank: 7, suit:"diamonds"}
-    ]; 
-
-    // newState.players[0].hold = this.chosenStage()[1];
-
-    // newState.players[1].hold = this.chosenStage()[2];
-
-
-    return [stage, hand1, hand2];  
-  }
+  }  
 
   deal() {
-    let newState = merge({}, this.state);
     let deck = shuffle(this.state.deck);
+    let cardsToDeal = deck.splice(48);
+    let newState = merge({}, this.state);
 
-    newState.players[0].hold = deck.slice(0, 2);
-    newState.players[1].hold = deck.slice(2);
-    
-    newState.deck = cardsToDeal.concat(deck);
+    newState.players[0].hold = cardsToDeal.slice(0, 2);
+    newState.players[1].hold = cardsToDeal.slice(2);
+    newState.deck = deck;
 
     this.playSound('deal-sound');
 
