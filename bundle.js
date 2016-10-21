@@ -23354,15 +23354,31 @@
 	      this.setState(newState, this.deal.bind(this));
 	    }
 	  }, {
+	    key: 'chosenStage',
+	    value: function chosenStage() {
+	      var stage = [{ rank: 4, suit: "clubs" }, { rank: 14, suit: "diamonds" }, { rank: 4, suit: "hearts" }, { rank: 11, suit: "spades" }, { rank: 4, suit: "clubs" }];
+	
+	      var hand1 = [{ rank: 12, suit: "clubs" }, { rank: 3, suit: "diamonds" }];
+	
+	      var hand2 = [{ rank: 7, suit: "clubs" }, { rank: 7, suit: "diamonds" }];
+	
+	      // newState.players[0].hold = this.chosenStage()[1];
+	
+	      // newState.players[1].hold = this.chosenStage()[2];
+	
+	
+	      return [stage, hand1, hand2];
+	    }
+	  }, {
 	    key: 'deal',
 	    value: function deal() {
-	      var deck = (0, _lodash.shuffle)(this.state.deck);
-	      var cardsToDeal = deck.splice(48);
 	      var newState = (0, _lodash.merge)({}, this.state);
+	      var deck = (0, _lodash.shuffle)(this.state.deck);
 	
-	      newState.players[0].hold = cardsToDeal.slice(0, 2);
-	      newState.players[1].hold = cardsToDeal.slice(2);
-	      newState.deck = deck;
+	      newState.players[0].hold = deck.slice(0, 2);
+	      newState.players[1].hold = deck.slice(2);
+	
+	      newState.deck = cardsToDeal.concat(deck);
 	
 	      this.playSound('deal-sound');
 	
@@ -42564,13 +42580,27 @@
 	  return PokerHand;
 	}();
 	
-	var stage = [{ rank: 5, suit: 'clubs' }, { rank: 4, suit: 'clubs' }, { rank: 5, suit: 'spades' }, { rank: 2, suit: 'clubs' }, { rank: 2, suit: 'hearts' }];
+	var stage = [{ rank: 4, suit: 'clubs' }, { rank: 14, suit: 'clubs' }, { rank: 4, suit: 'spades' }, { rank: 11, suit: 'clubs' }, { rank: 4, suit: 'hearts' }];
 	
-	var h1 = getPokerHand(stage, [{ rank: 13, suit: 'spades' }, { rank: 7, suit: 'hearts' }]);
-	var h2 = getPokerHand(stage, [{ rank: 4, suit: 'diamonds' }, { rank: 5, suit: 'clubs' }]);
+	var h1 = getPokerHand(stage, [{ rank: 3, suit: 'spades' }, { rank: 12, suit: 'hearts' }]);
+	var h2 = getPokerHand(stage, [{ rank: 7, suit: 'diamonds' }, { rank: 7, suit: 'clubs' }]);
 	
 	console.log("h1:", h1);
 	console.log("h2:", h2);
+	
+	// let stage = [{rank: 13, suit: 'clubs'},
+	//   {rank: 4, suit: 'clubs'},
+	//   {rank: 14, suit: 'spades'},
+	//   {rank: 2, suit: 'clubs'},
+	//   {rank: 2, suit: 'hearts'}];
+	
+	
+	// let h1 = getPokerHand(stage, [{rank: 14, suit: 'spades' }, {rank: 2, suit: 'hearts'}])
+	// let h2 = getPokerHand(stage, [{rank: 10, suit: 'diamonds' }, {rank: 6, suit: 'clubs'}])
+	
+	// console.log("h1:", h1);
+	// console.log("h2:", h2);
+	
 	
 	// let gh = greatestHold(stage, [h1, h2]);
 	// console.log("gh:", gh);

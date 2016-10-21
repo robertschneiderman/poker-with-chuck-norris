@@ -294,19 +294,33 @@ export class PokerHand {
   }
 }
 
-let stage = [{rank: 5, suit: 'clubs'},
-  {rank: 4, suit: 'clubs'},
-  {rank: 5, suit: 'spades'},
-  {rank: 2, suit: 'clubs'},
-  {rank: 2, suit: 'hearts'}];
+let stage = [{rank: 4, suit: 'clubs'},
+  {rank: 14, suit: 'clubs'},
+  {rank: 4, suit: 'spades'},
+  {rank: 11, suit: 'clubs'},
+  {rank: 4, suit: 'hearts'}];
 
 
 
-let h1 = getPokerHand(stage, [{rank: 13, suit: 'spades' }, {rank: 7, suit: 'hearts'}])
-let h2 = getPokerHand(stage, [{rank: 4, suit: 'diamonds' }, {rank: 5, suit: 'clubs'}])
+let h1 = getPokerHand(stage, [{rank: 3, suit: 'spades' }, {rank: 12, suit: 'hearts'}])
+let h2 = getPokerHand(stage, [{rank: 7, suit: 'diamonds' }, {rank: 7, suit: 'clubs'}])
 
 console.log("h1:", h1);
 console.log("h2:", h2);
+
+// let stage = [{rank: 13, suit: 'clubs'},
+//   {rank: 4, suit: 'clubs'},
+//   {rank: 14, suit: 'spades'},
+//   {rank: 2, suit: 'clubs'},
+//   {rank: 2, suit: 'hearts'}];
+
+
+
+// let h1 = getPokerHand(stage, [{rank: 14, suit: 'spades' }, {rank: 2, suit: 'hearts'}])
+// let h2 = getPokerHand(stage, [{rank: 10, suit: 'diamonds' }, {rank: 6, suit: 'clubs'}])
+
+// console.log("h1:", h1);
+// console.log("h2:", h2);
 
 
 // let gh = greatestHold(stage, [h1, h2]);
